@@ -1,0 +1,297 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.hiido</groupId>
+    <artifactId>hiido.hcat</artifactId>
+    <version>3.0.0</version>
+  </parent>
+  <groupId>com.hiido</groupId>
+  <artifactId>hcat.server</artifactId>
+  <version>3.0.0</version>
+  
+  <dependencies>
+  <!-- 
+   <dependency>
+    	<groupId>org.anarres.lzo</groupId>
+    	<artifactId>lzo-hadoop</artifactId>
+    	<version>1.0.0</version>
+    	<scope>system</scope>
+    	<systemPath>${project.basedir}/localJars/hadoop-lzo.jar</systemPath>
+    </dependency>
+    -->
+    
+    
+    
+    <dependency>
+    	<groupId>com.hiido</groupId>
+  		<artifactId>security</artifactId>
+    </dependency>
+    
+    <dependency>
+    	<groupId>com.hiido</groupId>
+  		<artifactId>hcat.http</artifactId>
+  		<version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+    	<groupId>com.hiido</groupId>
+  		<artifactId>hcat.common</artifactId>
+  		<version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+    <groupId>org.apache.avro</groupId>
+    <artifactId>avro</artifactId>
+    <version>1.7.5</version>
+</dependency>
+  
+  <dependency>
+    <groupId>com.jolbox</groupId>
+    <artifactId>bonecp</artifactId>
+	</dependency>
+    
+    <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+    
+    <dependency>
+    	<groupId>com.hiido</groupId>
+  		<artifactId>security</artifactId>
+    </dependency>
+    
+		<dependency>
+    		<groupId>org.apache.directory.jdbm</groupId>
+   			 <artifactId>apacheds-jdbm1</artifactId>
+   			 <scope>compile</scope>
+		</dependency>
+    
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-cli</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-common</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-beeline</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-exec</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-jdbc</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-metastore</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-orc</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-serde</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-service</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-shims</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>spark-client</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-storage-api</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+    		<groupId>org.apache.hive</groupId>
+    		<artifactId>hive-testutils</artifactId>
+    	</dependency>
+    	
+    	<dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client</artifactId>
+         <exclusions>
+           <exclusion>
+            <groupId>commmons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+         </exclusions>
+     </dependency>
+     
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-hdfs</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+     </dependency>
+     
+     <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-mapreduce-client-core</artifactId>
+     </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-minikdc</artifactId>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-common</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-hadoop-compat</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-hadoop2-compat</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase-server</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-minicluster</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-core_${scala.binary.version}</artifactId>
+      </dependency>
+      
+      <dependency>
+      <groupId>org.apache.tez</groupId>
+      <artifactId>tez-api</artifactId>
+      <version>0.8.2</version>
+      <optional>true</optional>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-hdfs</artifactId>
+        </exclusion>
+       <exclusion>
+         <groupId>org.apache.hadoop</groupId>
+         <artifactId>hadoop-yarn-client</artifactId>
+       </exclusion>
+       <exclusion>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+       </exclusion>
+      </exclusions>
+    </dependency>
+    	
+    </dependencies>
+    
+    <build>
+    	<plugins>
+
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+    	
+    	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>libserver</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>conf/**</exclude>
+                                <exclude>*.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+    	
+    		<plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>make-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors> <!--描述文件路径-->
+                                <descriptor>src/main/resources/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+    	</plugins>
+    </build>
+  
+  
+</project>

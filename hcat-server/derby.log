@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Jun 15 16:54:49 CST 2016:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-0155-5345-27fd-00000a98eb40 
+on database directory /home/zrc/workspace_for_hcat/hiido.hcat/hcat-server/metastore_db with class loader sun.misc.Launcher$AppClassLoader@77bdcbb2 
+Loaded from file:/home/zrc/.m2/repository/org/apache/derby/derby/10.10.2.0/derby-10.10.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_79-b15
+user.dir=/home/zrc/workspace_for_hcat/hiido.hcat/hcat-server
+os.name=Linux
+os.arch=amd64
+os.version=3.13.0-37-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

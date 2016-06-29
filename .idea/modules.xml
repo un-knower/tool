@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/hcat-client/hcat.client.iml" filepath="$PROJECT_DIR$/hcat-client/hcat.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hcat-common/hcat.common.iml" filepath="$PROJECT_DIR$/hcat-common/hcat.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hcat-http/hcat.http.iml" filepath="$PROJECT_DIR$/hcat-http/hcat.http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hcat-server/hcat.server.iml" filepath="$PROJECT_DIR$/hcat-server/hcat.server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hiido.hcat.iml" filepath="$PROJECT_DIR$/hiido.hcat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../security/security.iml" filepath="$PROJECT_DIR$/../security/security.iml" />
+    </modules>
+  </component>
+</project>

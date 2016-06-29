@@ -1,0 +1,36 @@
+#!/bin/bash
+bin=`dirname "$0"`
+. "$bin/hcat-env.sh"
+
+export APP_HOME=`cd $bin/..; pwd`
+
+main_class=com.hiido.hcat.service.ServiceMain
+
+lib="${APP_HOME}/lib"
+libserver="${APP_HOME}/libserver"
+conf="${APP_HOME}/conf"
+HADOOP_CONF="${HADOOP_HOME}/etc/hadoop"
+HADOOP_SP="${HADOOP_HOME}/sp"
+auxlib="${APP_HOME}/udf"
+
+class_path=$conf:$HADOOP_CONF
+
+for f in ${libserver}/*.jar; do
+    class_path=${class_path}:$f
+done
+
+for f in ${HADOOP_SP}/*.jar; do
+    class_path=${class_path}:$f
+done
+
+for f in ${lib}/*.jar; do
+    class_path=${class_path}:$f
+done
+
+for f in ${auxlib}/*.jar; do
+    class_path=${class_path}:$f
+done
+
+java_opt="-Xmx1024M -Duser.timezone=GMT+08 -Dfile.encoding=UTF-8 -Djava.library.path=${JAVA_LIBRARY_PATH}"
+
+${JAVA_HOME}/bin/java ${java_opt} -cp ${class_path} ${main_class} "$@"
