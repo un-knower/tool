@@ -8,6 +8,7 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/../security/pom.xml" />
+        <option value="$USER_HOME$/workspace_for_hcat/security/pom.xml" />
       </list>
     </option>
   </component>
