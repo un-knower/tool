@@ -4,19 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.sql.BatchUpdateException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.hiido.hcat.common.util.IOUtils;
+import com.hiido.suit.common.util.ConnectionPool;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -71,6 +70,7 @@ public class HttpHiveServer implements CliService.Iface {
 	private static final Logger LOG = Logger.getLogger(HttpHiveServer.class);
 	private final int port;
 	private final String serverTag;
+	private final long maxHistoryTask = 1000 * 60 * 60;
 	private final AtomicLong qidSeq = new AtomicLong();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
@@ -81,6 +81,13 @@ public class HttpHiveServer implements CliService.Iface {
 	private Configuration conf;
 	private Map<String, Task> qid2Task = new ConcurrentHashMap<String, Task>();
 	private BlockingQueue<Task> taskBlockQueue = new LinkedBlockingQueue<Task>();
+	private final BlockingQueue<BeeQuery> sqlQueue = new LinkedBlockingQueue<BeeQuery>();
+
+	public void setConnPool(ConnectionPool connPool) {
+		this.connPool = connPool;
+	}
+
+	private ConnectionPool connPool;
 
 	private final OperationManager operationManager;
 
@@ -100,7 +107,9 @@ public class HttpHiveServer implements CliService.Iface {
 		server.addServlet("query", "/query", new QueryServlet(new CliService.Processor<HttpHiveServer>(this),
 				new TBinaryProtocol.Factory(true, true)));
 		Thread disper = new Thread(new Disper(), "task-dipser");
+		Thread queryDB = new Thread(new QueryDB(), "queryDb");
 		disper.start();
+		queryDB.start();
 		server.start();
 	}
 
@@ -137,6 +146,13 @@ public class HttpHiveServer implements CliService.Iface {
 			this.qp.setJobId(new LinkedList<String>()).setState(JobStatus.READY.getValue()).setN(query.size())
 					.setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
 		}
+
+		boolean isFinished() {
+			int state = qp.getState();
+			return state > 1;
+
+		}
+
 
 		public QueryProgress getProgress() {
 			if (qp.state != JobStatus.RUNNING.getValue())
@@ -243,8 +259,7 @@ public class HttpHiveServer implements CliService.Iface {
 							}
 						}
 						qp.fetchDirs = new LinkedList<String>();
-						qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
-						System.out.println(qp.fetchDirs.get(qp.fetchDirs.size() - 1));
+						//qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
 						TableSchema schema = sqlOpt.getResultSetSchema();
 						qp.fields = new LinkedList<com.hiido.hcat.thrift.protocol.Field>();
 						for (ColumnDescriptor column : schema.getColumnDescriptors()) {
@@ -279,6 +294,7 @@ public class HttpHiveServer implements CliService.Iface {
 						"The server threw an exception, please contact the administrator.");
 			} finally {
 				try {
+					updateQueryRecord(qid, qp.state, this.qp.getRes());
 					qp.endTime = System.currentTimeMillis() / 1000;
 					this.confOverlay = null;
 					session.close();
@@ -291,6 +307,9 @@ public class HttpHiveServer implements CliService.Iface {
 	}
 
 	private final class Disper implements Runnable {
+
+		private long cleanTaskInterval = 1000 * 60 * 60;
+		private long lastCleanTime = System.currentTimeMillis();
 
 		public void run() {
 			while (true) {
@@ -306,6 +325,8 @@ public class HttpHiveServer implements CliService.Iface {
 					t.start();
 					LOG.info("start to run:" + qid);
 				}
+				if(System.currentTimeMillis() - cleanTaskInterval > lastCleanTime)
+					cleanTaskHistory(true);
 			}
 		}
 	}
@@ -422,6 +443,144 @@ public class HttpHiveServer implements CliService.Iface {
 		return isQuick;
 	}
 
+	private int cleanTaskHistory(boolean force) {
+		int count = 0;
+		long now = System.currentTimeMillis();
+		if (qid2Task.size() > maxHistoryTask) {
+			Set<String> tkeys = new HashSet<String>(qid2Task.keySet());
+			for (String k : tkeys) {
+				Task t = qid2Task.get(k);
+				if (t == null) {
+					continue;
+				}
+				boolean clean = t.isFinished() && (force || t.qp.endTime * 1000 - now >= historyTaskLife);
+				if (clean) {
+					qid2Task.remove(k);
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	private void commitQueryRecord(String qid, String qStr, String bususer, boolean isQuick) {
+		BeeQuery query = new BeeQuery();
+		query.setQid(qid);
+		query.setQuery(qStr);
+		query.setQuick(isQuick? 1: 0);
+		query.setCommittime(new Timestamp(System.currentTimeMillis()));
+		query.setExec_start(new Timestamp(System.currentTimeMillis()));
+		query.setCommitter(serverTag);
+		query.setExecutor(serverTag);
+		query.setUser(bususer);
+		query.setState(1);
+		query.setInsert(true);
+		sqlQueue.add(query);
+	}
+
+	private void updateQueryRecord(String qid, int state, String resourcedir) {
+		BeeQuery bq = new BeeQuery();
+		bq.setQid(qid);
+		bq.setState(state);
+		bq.setExec_end(new Timestamp(System.currentTimeMillis()));
+		bq.setResourcedir(resourcedir);
+		bq.setInsert(false);
+		sqlQueue.add(bq);
+	}
+
+	//TODO
+	private void updateBeeQuery(java.sql.PreparedStatement pstmt, BeeQuery bq) throws java.sql.SQLException {
+		if(bq.isInsert()) {
+			pstmt.setString(1, bq.getQid());
+			pstmt.setString(2, bq.getUser());
+			pstmt.setString(3, bq.getQuery());
+			pstmt.setInt(4, bq.getQuick());
+			pstmt.setString(5, bq.getCommitter());
+			pstmt.setTimestamp(6, bq.getCommittime());
+			pstmt.setString(7, bq.getExecutor());
+			pstmt.setTimestamp(8, bq.getExec_start());
+			pstmt.setInt(9, bq.getState());
+		}else {
+			pstmt.setInt(1, bq.getState());
+			pstmt.setTimestamp(2, bq.getExec_end());
+			pstmt.setString(3, bq.getResourcedir());
+			pstmt.setString(4, bq.getQid());
+		}
+		pstmt.addBatch();
+	}
+
+	private final class QueryDB implements Runnable {
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		int commitQueryTryCount = 2;
+		List<BeeQuery> list = new LinkedList<BeeQuery>();
+
+		public QueryDB() {
+		}
+
+		public void run() {
+			while (true) {
+				try {
+					BeeQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
+					if (query == null)
+						continue;
+					list.add(query);
+					if (sqlQueue.size() > 10) {
+						for (int i = 0; i < 10; i++) {
+							if (list.get(0).getCommitSQL() == sqlQueue.peek().getCommitSQL())
+								list.add(sqlQueue.poll());
+							else
+								break;
+						}
+					}
+				} catch (InterruptedException e) {
+					LOG.warn("QueryDB thread is interrupted :" + e.toString());
+					list.clear();
+					continue;
+				}
+
+				int count = 0;
+				boolean err = false;
+				while ((++count) <= commitQueryTryCount) {
+					try {
+						conn = connPool.acquire();
+						pstmt = conn.prepareStatement(list.get(0).getCommitSQL());
+						for (BeeQuery q : list)
+							updateBeeQuery(pstmt, q);
+						pstmt.executeBatch();
+					} catch (BatchUpdateException e) {
+						err = true;
+						int[] results = e.getUpdateCounts();
+						for (int i = results.length - 1; i >= 0; i--)
+							if (results[i] != java.sql.Statement.EXECUTE_FAILED)
+								list.remove(i);
+						StringBuilder str = new StringBuilder();
+						for (BeeQuery q : list) {
+							str.append(q.getQid());
+							str.append(";");
+						}
+						LOG.error(String.format("[fatal] Failed to commit sql[%s] tryed[%d]", str.toString(), count), e);
+					} catch (Throwable e) {
+						err = true;
+						StringBuilder str = new StringBuilder();
+						for (BeeQuery q : list) {
+							str.append(q.getQid());
+							str.append(";");
+						}
+						LOG.error(String.format("[fatal] Failed to commit sql[%s] tryed[%d]", str.toString(), count), e);
+					} finally {
+						IOUtils.closeIO(pstmt);
+						connPool.release(conn, err);
+						if (!err) {
+							list.clear();
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	@Override
 	public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, TException {
 		// ServletUtil.httpResponse(200, "hello world, this is hcat server.",
@@ -471,6 +630,7 @@ public class HttpHiveServer implements CliService.Iface {
 
 			String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
 					qidSeq.getAndIncrement());
+			commitQueryRecord(qid, queryStr, cq.getCipher().get("bususer").toString(), quick);
 			HcatSession session = new HcatSession("user", "password", new HiveConf(), "ip");
 
 			session.setOperationManager(operationManager);

@@ -291,7 +291,6 @@ class JobSubmitter {
   /**
    * configure the jobconf of the user with the command line options of 
    * -libjars, -files, -archives.
-   * @param conf
    * @throws IOException
    */
   private void copyAndConfigureFiles(Job job, Path jobSubmitDir) 
