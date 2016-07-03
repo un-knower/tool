@@ -88,15 +88,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-service:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-exec:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-ant:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-service:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-exec:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-ant:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.velocity:velocity:1.5" level="project" />
     <orderEntry type="library" name="Maven: oro:oro:2.0.8" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-tez:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-common:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-storage-api:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-orc:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-tez:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-common:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-storage-api:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-orc:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.iq80.snappy:snappy:0.2" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.5" level="project" />
@@ -107,12 +107,12 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.4.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.4.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-client:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-common:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-client:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-llap-common:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-shims:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive.shims:hive-shims-common:2.0.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hive.shims:hive-shims-0.23:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-shims:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive.shims:hive-shims-common:2.0.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hive.shims:hive-shims-0.23:2.0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hadoop:hadoop-yarn-server-resourcemanager:2.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-servlet:3.0" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey.contribs:jersey-guice:1.9" level="project" />
@@ -122,7 +122,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.fusesource.leveldbjni:leveldbjni-all:1.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hadoop:hadoop-yarn-server-applicationhistoryservice:2.6.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hadoop:hadoop-yarn-server-web-proxy:2.6.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hive.shims:hive-shims-scheduler:2.0.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.hive.shims:hive-shims-scheduler:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-1.2-api:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.4.1" level="project" />
@@ -146,8 +146,8 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.2.4" level="project" />
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: jline:jline:2.12" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-metastore:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hive:hive-serde:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-metastore:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.hive:hive-serde:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.parquet:parquet-hadoop-bundle:1.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hbase:hbase-client:1.1.1" level="project" />

@@ -6,6 +6,7 @@
   <packaging>pom</packaging>
   
     <properties>
+        <hive.version>2.0.1</hive.version>
       <hadoop.version>2.4.1</hadoop.version>
       <hbase.version>1.1.1</hbase.version>
       <scala.version>2.10.4</scala.version>
@@ -57,79 +58,79 @@
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-cli</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-common</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-beeline</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-exec</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-jdbc</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-metastore</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-orc</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-serde</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-service</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-shims</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>spark-client</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-storage-api</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
     		<groupId>org.apache.hive</groupId>
     		<artifactId>hive-testutils</artifactId>
-    		<version>2.0.0</version>
+    		<version>${hive.version}</version>
     	</dependency>
     	
     	<dependency>
