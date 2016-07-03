@@ -7,23 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.hiido.suit.Business;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Task;
 import org.apache.hadoop.hive.ql.hooks.Entity.Type;
 import org.apache.hadoop.hive.ql.hooks.ReadEntity;
 import org.apache.hadoop.hive.ql.hooks.WriteEntity;
 import org.apache.hadoop.hive.ql.metadata.AuthorizationException;
-import org.apache.hadoop.hive.ql.parse.ASTNode;
-import org.apache.hadoop.hive.ql.parse.AbstractSemanticAnalyzerHook;
-import org.apache.hadoop.hive.ql.parse.BaseSemanticAnalyzer;
-import org.apache.hadoop.hive.ql.parse.ColumnAccessInfo;
-import org.apache.hadoop.hive.ql.parse.ExplainSemanticAnalyzer;
-import org.apache.hadoop.hive.ql.parse.FunctionSemanticAnalyzer;
-import org.apache.hadoop.hive.ql.parse.HiveParser;
-import org.apache.hadoop.hive.ql.parse.HiveSemanticAnalyzerHookContext;
-import org.apache.hadoop.hive.ql.parse.HiveSemanticAnalyzerHookContextImpl;
-import org.apache.hadoop.hive.ql.parse.SemanticAnalyzer;
-import org.apache.hadoop.hive.ql.parse.SemanticException;
+import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.HiveOperation;
 import org.apache.hadoop.hive.ql.security.authorization.Privilege;
 import org.apache.hadoop.hive.ql.session.SessionState;
@@ -59,7 +50,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 			return;
 		
 		BaseSemanticAnalyzer sem = ((HiveSemanticAnalyzerHookContextImpl) context).getSem();
-		
+
 		if(sem instanceof FunctionSemanticAnalyzer) {
 			if (!(ast.getFirstChildWithType(HiveParser.TOK_TEMPORARY) != null))
                 throw new SemanticException("Unsupported create-function syntax, please use create-temporary-function syntax.");
@@ -77,6 +68,24 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                 }
                 return;
             }
+		} else if(sem instanceof DDLSemanticAnalyzer) {
+			if(op == HiveOperation.DROPTABLE || op == HiveOperation.DROPVIEW) {
+				Set<WriteEntity> writeSet = context.getOutputs();
+				List<AuthEntry> authList = new LinkedList<AuthEntry>();
+				for(WriteEntity entity : writeSet) {
+					if(entity.getType() == Type.TABLE) {
+						AuthEntry entry = new AuthEntry();
+						entry.setPrivi_type(PriviType.DROPTABLE.toString());
+						entry.setBusi_type(Business.BusType.HIVE.toString());
+						AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
+						String object_name = String.format("%s.%s", "default", entity.getName());
+						System.out.println("drop auth:" + object_name);
+
+						objectInfo.setObject_name(object_name);
+						entry.setObject_info(objectInfo);
+					}
+				}
+			}
 		} else {
 			List<AuthEntry> authInfo = new LinkedList<AuthEntry>();
 			Set<WriteEntity> writeSet = context.getOutputs();
@@ -121,6 +130,8 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 		case SHOWINDEXES:
 		case SHOWCONF:
 			return false;
+		case DROPDATABASE:
+			throw new AuthorizationException("hcat not support drop database.");
 		default:
 				return true;
 		}

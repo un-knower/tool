@@ -78,7 +78,8 @@ public class TestHttpClient {
 			TProtocol lopFactory = new TBinaryProtocol(thc);
 			CliService.Client client = new CliService.Client(lopFactory);
 			//String sql = "use freshman; set hive.exec.mode.local.auto=true;insert overwrite local directory '/tmp/hive-zrc/abc' select school, count(*) from freshman_studs group by school;";
-			String sql = "set hive.exec.reduces.max=48;use freshman;select name,school from freshman_studs";
+			//String sql = "use freshman;select sc,num from freshman_studs_view";
+			String sql = "use freshman;create view freshman_studs_view (sc, num) as select school,count(*) from freshman_studs group by school";
 			
 			CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(Collections.<String, String> emptyMap());
 			CommitQueryReply reply = client.commit(cq);

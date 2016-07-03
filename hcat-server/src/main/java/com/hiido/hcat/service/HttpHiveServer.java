@@ -630,7 +630,7 @@ public class HttpHiveServer implements CliService.Iface {
 
 			String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
 					qidSeq.getAndIncrement());
-			commitQueryRecord(qid, queryStr, cq.getCipher().get("bususer").toString(), quick);
+			//commitQueryRecord(qid, queryStr, cq.getCipher().get("bususer").toString(), quick);
 			HcatSession session = new HcatSession("user", "password", new HiveConf(), "ip");
 
 			session.setOperationManager(operationManager);
