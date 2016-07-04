@@ -36,6 +36,8 @@ public interface PublicConstant {
     String DEF_SUIT_TRUSTSTORE = "ssl/hiohadoopcli.cer";
     String HIO_SUIT_TRUSTSTORE_PASSWD = "hio.suit.truststore.passwd";
 
+    String HCAT_AUTHENTICATION_SERVERS = "hcat.authentication.servers";
+
     String HIO_FS_DEFAULT_NAME = "fs.default.name";
     String HIO_FS_EXT_SERVER = "httpfs.ext.server";
 

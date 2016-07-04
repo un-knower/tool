@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.hiido.hcat.common.util.IOUtils;
 import com.hiido.suit.common.util.ConnectionPool;
+import com.hiido.suit.security.SecurityCenter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -26,10 +27,7 @@ import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.Driver;
 import org.apache.hadoop.hive.ql.exec.FetchTask;
 import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
-import org.apache.hadoop.hive.ql.parse.ASTNode;
-import org.apache.hadoop.hive.ql.parse.HiveParser;
-import org.apache.hadoop.hive.ql.parse.ParseDriver;
-import org.apache.hadoop.hive.ql.parse.ParseUtils;
+import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.FetchWork;
 import org.apache.hadoop.hive.ql.processors.HiveCommand;
 import org.apache.hive.service.cli.ColumnDescriptor;
@@ -88,6 +86,28 @@ public class HttpHiveServer implements CliService.Iface {
 	}
 
 	private ConnectionPool connPool;
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getServerTag() {
+		return serverTag;
+	}
+
+	public long getMaxHistoryTask() {
+		return maxHistoryTask;
+	}
+
+	public long getHistoryTaskLife() {
+		return historyTaskLife;
+	}
+
+	public void setHistoryTaskLife(long historyTaskLife) {
+		this.historyTaskLife = historyTaskLife;
+	}
+
+	private TokenVerifyStone VerifyStone;
 
 	private final OperationManager operationManager;
 
@@ -438,7 +458,7 @@ public class HttpHiveServer implements CliService.Iface {
 			throw e;
 		} catch (Exception e) {
 			LOG.error("failed in parse sql .", e);
-			throw new RuntimeException("server-side exception when commit sql.");
+			throw new RuntimeException("failed in parse sql :" + e.toString());
 		}
 		return isQuick;
 	}

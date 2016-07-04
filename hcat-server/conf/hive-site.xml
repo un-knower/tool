@@ -233,5 +233,11 @@
   <name>hive.hmshandler.retry.interval</name>
   <value>30</value>
 </property>
+
+    <property>
+        <name>hcat.authentication.servers</name>
+        <value>10.21.33.13:26008;10.21.33.30:26008;</value>
+    </property>
+
 </configuration>
 
