@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.hiido.hcat.common.util.IOUtils;
+import com.hiido.suit.CipherUser;
+import com.hiido.suit.SuitUser;
 import com.hiido.suit.common.util.ConnectionPool;
+import com.hiido.suit.err.ErrCodeException;
 import com.hiido.suit.security.SecurityCenter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -147,6 +150,7 @@ public class HttpHiveServer implements CliService.Iface {
 	final class Task implements Runnable {
 		final String qid;
 		final boolean quick;
+		final BitSet bitSet;
 		final List<String> query;
 		Map<String, String> confOverlay;
 		HcatSession session;
@@ -156,12 +160,13 @@ public class HttpHiveServer implements CliService.Iface {
 
 		RuntimeException serverException;
 
-		public Task(String qid, HcatSession session, List<String> query, boolean quick,
+		public Task(String qid, HcatSession session, List<String> query, boolean quick, BitSet bitSet,
 				Map<String, String> confOverlay) {
 			this.qid = qid;
 			this.session = session;
 			this.query = query;
 			this.quick = quick;
+			this.bitSet = bitSet;
 			this.confOverlay = confOverlay;
 			this.qp.setJobId(new LinkedList<String>()).setState(JobStatus.READY.getValue()).setN(query.size())
 					.setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
@@ -178,7 +183,12 @@ public class HttpHiveServer implements CliService.Iface {
 			if (qp.state != JobStatus.RUNNING.getValue())
 				qp.setProgress(0.0);
 			else {
-				qp.setProgress((session.getSessionState().getCurProgress() + running) / query.size());
+				int c1 = 0, c2 = 0;
+				for(int i = 0; i < running; i++)
+					if(bitSet.get(i)) c1++; else c2++;
+
+				//qp.setProgress((session.getSessionState().getCurProgress() + running) / query.size());
+				qp.setProgress((session.getSessionState().getCurProgress()+c2)*0.9/(query.size()-bitSet.cardinality()) + (c1*0.1/bitSet.cardinality()) );
 				qp.setJobId(session.getSessionState().getJobs());
 			}
 			
@@ -197,14 +207,19 @@ public class HttpHiveServer implements CliService.Iface {
 		@Override
 		public void run() {
 			try {
-				session.open(Collections.<String, String> emptyMap());
-				session.startSs();
+				session.getHiveConf().setVar(HiveConf.ConfVars.HIVEQUERYID, qid);
+				//if(quick)
+				//	session.openWithoutStartSs(Collections.<String, String>emptyMap());	//no need reloadAuxLib, create tmp dir
+				//else
+					session.open(Collections.<String, String> emptyMap());
 				synchronized (qp) {
 					if (qp.state == JobStatus.CANCEL.getValue())
 						return;
 					qp.state = JobStatus.RUNNING.getValue();
 					qp.startTime = System.currentTimeMillis() / 1000;
 				}
+
+				boolean loadedSparkConf = false;
 				for (String q : query) {
 					// 前端不支持输出多个select查询结果
 					if (qp.isFetchTask)
@@ -219,6 +234,13 @@ public class HttpHiveServer implements CliService.Iface {
 					if (handle == null)
 						continue;
 
+					if(!loadedSparkConf) {
+						String engine = session.getHiveConf().getVar(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE);
+						if(engine.equals("spark")) {
+							session.getHiveConf().addResource("spark-site.xml");
+							loadedSparkConf = true;
+						}
+					}
 					Operation operation = operationManager.getOperation(handle);
 					if (operation instanceof SQLOperation) {
 						SQLOperation sqlOpt = (SQLOperation) operation;
@@ -260,14 +282,14 @@ public class HttpHiveServer implements CliService.Iface {
 
 						if (needToMove) {
 							FileSystem fs = work.getPathLists().get(0).getFileSystem(session.getHiveConf());
-							Path parent = new Path(conf.get("hcat.mr.resultDir"), this.qid);
+							Path parent = new Path(new Path(tblDir.toUri().getScheme(), tblDir.toUri().getAuthority(),conf.get("hcat.mr.resultDir")), this.qid);
 							if (!fs.exists(parent))
 								fs.mkdirs(parent);
 
 							if (!work.isPartitioned()) {
 								fs.rename(work.getTblDir(), parent);
 								work.setTblDir(new Path(parent, work.getTblDir().getName()));
-								qp.res = work.getTblDir().toUri().toString();
+								qp.res = work.getTblDir().toString();
 								LOG.debug(String.format("%s result is %s", qid, qp.res));
 							} else if (work.getPartDir() != null) {
 								ArrayList<Path> partDir = new ArrayList<Path>(work.getPartDir().size());
@@ -319,6 +341,7 @@ public class HttpHiveServer implements CliService.Iface {
 					this.confOverlay = null;
 					session.close();
 					session = null;
+					LOG.info(String.format("finish %s with state %d", qid, this.qp.state));
 				} catch (HiveSQLException e) {
 					LOG.error("close session wrong.", e);
 				}
@@ -603,11 +626,15 @@ public class HttpHiveServer implements CliService.Iface {
 
 	@Override
 	public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, TException {
-		// ServletUtil.httpResponse(200, "hello world, this is hcat server.",
-		// "application/json", "utf-8", response);
 		// 1. 权限验证
-		// 2. 创建任务
-		// 3. 返回handle
+		CipherUser cipherUser = null;
+		try {
+			cipherUser = this.tokenVerifyStone.getCipherUser(cq.cipher);
+		}catch(ErrCodeException e) {
+			LOG.error("failed to verify token: ", e);
+			throw new AuthorizationException(e.toString());
+		}
+		//CipherUser cipherUser = new CipherUser(SuitUser.newInstance("freshman", "zrc","",""),4, null, false);
 		CommitQueryReply reply = new CommitQueryReply();
 		String queryStr = cq.getQuery();
 		String line;
@@ -631,6 +658,10 @@ public class HttpHiveServer implements CliService.Iface {
 			Context ctx = new Context(conf, false);
 			ParseDriver pd = new ParseDriver();
 			String command = "";
+
+			int pos = 0;
+			BitSet bitSet = new BitSet();
+
 			for (String oneCmd : qsb.toString().split(";")) {
 				if (StringUtils.endsWith(oneCmd, "\\")) {
 					command += StringUtils.chop(oneCmd) + ";";
@@ -643,22 +674,24 @@ public class HttpHiveServer implements CliService.Iface {
 				}
 				command = command.trim();
 				LOG.debug("parse cmd :" + command);
-				quick = quick & isQuickCmd(command, ctx, pd);
+				boolean isQ = isQuickCmd(command, ctx, pd);
+				bitSet.set(pos++, isQ);
+				quick = quick & isQ;
 				cmds.add(command);
 				command = "";
 			}
 
 			String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
 					qidSeq.getAndIncrement());
-			//commitQueryRecord(qid, queryStr, cq.getCipher().get("bususer").toString(), quick);
-			HcatSession session = new HcatSession("user", "password", new HiveConf(), "ip");
+			commitQueryRecord(qid, queryStr, cipherUser.getBusUser(), quick);
+			HcatSession session = new HcatSession(cipherUser.getBusUser(), cipherUser.genSKey(), new HiveConf(), cipherUser.getRemoteIP());
 
 			session.setOperationManager(operationManager);
-			Task task = new Task(qid, session, cmds, quick, cq.getConf());
+			Task task = new Task(qid, session, cmds, quick, bitSet, cq.getConf());
+			qid2Task.put(qid, task);
 			if (quick) {
 				task.run();
 			} else {
-				qid2Task.put(qid, task);
 				taskBlockQueue.add(task);
 			}
 			Handle handle = new Handle().setQuick(quick).setQueryId(qid).setTotalN(cmds.size()).setRunning(false).setStderr(task.getProgress().errmsg);
@@ -678,7 +711,6 @@ public class HttpHiveServer implements CliService.Iface {
 
 	@Override
 	public QueryStatusReply queryJobStatus(QueryStatus qs) throws NotFoundException, TException {
-		//LOG.debug("receive jobstatus request : " + qs.queryId);
 		Task task = qid2Task.get(qs.queryId);
 		if (task == null) {
 			LOG.warn("server not found qid : " + qs.queryId);
@@ -688,8 +720,6 @@ public class HttpHiveServer implements CliService.Iface {
 			QueryStatusReply reply = new QueryStatusReply();
 			reply.setQueryProgress(task.getProgress());
 			
-			//LOG.debug(String.format("%s progress is %f, status is %d, errmsg : %s", qs.queryId, reply.queryProgress.progress,
-					//reply.queryProgress.state, reply.queryProgress.errmsg));
 			return reply;
 		} catch (Throwable e) {
 			throw new RuntimeException(e.toString());
@@ -715,5 +745,13 @@ public class HttpHiveServer implements CliService.Iface {
 	public LoadFileReply laodData(LoadFile lf) throws AuthorizationException, RuntimeException, TException {
 		LOG.info("receive load data");
 		throw new RuntimeException("not support load data.");
+	}
+
+	public void setTokenVerifyStone(TokenVerifyStone verifyStone) {
+		this.tokenVerifyStone = verifyStone;
+	}
+
+	public TokenVerifyStone getTokenVerifyStone() {
+		return tokenVerifyStone;
 	}
 }

@@ -14,9 +14,17 @@
             <directory>bin</directory>
             <outputDirectory>/bin</outputDirectory>
         </fileSet>
-	<fileSet>
+	    <fileSet>
             <directory>libserver</directory>
             <outputDirectory>/libserver</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>ssl</directory>
+            <outputDirectory>/ssl</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>spring_conf</directory>
+            <outputDirectory>/spring_conf</outputDirectory>
         </fileSet>
     </fileSets>
     <dependencySets>

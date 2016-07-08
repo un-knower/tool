@@ -162,6 +162,8 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
             return;
         else {
             SessionState.get().updateRunningTask(this.jobId, ((float)complete)/total);
+            if(LOG.isDebugEnabled())
+                LOG.debug(String.format("update job progress: %s : %f", jobId, ((float)complete)/total));
         }
     }
 }

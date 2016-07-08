@@ -37,6 +37,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.hive.ql.exec.mr.ExecDriver;
+import org.apache.hadoop.hive.ql.hooks.*;
 import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,15 +63,6 @@ import org.apache.hadoop.hive.ql.exec.TaskResult;
 import org.apache.hadoop.hive.ql.exec.TaskRunner;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.history.HiveHistory.Keys;
-import org.apache.hadoop.hive.ql.hooks.Entity;
-import org.apache.hadoop.hive.ql.hooks.ExecuteWithHookContext;
-import org.apache.hadoop.hive.ql.hooks.Hook;
-import org.apache.hadoop.hive.ql.hooks.HookContext;
-import org.apache.hadoop.hive.ql.hooks.HookUtils;
-import org.apache.hadoop.hive.ql.hooks.PostExecute;
-import org.apache.hadoop.hive.ql.hooks.PreExecute;
-import org.apache.hadoop.hive.ql.hooks.ReadEntity;
-import org.apache.hadoop.hive.ql.hooks.WriteEntity;
 import org.apache.hadoop.hive.ql.lockmgr.HiveLock;
 import org.apache.hadoop.hive.ql.lockmgr.HiveLockMode;
 import org.apache.hadoop.hive.ql.lockmgr.HiveLockObj;
@@ -1597,7 +1590,6 @@ public class Driver implements CommandProcessor {
         hookContext.addCompleteTask(tskRun);
 
         Task<? extends Serializable> tsk = tskRun.getTask();
-        SessionState.get().updateFinishTask(tsk.getId());
         TaskResult result = tskRun.getTaskResult();
 
         int exitVal = result.getExitVal();
@@ -1642,7 +1634,8 @@ public class Driver implements CommandProcessor {
             return exitVal;
           }
         }
-
+        if(tsk instanceof ExecDriver)
+          SessionState.get().updateFinishTask(tsk.getId());
         driverCxt.finished(tskRun);
 
         if (SessionState.get() != null) {

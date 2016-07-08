@@ -86,7 +86,7 @@ object SparkSubmit {
 
   // scalastyle:off println
   // Exposed for testing
-  private[spark] var exitFn: Int => Unit = (exitCode: Int) => ()
+  private[spark] var exitFn: Int => Unit = (exitCode: Int) => () //FiXME
   private[spark] var printStream: PrintStream = System.err
   private[spark] def printWarning(str: String): Unit = printStream.println("Warning: " + str)
   private[spark] def printErrorAndExit(str: String): Unit = {
@@ -120,6 +120,7 @@ object SparkSubmit {
     }
   }
 
+  //FIXME
   def mainWithStream(args: Array[String], errStream: PrintStream): Unit = {
     printStream = errStream
     main(args)
@@ -648,7 +649,9 @@ object SparkSubmit {
           printStream.println("You need to build Spark with -Phive and -Phive-thriftserver.")
           // scalastyle:on println
         }
-        System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+        //FIXME
+        //System.exit(CLASS_NOT_FOUND_EXIT_STATUS)
+        exitFn(CLASS_NOT_FOUND_EXIT_STATUS)
     }
 
     // SPARK-4170

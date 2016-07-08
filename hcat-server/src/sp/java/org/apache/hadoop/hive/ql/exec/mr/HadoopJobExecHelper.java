@@ -503,14 +503,18 @@ public class HadoopJobExecHelper {
           } else {
             jd = new JobDebugger(job, rj, console);
           }
+          //FIXME
+          /*
           Thread t = new Thread(jd);
           t.start();
           t.join(HiveConf.getIntVar(job, HiveConf.ConfVars.JOB_DEBUG_TIMEOUT));
+          */
+          jd.run();
           int ec = jd.getErrorCode();
           if (ec > 0) {
             returnVal = ec;
           }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
           console.printError("Timed out trying to grab more detailed job failure"
               + " information, please check jobtracker for more info");
         }

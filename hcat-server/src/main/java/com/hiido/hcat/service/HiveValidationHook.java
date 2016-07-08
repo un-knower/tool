@@ -30,6 +30,7 @@ import org.apache.spark.sql.catalyst.plans.logical.Except;
 
 public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 	private static final Logger LOG = Logger.getLogger(HiveValidationHook.class);
+	private static final String EmptyStr = "";
 	private List<String> verifyUDF;
 	private HiveConf conf;
 	private ASTNode ast;
@@ -90,6 +91,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 				}
 			}
 		} else {
+			ColumnAccessInfo columnAccess = sem.getColumnAccessInfo();
 			Set<WriteEntity> writeSet = context.getOutputs();
 			Set<ReadEntity> readSet = context.getInputs();
 			
@@ -104,7 +106,11 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 						entry.setPrivi_type(PriviType.WRITETABLE.toString());
 					entry.setBusi_type(Business.BusType.HIVE.toString());
 					AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-					String object_name = String.format("%s.%s", "default", entity.getName());
+					String table = entity.getName().replace('@','.');
+					if(table.startsWith(context.getUserName()))
+						continue;
+					String object_name = String.format("%s.%s", "default", table);
+					addColumnInfo(objectInfo, columnAccess, entity.getName());
 					objectInfo.setObject_name(object_name);
 					entry.setObject_info(objectInfo);
 					authInfo.add(entry);
@@ -120,38 +126,31 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 					entry.setPrivi_type(PriviType.QUERY.toString());
 					entry.setBusi_type(Business.BusType.HIVE.toString());
 					AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-					String object_name = String.format("%s.%s", "default", entity.getName());
+					String table = entity.getName().replace('@','.');
+					if(table.startsWith(context.getUserName()))
+						continue;
+					String object_name = String.format("%s.%s", "default", table);
 					objectInfo.setObject_name(object_name);
+					addColumnInfo(objectInfo, columnAccess, entity.getName());
 					entry.setObject_info(objectInfo);
 					authInfo.add(entry);
 					LOG.debug(String.format("read entity %s: %s", entity.getTyp().name(), entity.getName()));
 				}
 			}
-			
-			ColumnAccessInfo columnAccess = sem.getColumnAccessInfo();
-			if(columnAccess != null) {
-				Map<String, List<String>> map = columnAccess.getTableToColumnAccessMap();
-				for(String s : map.keySet()) {
-					StringBuilder builder = new StringBuilder();
-					for(String ss : map.get(s))
-						builder.append(ss).append(",");
-					LOG.debug(String.format("column access: %s, %s", s, builder.toString()));
-				}
-			}
-			//objectInfo.addExtra("col1");
-			//objectInfo.addExtra("col2");
+
 		}
-		SecurityAuth sa = createSecurityAuth();
+		if(authInfo.size() == 0)
+			return;
+		SecurityAuth sa = createSecurityAuth(context.getUserName());
+		sa.setAuth_info(authInfo);
 		com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient client = new com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient();
 		try {
 			client.setAddrList(conf.get(PublicConstant.HCAT_AUTHENTICATION_SERVERS));
 			client.setClientNum(-1);
 			com.hiido.suit.net.http.protocol.HttpApacheClient apacheClient = new com.hiido.suit.net.http.protocol.HttpApacheClient();
 			client.setHttpProtocolClient(apacheClient);
-			SecurityAuth.Reply reply = null;
 
-			reply = client.post(sa, SecurityAuth.Reply.class);
-
+			SecurityAuth.Reply reply = client.post(sa, SecurityAuth.Reply.class);
 			if (reply == null || !"success".equals(reply.getResp_code())) {
 				throw new AuthorizationException("fail to auth:" + reply == null ? "NULL" : reply.toString());
 			}
@@ -165,19 +164,30 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
 		}
 	}
 
+	private void addColumnInfo(AuthEntry.ObjectInfo objectInfo, ColumnAccessInfo columnAccess, String tableName) {
+		if(columnAccess != null) {
+			List<String> columns = columnAccess.getTableToColumnAccessMap().get(tableName);
+			if(columns != null && columns.size() > 0)
+				for(String s : columns)
+					objectInfo.addExtra(s);
+			else
+				objectInfo.addExtra("*");
+		}
+	}
 
-	protected SecurityAuth createSecurityAuth() {
+
+	protected SecurityAuth createSecurityAuth(String bususer) {
         SecurityAuth sa = new SecurityAuth();
 		sa.setClient_user_name("superman");
 		sa.setClient_passwd("032ce83b465499938dhg77d8bc9ef7fc");
 		sa.setVersion("1.02");
         sa.setRequest_type(SecurityAuth.REQUEST_TYPE_AUTH);
-        //sa.setUser_name(scWrapper.busUser);
-        //sa.setLog_user(scWrapper.sysUser);
-        //sa.setCur_user(scWrapper.curUser);
-        //sa.setQuery_id(scWrapper.query_id);
-        //sa.setSid(String.valueOf(scWrapper.sid));
-        //sa.setQstring(scWrapper.qstring);
+        sa.setUser_name(bususer);
+        sa.setLog_user(EmptyStr);
+        sa.setCur_user(EmptyStr);
+        sa.setQuery_id(conf.getVar(HiveConf.ConfVars.HIVEQUERYID));
+        sa.setSid(EmptyStr);
+        sa.setQstring(EmptyStr);
         return sa;
     }
 

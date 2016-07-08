@@ -76,11 +76,6 @@ public class HcatSession implements HiveSession {
 		return operationManager;
 	}
 	
-	public void startSs() {
-		err = new ErrCacheOutputStream();
-		SessionState.start(sessionState);
-	}
-	
 	public ErrCacheOutputStream getErr() {
 		return err;
 	}
@@ -183,13 +178,26 @@ public class HcatSession implements HiveSession {
 		return handle;
 	}
 
+	//FIXME
+	public void openWithoutStartSs(Map<String, String> sessionConfMap) throws Exception {
+		sessionState = new SessionState(hiveConf, username);
+		sessionState.setUserIpAddress(ipAddress);
+		// sessionState.setIsHiveServerQuery(true);
+		err = new ErrCacheOutputStream();
+		try {
+			sessionHive = Hive.get(hiveConf);
+		} catch (HiveException e) {
+			throw new HiveSQLException("Failed to get metastore connection", e);
+		}
+	}
+
 	@Override
 	public void open(Map<String, String> sessionConfMap) throws Exception {
 		sessionState = new SessionState(hiveConf, username);
 		sessionState.setUserIpAddress(ipAddress);
 		// sessionState.setIsHiveServerQuery(true);
-		//FIXME
-		//SessionState.start(sessionState);
+		err = new ErrCacheOutputStream();
+		SessionState.start(sessionState);
 		try {
 			sessionState.reloadAuxJars();
 		} catch (IOException e) {

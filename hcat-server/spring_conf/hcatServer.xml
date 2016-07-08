@@ -5,9 +5,10 @@
        classpath:/org/springframework/beans/factory/xml/spring-beans-3.1.xsd"
        default-lazy-init="true">
 
-    <bean id="bees" class="com.hiido.hcat.service.HttpHiveServer" scope="singleton">
-        <property name="tokenVerifyStone" ref=""/>
-        <property name="port" value="" />
+    <bean id="hcatserver" class="com.hiido.hcat.service.HttpHiveServer" scope="singleton">
+        <constructor-arg value="0.0.0.0" />
+        <constructor-arg value="26018" />
+        <property name="tokenVerifyStone" ref="tokenverifystone"/>
         <property name="connPool" ref="conn_pool_84" />
     </bean>
 
@@ -27,7 +28,7 @@
         <property name="userPasswdProvider" ref="simple_passwd_provider" />
         <property name="keystoneCipherVerifier" ref="keystone_cipherkey_verifier" />
         <property name="keyStoneClient" ref="keystoneclient" />
-        <property name="truststore" value="ssl/hiohadoopcli.cer" />
+        <property name="truststore" value="hiohadoopcli.cer" />
         <property name="truststorePasswd" value="hiohadoopclinottellyou" />
     </bean>
 
@@ -65,6 +66,11 @@
     <bean id="keystoneclient" class="com.hiido.suit.KeyStoneClient" scope="singleton">
         <property name="cipher" ref="keystone_tranpsport_cipher"/>
         <property name="client" ref="keystone_http_client" />
+    </bean>
+
+    <bean id="keystone_tranpsport_cipher"
+          class="com.hiido.suit.security.HttpEncryptedTransportCipher"
+          scope="prototype">
     </bean>
 
     <bean id="keystone_http_client" class="com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient" scope="prototype">
