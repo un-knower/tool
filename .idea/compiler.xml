@@ -26,16 +26,16 @@
         <module name="hcat.common" />
         <module name="hcat.http" />
         <module name="hcat.server" />
+        <module name="security" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.7">
       <module name="hcat.client" target="1.7" />
       <module name="hcat.common" target="1.7" />
       <module name="hcat.http" target="1.7" />
       <module name="hcat.server" target="1.7" />
       <module name="hiido.hcat" target="1.7" />
       <module name="security" target="1.7" />
-      <module name="security (1)" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

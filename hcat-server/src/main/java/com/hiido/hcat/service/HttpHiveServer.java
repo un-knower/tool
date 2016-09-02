@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.sql.BatchUpdateException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -82,7 +82,7 @@ public class HttpHiveServer implements CliService.Iface {
 	private Configuration conf;
 	private Map<String, Task> qid2Task = new ConcurrentHashMap<String, Task>();
 	private BlockingQueue<Task> taskBlockQueue = new LinkedBlockingQueue<Task>();
-	private final BlockingQueue<BeeQuery> sqlQueue = new LinkedBlockingQueue<BeeQuery>();
+	private final BlockingQueue<HcatQuery> sqlQueue = new LinkedBlockingQueue<HcatQuery>();
 
 	public void setConnPool(ConnectionPool connPool) {
 		this.connPool = connPool;
@@ -211,7 +211,7 @@ public class HttpHiveServer implements CliService.Iface {
 				//if(quick)
 				//	session.openWithoutStartSs(Collections.<String, String>emptyMap());	//no need reloadAuxLib, create tmp dir
 				//else
-					session.open(Collections.<String, String> emptyMap());
+					session.open(confOverlay);
 				synchronized (qp) {
 					if (qp.state == JobStatus.CANCEL.getValue())
 						return;
@@ -261,7 +261,7 @@ public class HttpHiveServer implements CliService.Iface {
 
 						FetchWork work = fetch.getWork();
 						Path tblDir = work.getTblDir();
-						LOG.error("fetch's path is " + (tblDir == null ? "null" : tblDir.toString()));
+						LOG.debug("fetch's path is " + (tblDir == null ? "null" : tblDir.toString()));
 
 						boolean needToMove = true;
 						Path scratchdir = new Path(session.getHiveConf().get(HiveConf.ConfVars.SCRATCHDIR.varname));
@@ -336,7 +336,7 @@ public class HttpHiveServer implements CliService.Iface {
 						"The server threw an exception, please contact the administrator.");
 			} finally {
 				try {
-					updateQueryRecord(qid, qp.state, this.qp.getRes());
+					updateQueryRecord(qid, qp.state, qp.getRes(), qp.resSize, qp.jobId, qp.fields);
 					qp.endTime = System.currentTimeMillis() / 1000;
 					this.confOverlay = null;
 					session.close();
@@ -506,7 +506,53 @@ public class HttpHiveServer implements CliService.Iface {
 		return count;
 	}
 
+
+	private QueryProgress getStatusFromDb(String qid) {
+		HcatQuery query = new HcatQuery();
+		query.setQid(qid);
+		query.setOperation(HcatQuery.DbOperation.SELECT);
+		boolean err = false;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet set = null;
+		QueryProgress progress = new QueryProgress();
+		//required fields
+		progress.setN(0);
+		progress.setEngine("mapreduce");
+		progress.setErrmsg("");
+		progress.setProgress(0.0f);
+		try {
+			conn = connPool.acquire();
+			pstmt = HcatQuery.createStatement(conn, query);
+			set = pstmt.executeQuery();
+			boolean hasRecord = false;
+			while(set.next()) {
+				hasRecord = true;
+				progress.setEndTime(set.getTimestamp(1)==null? 0l : set.getTimestamp(1).getTime());
+				progress.setState(set.getInt(2));
+				progress.setRes(set.getString(3));
+				progress.setJobId(HcatQuery.convertJobIds(set.getString(4)));
+				progress.setFields(HcatQuery.convertFieldList(qid, set.getString(5)));
+				progress.setIsFetchTask(set.getBoolean(6));
+				progress.setResSize(set.getLong(7));
+			}
+			LOG.debug(progress.toString());
+			return hasRecord ? progress : null;
+		} catch (Exception e) {
+			LOG.error(String.format("failed search qid %s from database.", qid), e);
+			err = true;
+			return null;
+		} finally {
+			IOUtils.closeIO(set);
+			IOUtils.closeIO(pstmt);
+			connPool.release(conn, err);
+		}
+
+	}
+
+
 	private void commitQueryRecord(String qid, String qStr, String bususer, boolean isQuick) {
+		/*
 		BeeQuery query = new BeeQuery();
 		query.setQid(qid);
 		query.setQuery(qStr);
@@ -519,9 +565,19 @@ public class HttpHiveServer implements CliService.Iface {
 		query.setState(1);
 		query.setInsert(true);
 		sqlQueue.add(query);
+		*/
+		HcatQuery query = new HcatQuery();
+		query.setQid(qid);
+		query.setQuick(isQuick);
+		query.setCommitter(serverTag);
+		query.setUser(bususer);
+		query.setState(1);
+		query.setOperation(HcatQuery.DbOperation.INSERT);
+		sqlQueue.add(query);
 	}
 
-	private void updateQueryRecord(String qid, int state, String resourcedir) {
+	private void updateQueryRecord(String qid, int state, String resourcedir, long resSize, List<String> jobs, List<com.hiido.hcat.thrift.protocol.Field> fields) {
+		/*
 		BeeQuery bq = new BeeQuery();
 		bq.setQid(qid);
 		bq.setState(state);
@@ -529,6 +585,20 @@ public class HttpHiveServer implements CliService.Iface {
 		bq.setResourcedir(resourcedir);
 		bq.setInsert(false);
 		sqlQueue.add(bq);
+		*/
+		HcatQuery query = new HcatQuery();
+		query.setQid(qid);
+		query.setState(state);
+		query.setExec_end(new Timestamp(System.currentTimeMillis()));
+		query.setResourcedir(resourcedir);
+		query.setResSize(resSize);
+		if(jobs != null && jobs.size() > 3)
+			query.setJobIds(jobs.subList(jobs.size() -2, jobs.size()));
+		else
+			query.setJobIds(jobs);
+		query.setFieldList(fields);
+		query.setOperation(HcatQuery.DbOperation.UPDATE);
+		sqlQueue.add(query);
 	}
 
 	//TODO
@@ -556,7 +626,7 @@ public class HttpHiveServer implements CliService.Iface {
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		int commitQueryTryCount = 2;
-		List<BeeQuery> list = new LinkedList<BeeQuery>();
+		List<HcatQuery> list = new LinkedList<HcatQuery>();
 
 		public QueryDB() {
 		}
@@ -564,13 +634,14 @@ public class HttpHiveServer implements CliService.Iface {
 		public void run() {
 			while (true) {
 				try {
-					BeeQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
+					list.clear();
+					HcatQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
 					if (query == null)
 						continue;
 					list.add(query);
 					if (sqlQueue.size() > 10) {
 						for (int i = 0; i < 10; i++) {
-							if (list.get(0).getCommitSQL() == sqlQueue.peek().getCommitSQL())
+							if (list.get(0).getoperation() == sqlQueue.peek().getoperation())
 								list.add(sqlQueue.poll());
 							else
 								break;
@@ -587,9 +658,11 @@ public class HttpHiveServer implements CliService.Iface {
 				while ((++count) <= commitQueryTryCount) {
 					try {
 						conn = connPool.acquire();
-						pstmt = conn.prepareStatement(list.get(0).getCommitSQL());
-						for (BeeQuery q : list)
-							updateBeeQuery(pstmt, q);
+						pstmt = conn.prepareStatement(list.get(0).getoperation().sql);
+						for (HcatQuery q : list) {
+							HcatQuery.prepareStatement(pstmt, q);
+							pstmt.addBatch();
+						}
 						pstmt.executeBatch();
 					} catch (BatchUpdateException e) {
 						err = true;
@@ -598,7 +671,7 @@ public class HttpHiveServer implements CliService.Iface {
 							if (results[i] != java.sql.Statement.EXECUTE_FAILED)
 								list.remove(i);
 						StringBuilder str = new StringBuilder();
-						for (BeeQuery q : list) {
+						for (HcatQuery q : list) {
 							str.append(q.getQid());
 							str.append(";");
 						}
@@ -606,7 +679,7 @@ public class HttpHiveServer implements CliService.Iface {
 					} catch (Throwable e) {
 						err = true;
 						StringBuilder str = new StringBuilder();
-						for (BeeQuery q : list) {
+						for (HcatQuery q : list) {
 							str.append(q.getQid());
 							str.append(";");
 						}
@@ -712,13 +785,17 @@ public class HttpHiveServer implements CliService.Iface {
 	@Override
 	public QueryStatusReply queryJobStatus(QueryStatus qs) throws NotFoundException, TException {
 		Task task = qid2Task.get(qs.queryId);
+		QueryProgress progress = null;
 		if (task == null) {
-			LOG.warn("server not found qid : " + qs.queryId);
-			throw new NotFoundException(String.format("Not found qid %s.", qs.queryId));
+			progress = getStatusFromDb(qs.getQueryId());
+			if(progress == null) {
+				LOG.warn("server not found qid : " + qs.queryId);
+				throw new NotFoundException(String.format("Not found qid %s.", qs.queryId));
+			}
 		}
 		try {
 			QueryStatusReply reply = new QueryStatusReply();
-			reply.setQueryProgress(task.getProgress());
+			reply.setQueryProgress(task != null? task.getProgress() : progress);
 			
 			return reply;
 		} catch (Throwable e) {

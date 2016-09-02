@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/hcat-http/hcat.http.iml" filepath="$PROJECT_DIR$/hcat-http/hcat.http.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-server/hcat.server.iml" filepath="$PROJECT_DIR$/hcat-server/hcat.server.iml" />
       <module fileurl="file://$PROJECT_DIR$/hiido.hcat.iml" filepath="$PROJECT_DIR$/hiido.hcat.iml" />
+      <module fileurl="file://$USER_HOME$/ideaProjects/calc/security/security.iml" filepath="$USER_HOME$/ideaProjects/calc/security/security.iml" />
     </modules>
   </component>
 </project>

@@ -51,7 +51,8 @@ public class CliDriver {
 			System.exit(1);
 		}
 	}
-	
+
+
 	private int executeDriver(CliSessionState ss, HiveConf conf) {
 		String line;
 		int ret = 0;

@@ -14,16 +14,6 @@ public class ServiceMain {
 	private static final Logger log = Logger.getLogger(ServiceMain.class);
 	static {
 		Configuration.addDefaultResource("hive-site.xml");
-		/*
-		Configuration.addDefaultResource("core-default.xml");
-        Configuration.addDefaultResource("core-site.xml");
-        Configuration.addDefaultResource("hdfs-default.xml");
-        Configuration.addDefaultResource("hdfs-site.xml");
-        Configuration.addDefaultResource("mapred-default.xml");
-        Configuration.addDefaultResource("mapred-site.xml");
-		Configuration.addDefaultResource("yarn-site.xml");
-		System.out.println(Thread.currentThread().getContextClassLoader().getResource("yarn-site.xml").getPath());
-		*/
         try {
 			LogUtils.initHiveExecLog4j();
 		} catch (LogInitializationException e) {

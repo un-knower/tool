@@ -259,11 +259,11 @@ class SparkClientImpl implements SparkClient {
       // Create a file with all the job properties to be read by spark-submit. Change the
       // file's permissions so that only the owner can read it. This avoid having the
       // connection secret show up in the child process's command line.
-      File properties = File.createTempFile("spark-submit.", ".properties");
+      final File properties = File.createTempFile("spark-submit.", ".properties");
       if (!properties.setReadable(false) || !properties.setReadable(true, true)) {
         throw new IOException("Cannot change permissions of job properties file.");
       }
-      properties.deleteOnExit();
+      //properties.deleteOnExit();
 
       Properties allProps = new Properties();
       // first load the defaults from spark-defaults.conf if available
@@ -443,7 +443,9 @@ class SparkClientImpl implements SparkClient {
     		  } catch(Exception e) {
     			  e.printStackTrace();
     			  return e;
-    		  }
+    		  } finally {
+                properties.delete();
+              }
     		  return null;
     	  }
       };

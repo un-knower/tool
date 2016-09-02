@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 public class BeeQuery {
     private static final String SQL_COMMIT = "insert into bees.bee_query(qid,user,query,quick,committer,committime,executor,exec_start,state) values(?,?,?,?,?,?,?,?,?)";
     public static final String SQL_UPDATE = "update bees.bee_query set  state=?,exec_end=?, resourcedir=? where qid=? ";
+    private static final String SQL_STATUS = " select exec_start, exec_end, state,jobid,n,res,fields,set_time,errcode,errmsg,ressize from bees.bee_query left join bees.bee_running on bees.bee_query.qid=bees.bee_running.qid where bees.bee_query.qid=?";
     private String qid;
     private String user;
     private String query;

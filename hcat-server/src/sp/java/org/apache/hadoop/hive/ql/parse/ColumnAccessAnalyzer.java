@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.hive.ql.exec.Operator;
@@ -53,9 +54,20 @@ public class ColumnAccessAnalyzer {
                     continue;
                 String tableName = table.getCompleteName();
                 List<String> referenced = top.getReferencedColumns();
+
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("test echo partition columns");
+                    for (FieldSchema field : table.getPartCols()) {
+                        LOG.debug("partition key :" + field.getName().toLowerCase());
+                    }
+                }
                 for (String column : referenced) {
+                    //FIXME
+                    if(table.isPartitionKey(column))
+                        continue;
                     columnAccessInfo.add(tableName, column);
                 }
+                /*
                 if (table.isPartitioned()) {
                     PrunedPartitionList parts = pGraphContext.getPrunedPartitions(table.getTableName(), top);
                     if (parts.getReferredPartCols() != null) {
@@ -64,6 +76,7 @@ public class ColumnAccessAnalyzer {
                         }
                     }
                 }
+                */
             }
         }
         return columnAccessInfo;

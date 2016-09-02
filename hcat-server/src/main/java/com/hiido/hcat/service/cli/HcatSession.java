@@ -17,6 +17,7 @@ import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.history.HiveHistory;
 import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
+import org.apache.hadoop.hive.ql.processors.SetProcessor;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hive.common.util.HiveVersionInfo;
 import org.apache.hive.service.auth.HiveAuthFactory;
@@ -210,6 +211,9 @@ public class HcatSession implements HiveSession {
 		} catch (HiveException e) {
 			throw new HiveSQLException("Failed to get metastore connection", e);
 		}
+
+		if(sessionConfMap != null)
+			configureSession(sessionConfMap);
 	}
 
 	@Override
@@ -479,5 +483,23 @@ public class HcatSession implements HiveSession {
 		      pop();
 		      throw e;
 		    }
+	}
+
+	private void configureSession(Map<String, String> sessionConfMap) throws HiveSQLException {
+		SessionState.setCurrentSessionState(sessionState);
+		for (Map.Entry<String, String> entry : sessionConfMap.entrySet()) {
+			String key = entry.getKey();
+			if (key.startsWith("set:")) {
+				try {
+					SetProcessor.setVariable(key.substring(4), entry.getValue());
+				} catch (Exception e) {
+					throw new HiveSQLException(e);
+				}
+			} else if (key.startsWith("use:")) {
+				SessionState.get().setCurrentDatabase(entry.getValue());
+			} else {
+				hiveConf.verifyAndSet(key, entry.getValue());
+			}
+		}
 	}
 }

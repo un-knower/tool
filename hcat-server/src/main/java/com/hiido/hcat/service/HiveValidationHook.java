@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.hiido.suit.Business;
@@ -16,7 +15,6 @@ import org.apache.hadoop.hive.ql.hooks.WriteEntity;
 import org.apache.hadoop.hive.ql.metadata.AuthorizationException;
 import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.HiveOperation;
-import org.apache.hadoop.hive.ql.security.authorization.Privilege;
 import org.apache.hadoop.hive.ql.session.SessionState;
 
 import com.hiido.hcat.common.PublicConstant;
@@ -26,36 +24,35 @@ import com.hiido.suit.net.http.protocol.SecurityAuth.AuthEntry;
 import com.hiido.suit.service.security.SecurityObject;
 import com.hiido.suit.service.security.SecurityObject.PriviType;
 import org.apache.log4j.Logger;
-import org.apache.spark.sql.catalyst.plans.logical.Except;
 
 public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
-	private static final Logger LOG = Logger.getLogger(HiveValidationHook.class);
-	private static final String EmptyStr = "";
-	private List<String> verifyUDF;
-	private HiveConf conf;
-	private ASTNode ast;
+    private static final Logger LOG = Logger.getLogger(HiveValidationHook.class);
+    private static final String EmptyStr = "";
+    private List<String> verifyUDF;
+    private HiveConf conf;
+    private ASTNode ast;
 
-	public ASTNode preAnalyze(HiveSemanticAnalyzerHookContext context, ASTNode ast) throws SemanticException {
-		this.conf = (HiveConf) context.getConf();
-		this.ast = ast;
-		if (verifyUDF == null) {
-			String udfs = HiveConfConstants.getHcatVerifyUDFs(conf);
-			verifyUDF = "".equals(udfs) ? null : Arrays.asList(udfs.split(","));
-		}
-		return ast;
-	}
+    public ASTNode preAnalyze(HiveSemanticAnalyzerHookContext context, ASTNode ast) throws SemanticException {
+        this.conf = (HiveConf) context.getConf();
+        this.ast = ast;
+        if (verifyUDF == null) {
+            String udfs = HiveConfConstants.getHcatVerifyUDFs(conf);
+            verifyUDF = "".equals(udfs) ? null : Arrays.asList(udfs.split(","));
+        }
+        return ast;
+    }
 
-	public void postAnalyze(HiveSemanticAnalyzerHookContext context, List<Task<? extends Serializable>> rootTasks)
-			throws SemanticException {
-		
-		HiveOperation op = SessionState.get().getHiveOperation();
-		if(!filterHiveOperation(op))
-			return;
-		
-		BaseSemanticAnalyzer sem = ((HiveSemanticAnalyzerHookContextImpl) context).getSem();
-		List<AuthEntry> authInfo = new LinkedList<AuthEntry>();
-		if(sem instanceof FunctionSemanticAnalyzer) {
-			if (!(ast.getFirstChildWithType(HiveParser.TOK_TEMPORARY) != null))
+    public void postAnalyze(HiveSemanticAnalyzerHookContext context, List<Task<? extends Serializable>> rootTasks)
+            throws SemanticException {
+
+        HiveOperation op = SessionState.get().getHiveOperation();
+        if (!filterHiveOperation(op))
+            return;
+
+        BaseSemanticAnalyzer sem = ((HiveSemanticAnalyzerHookContextImpl) context).getSem();
+        List<AuthEntry> authInfo = new LinkedList<AuthEntry>();
+        if (sem instanceof FunctionSemanticAnalyzer) {
+            if (!(ast.getFirstChildWithType(HiveParser.TOK_TEMPORARY) != null))
                 throw new SemanticException("Unsupported create-function syntax, please use create-temporary-function syntax.");
             if (verifyUDF != null) {
                 String className = BaseSemanticAnalyzer.unescapeSQLString(ast.getChild(1).getText());
@@ -71,116 +68,115 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                 }
                 return;
             }
-		} else if(sem instanceof DDLSemanticAnalyzer) {
-			if(op == HiveOperation.DROPTABLE || op == HiveOperation.DROPVIEW) {
-				Set<WriteEntity> writeSet = context.getOutputs();
+        } else if (sem instanceof DDLSemanticAnalyzer) {
+            Set<WriteEntity> writeSet = context.getOutputs();
+            for (WriteEntity entity : writeSet) {
+                if (entity.getType() == Type.TABLE) {
+                    AuthEntry entry = new AuthEntry();
+                    if (op == HiveOperation.DROPTABLE || op == HiveOperation.DROPVIEW)
+                        entry.setPrivi_type(PriviType.DROPTABLE.toString());
+                    else
+                        entry.setPrivi_type(PriviType.WRITETABLE.toString());
+                    entry.setBusi_type(Business.BusType.HIVE.toString());
+                    AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
+                    String object_name = String.format("%s.%s", "default", entity.getName());
 
-				for(WriteEntity entity : writeSet) {
-					if(entity.getType() == Type.TABLE) {
-						AuthEntry entry = new AuthEntry();
-						entry.setPrivi_type(PriviType.DROPTABLE.toString());
-						entry.setBusi_type(Business.BusType.HIVE.toString());
-						AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-						String object_name = String.format("%s.%s", "default", entity.getName());
-						System.out.println("drop auth:" + object_name);
+                    objectInfo.setObject_name(object_name);
+                    entry.setObject_info(objectInfo);
+                    authInfo.add(entry);
+                }
+            }
+        } else {
+            ColumnAccessInfo columnAccess = sem.getColumnAccessInfo();
+            Set<WriteEntity> writeSet = context.getOutputs();
+            Set<ReadEntity> readSet = context.getInputs();
 
-						objectInfo.setObject_name(object_name);
-						entry.setObject_info(objectInfo);
-						authInfo.add(entry);
-					}
-				}
-			}
-		} else {
-			ColumnAccessInfo columnAccess = sem.getColumnAccessInfo();
-			Set<WriteEntity> writeSet = context.getOutputs();
-			Set<ReadEntity> readSet = context.getInputs();
-			
-			for(WriteEntity entity : writeSet) {
-				if(entity.getType() == Type.LOCAL_DIR)
-					throw new AuthorizationException("hcat not support read/write local dir.");
-				if(entity.getType() == Type.TABLE ) {
-					AuthEntry entry = new AuthEntry();
-					if((op != HiveOperation.CREATETABLE || op != HiveOperation.CREATETABLE_AS_SELECT ))
-						entry.setPrivi_type(PriviType.CREATETABLE.toString());
-					else
-						entry.setPrivi_type(PriviType.WRITETABLE.toString());
-					entry.setBusi_type(Business.BusType.HIVE.toString());
-					AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-					String table = entity.getName().replace('@','.');
-					if(table.startsWith(context.getUserName()))
-						continue;
-					String object_name = String.format("%s.%s", "default", table);
-					addColumnInfo(objectInfo, columnAccess, entity.getName());
-					objectInfo.setObject_name(object_name);
-					entry.setObject_info(objectInfo);
-					authInfo.add(entry);
-					LOG.debug(String.format("write entity %s: %s", entity.getTyp().name(), entity.getName()));
-				}
-			}
-			for(ReadEntity entity : readSet) {
-				if(entity.getType() == Type.LOCAL_DIR)
-					throw new AuthorizationException("hcat not support read/write local dir.");
+            for (WriteEntity entity : writeSet) {
+                if (entity.getType() == Type.LOCAL_DIR)
+                    throw new AuthorizationException("hcat not support read/write local dir.");
+                if (entity.getType() == Type.TABLE) {
+                    AuthEntry entry = new AuthEntry();
+                    if ((op == HiveOperation.CREATETABLE || op == HiveOperation.CREATETABLE_AS_SELECT))
+                        entry.setPrivi_type(PriviType.CREATETABLE.toString());
+                    else
+                        entry.setPrivi_type(PriviType.WRITETABLE.toString());
+                    entry.setBusi_type(Business.BusType.HIVE.toString());
+                    AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
+                    String table = entity.getName().replace('@', '.');
+                    if (table.startsWith(context.getUserName()))
+                        continue;
+                    String object_name = String.format("%s.%s", "default", table);
+                    addColumnInfo(objectInfo, columnAccess, entity.getName());
+                    objectInfo.setObject_name(object_name);
+                    entry.setObject_info(objectInfo);
+                    authInfo.add(entry);
+                    LOG.debug(String.format("write entity %s: %s", entity.getTyp().name(), entity.getName()));
+                }
+            }
+            for (ReadEntity entity : readSet) {
+                if (entity.getType() == Type.LOCAL_DIR)
+                    throw new AuthorizationException("hcat not support read/write local dir.");
 
-				if(entity.getType() == Type.TABLE) {
-					AuthEntry entry = new AuthEntry();
-					entry.setPrivi_type(PriviType.QUERY.toString());
-					entry.setBusi_type(Business.BusType.HIVE.toString());
-					AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-					String table = entity.getName().replace('@','.');
-					if(table.startsWith(context.getUserName()))
-						continue;
-					String object_name = String.format("%s.%s", "default", table);
-					objectInfo.setObject_name(object_name);
-					addColumnInfo(objectInfo, columnAccess, entity.getName());
-					entry.setObject_info(objectInfo);
-					authInfo.add(entry);
-					LOG.debug(String.format("read entity %s: %s", entity.getTyp().name(), entity.getName()));
-				}
-			}
+                if (entity.getType() == Type.TABLE) {
+                    AuthEntry entry = new AuthEntry();
+                    entry.setPrivi_type(PriviType.QUERY.toString());
+                    entry.setBusi_type(Business.BusType.HIVE.toString());
+                    AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
+                    String table = entity.getName().replace('@', '.');
+                    if (table.startsWith(context.getUserName()))
+                        continue;
+                    String object_name = String.format("%s.%s", "default", table);
+                    objectInfo.setObject_name(object_name);
+                    addColumnInfo(objectInfo, columnAccess, entity.getName());
+                    entry.setObject_info(objectInfo);
+                    authInfo.add(entry);
+                    LOG.debug(String.format("read entity %s: %s", entity.getTyp().name(), entity.getName()));
+                }
+            }
 
-		}
-		if(authInfo.size() == 0)
-			return;
-		SecurityAuth sa = createSecurityAuth(context.getUserName());
-		sa.setAuth_info(authInfo);
-		com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient client = new com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient();
-		try {
-			client.setAddrList(conf.get(PublicConstant.HCAT_AUTHENTICATION_SERVERS));
-			client.setClientNum(-1);
-			com.hiido.suit.net.http.protocol.HttpApacheClient apacheClient = new com.hiido.suit.net.http.protocol.HttpApacheClient();
-			client.setHttpProtocolClient(apacheClient);
+        }
+        if (authInfo.size() == 0)
+            return;
+        SecurityAuth sa = createSecurityAuth(context.getUserName());
+        sa.setAuth_info(authInfo);
+        com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient client = new com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient();
+        try {
+            client.setAddrList(conf.get(PublicConstant.HCAT_AUTHENTICATION_SERVERS));
+            client.setClientNum(-1);
+            com.hiido.suit.net.http.protocol.HttpApacheClient apacheClient = new com.hiido.suit.net.http.protocol.HttpApacheClient();
+            client.setHttpProtocolClient(apacheClient);
 
-			SecurityAuth.Reply reply = client.post(sa, SecurityAuth.Reply.class);
-			if (reply == null || !"success".equals(reply.getResp_code())) {
-				throw new AuthorizationException("fail to auth:" + reply == null ? "NULL" : reply.toString());
-			}
-		}catch(Exception e) {
-			if(e instanceof AuthorizationException)
-				throw (AuthorizationException)e;
-			LOG.error("failed to connect authorization Server.", e);
-			throw new AuthorizationException(String.format("failed to connect authorization Server : %s", e.getMessage()));
-		} finally {
-			client.close();
-		}
-	}
+            SecurityAuth.Reply reply = client.post(sa, SecurityAuth.Reply.class);
+            if (reply == null || !"success".equals(reply.getResp_code())) {
+                throw new AuthorizationException("fail to auth:" + reply == null ? "NULL" : reply.toString());
+            }
+        } catch (Exception e) {
+            if (e instanceof AuthorizationException)
+                throw (AuthorizationException) e;
+            LOG.error("failed to connect authorization Server.", e);
+            throw new AuthorizationException(String.format("failed to connect authorization Server : %s", e.getMessage()));
+        } finally {
+            client.close();
+        }
+    }
 
-	private void addColumnInfo(AuthEntry.ObjectInfo objectInfo, ColumnAccessInfo columnAccess, String tableName) {
-		if(columnAccess != null) {
-			List<String> columns = columnAccess.getTableToColumnAccessMap().get(tableName);
-			if(columns != null && columns.size() > 0)
-				for(String s : columns)
-					objectInfo.addExtra(s);
-			else
-				objectInfo.addExtra("*");
-		}
-	}
+    private void addColumnInfo(AuthEntry.ObjectInfo objectInfo, ColumnAccessInfo columnAccess, String tableName) {
+        if (columnAccess != null) {
+            List<String> columns = columnAccess.getTableToColumnAccessMap().get(tableName);
+            if (columns != null && columns.size() > 0)
+                for (String s : columns)
+                    objectInfo.addExtra(s);
+            else
+                objectInfo.addExtra("*");
+        }
+    }
 
 
-	protected SecurityAuth createSecurityAuth(String bususer) {
+    protected SecurityAuth createSecurityAuth(String bususer) {
         SecurityAuth sa = new SecurityAuth();
-		sa.setClient_user_name("superman");
-		sa.setClient_passwd("032ce83b465499938dhg77d8bc9ef7fc");
-		sa.setVersion("1.02");
+        sa.setClient_user_name("superman");
+        sa.setClient_passwd("032ce83b465499938dhg77d8bc9ef7fc");
+        sa.setVersion("1.02");
         sa.setRequest_type(SecurityAuth.REQUEST_TYPE_AUTH);
         sa.setUser_name(bususer);
         sa.setLog_user(EmptyStr);
@@ -191,24 +187,24 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
         return sa;
     }
 
-	public static boolean filterHiveOperation(HiveOperation op) {
-		switch(op) {
-		case EXPLAIN:
-		case SWITCHDATABASE:
-		case DESCFUNCTION:
-		case SHOWDATABASES:
-		case SHOWTABLES:
-		case SHOWCOLUMNS:
-		case SHOW_TABLESTATUS:
-		case SHOW_TBLPROPERTIES:
-		case SHOWFUNCTIONS:
-		case SHOWINDEXES:
-		case SHOWCONF:
-			return false;
-		case DROPDATABASE:
-			throw new AuthorizationException("hcat not support drop database.");
-		default:
-				return true;
-		}
-	}
+    public static boolean filterHiveOperation(HiveOperation op) {
+        switch (op) {
+            case EXPLAIN:
+            case SWITCHDATABASE:
+            case DESCFUNCTION:
+            case SHOWDATABASES:
+            case SHOWTABLES:
+            case SHOWCOLUMNS:
+            case SHOW_TABLESTATUS:
+            case SHOW_TBLPROPERTIES:
+            case SHOWFUNCTIONS:
+            case SHOWINDEXES:
+            case SHOWCONF:
+                return false;
+            case DROPDATABASE:
+                throw new AuthorizationException("hcat not support drop database.");
+            default:
+                return true;
+        }
+    }
 }
