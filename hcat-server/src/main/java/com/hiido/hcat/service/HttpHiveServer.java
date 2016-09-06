@@ -76,6 +76,9 @@ public class HttpHiveServer implements CliService.Iface {
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 	private long historyTaskLife = 3600000;
+	private int maxThreads = 10;
+	private int minThreads = 2;
+	private int maxIdleTimeMs=30000;
 	
 	private HttpServer server;
 	private TokenVerifyStone tokenVerifyStone;
@@ -92,6 +95,30 @@ public class HttpHiveServer implements CliService.Iface {
 
 	public int getPort() {
 		return port;
+	}
+
+	public int getMaxThreads() {
+		return maxThreads;
+	}
+
+	public void setMaxThreads(int maxThreads) {
+		this.maxThreads = maxThreads;
+	}
+
+	public int getMinThreads() {
+		return minThreads;
+	}
+
+	public void setMinThreads(int minThreads) {
+		this.minThreads = minThreads;
+	}
+
+	public int getMaxIdleTimeMs() {
+		return maxIdleTimeMs;
+	}
+
+	public void setMaxIdleTimeMs(int maxIdleTimeMs) {
+		this.maxIdleTimeMs = maxIdleTimeMs;
 	}
 
 	public String getServerTag() {
@@ -125,7 +152,7 @@ public class HttpHiveServer implements CliService.Iface {
 	public void start() throws Exception {
 		conf = new Configuration();
 		HttpServer.Builder builder = new HttpServer.Builder();
-		server = builder.setName("hiido").setHost("0.0.0.0").setPort(this.port).setMaxThreads(25)
+		server = builder.setName("hiido").setHost("0.0.0.0").setPort(this.port).setMaxThreads(maxThreads).setMinThreads(minThreads).setMaxIdleTimeMs(maxIdleTimeMs)
 				.setConf(new HiveConf(conf, this.getClass())).setUseSSL(false).build();
 		server.addServlet("query", "/query", new QueryServlet(new CliService.Processor<HttpHiveServer>(this),
 				new TBinaryProtocol.Factory(true, true)));

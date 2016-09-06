@@ -48,6 +48,7 @@ public class HttpServer {
 		webServer = new Server();
 		QueuedThreadPool pool = new QueuedThreadPool(builder.maxThreads);
 		pool.setMinThreads(builder.minThreads);
+		pool.setMaxIdleTimeMs(builder.maxIdleTimeMs);
 		webServer.setThreadPool(pool);
 		if(ipAccessHandler != null)
 			webServer.setHandler(ipAccessHandler);
@@ -102,6 +103,14 @@ public class HttpServer {
 			return this;
 		}
 
+		public int getMaxIdleTimeMs() {
+			return maxIdleTimeMs;
+		}
+
+		public Builder setMaxIdleTimeMs(int maxIdleTimeMs) {
+			this.maxIdleTimeMs = maxIdleTimeMs;
+			return this;
+		}
 		public HiveConf getConf() {
 			return conf;
 		}
@@ -151,6 +160,7 @@ public class HttpServer {
 		private int port;
 		private int minThreads;
 		private int maxThreads;
+		private int maxIdleTimeMs;
 		private HiveConf conf;
 		private Map<String, Object> contextAttrs = new HashMap<String, Object>();
 		private String keyStorePassword;
