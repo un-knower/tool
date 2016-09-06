@@ -79,7 +79,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                         entry.setPrivi_type(PriviType.WRITETABLE.toString());
                     entry.setBusi_type(Business.BusType.HIVE.toString());
                     AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
-                    String object_name = String.format("%s.%s", "default", entity.getName());
+                    String object_name = String.format("%s.%s", "default", entity.getName().replace('@', '.'));
 
                     objectInfo.setObject_name(object_name);
                     entry.setObject_info(objectInfo);
@@ -110,7 +110,22 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                     objectInfo.setObject_name(object_name);
                     entry.setObject_info(objectInfo);
                     authInfo.add(entry);
-                    LOG.debug(String.format("write entity %s: %s", entity.getTyp().name(), entity.getName()));
+                    if(LOG.isDebugEnabled())
+                        LOG.debug(String.format("write entity %s: %s", entity.getTyp().name(), entity.getName()));
+                }
+                if(entity.getWriteType() == WriteEntity.WriteType.PATH_WRITE) {
+                    if(entity.getName().startsWith(HiveConf.getVar(conf, HiveConf.ConfVars.SCRATCHDIR)))
+                        continue;
+                    AuthEntry entry = new AuthEntry();
+                    entry.setPrivi_type(PriviType.WRITEDFS.toString());
+                    entry.setBusi_type(Business.BusType.HDFS.toString());
+                    AuthEntry.ObjectInfo objectInfo = new AuthEntry.ObjectInfo();
+                    objectInfo.setObject_name(entity.getD().toUri().getPath());
+                    objectInfo.addExtra("DIR");
+                    entry.setObject_info(objectInfo);
+                    authInfo.add(entry);
+                    if(LOG.isDebugEnabled())
+                        LOG.debug(String.format("write entity %s: %s", entity.getTyp().name(), entity.getName()));
                 }
             }
             for (ReadEntity entity : readSet) {
@@ -130,7 +145,8 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                     addColumnInfo(objectInfo, columnAccess, entity.getName());
                     entry.setObject_info(objectInfo);
                     authInfo.add(entry);
-                    LOG.debug(String.format("read entity %s: %s", entity.getTyp().name(), entity.getName()));
+                    if(LOG.isDebugEnabled())
+                        LOG.debug(String.format("read entity %s: %s", entity.getTyp().name(), entity.getName()));
                 }
             }
 

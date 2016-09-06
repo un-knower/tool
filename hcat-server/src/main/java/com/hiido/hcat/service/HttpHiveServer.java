@@ -215,7 +215,8 @@ public class HttpHiveServer implements CliService.Iface {
 					if(bitSet.get(i)) c1++; else c2++;
 
 				//qp.setProgress((session.getSessionState().getCurProgress() + running) / query.size());
-				qp.setProgress((session.getSessionState().getCurProgress()+c2)*0.9/(query.size()-bitSet.cardinality()) + (c1*0.1/bitSet.cardinality()) );
+				double p = (session.getSessionState().getCurProgress()+c2)*0.9/(query.size()-bitSet.cardinality()) + (c1*0.1/bitSet.cardinality());
+				qp.setProgress( p == Double.NaN ? 0.0 : p );
 				qp.setJobId(session.getSessionState().getJobs());
 			}
 			
@@ -579,20 +580,6 @@ public class HttpHiveServer implements CliService.Iface {
 
 
 	private void commitQueryRecord(String qid, String qStr, String bususer, boolean isQuick) {
-		/*
-		BeeQuery query = new BeeQuery();
-		query.setQid(qid);
-		query.setQuery(qStr);
-		query.setQuick(isQuick? 1: 0);
-		query.setCommittime(new Timestamp(System.currentTimeMillis()));
-		query.setExec_start(new Timestamp(System.currentTimeMillis()));
-		query.setCommitter(serverTag);
-		query.setExecutor(serverTag);
-		query.setUser(bususer);
-		query.setState(1);
-		query.setInsert(true);
-		sqlQueue.add(query);
-		*/
 		HcatQuery query = new HcatQuery();
 		query.setQid(qid);
 		query.setQuick(isQuick);
@@ -604,15 +591,6 @@ public class HttpHiveServer implements CliService.Iface {
 	}
 
 	private void updateQueryRecord(String qid, int state, String resourcedir, long resSize, List<String> jobs, List<com.hiido.hcat.thrift.protocol.Field> fields) {
-		/*
-		BeeQuery bq = new BeeQuery();
-		bq.setQid(qid);
-		bq.setState(state);
-		bq.setExec_end(new Timestamp(System.currentTimeMillis()));
-		bq.setResourcedir(resourcedir);
-		bq.setInsert(false);
-		sqlQueue.add(bq);
-		*/
 		HcatQuery query = new HcatQuery();
 		query.setQid(qid);
 		query.setState(state);
