@@ -6,11 +6,11 @@
   <packaging>pom</packaging>
   
     <properties>
-        <hive.version>2.1.0</hive.version>
+        <hive.version>2.0.0</hive.version>
       <hadoop.version>2.4.1</hadoop.version>
       <hbase.version>1.1.1</hbase.version>
       <scala.version>2.10.4</scala.version>
-      <spark.version>1.6.2</spark.version>
+      <spark.version>1.5.0</spark.version>
       <scala.binary.version>2.10</scala.binary.version>
   </properties>
   

@@ -5,17 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="8c7fce1e-72ac-42e2-acb5-98d075051a71" name="Default" comment="validationHook">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/exec/MoveTask.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_calcite_calcite_avatica_1_5_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_calcite_calcite_core_1_5_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_calcite_calcite_linq4j_1_5_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/exec/MoveTask.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/TokenVerifyStone.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/TokenVerifyStone.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/net/http/protocol/SecurityAuth.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/net/http/protocol/SecurityAuth.class" />
-      <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/net/http/protocol/ha/HttpHAPoolClient.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/net/http/protocol/ha/HttpHAPoolClient.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/SecurityCenter.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/SecurityCenter.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/UserPasswdProvider$Passwd.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/UserPasswdProvider$Passwd.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/UserPasswdProvider$PasswdCount.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/security/UserPasswdProvider$PasswdCount.class" />
@@ -24,10 +19,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-client/hcat.client.iml" afterPath="$PROJECT_DIR$/hcat-client/hcat.client.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-http/hcat.http.iml" afterPath="$PROJECT_DIR$/hcat-http/hcat.http.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-http/pom.xml" afterPath="$PROJECT_DIR$/hcat-http/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/README" afterPath="$PROJECT_DIR$/hcat-server/README" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/hcat.server.iml" afterPath="$PROJECT_DIR$/hcat-server/hcat.server.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java" afterPath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java" afterPath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
     </list>
     <list id="84acc146-5515-4f8b-8b26-6bbd18e8e901" name="Rejected commit: Default" comment="Rejected commit: Default" />
@@ -61,55 +54,64 @@
     <favorites_list name="hiido.hcat" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6368022">
+    <splitter split-orientation="horizontal" split-proportion="0.49793956">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="HcatSession.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2356">
-                  <caret line="202" column="32" selection-start-line="202" selection-start-column="32" selection-end-line="202" selection-end-column="32" />
+                <state relative-caret-position="627">
+                  <caret line="67" column="47" selection-start-line="67" selection-start-column="47" selection-end-line="67" selection-end-column="47" />
                   <folding>
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#2977#2978#0" expanded="false" />
-                    <element signature="e#3007#3008#0" expanded="false" />
-                    <element signature="e#3049#3050#0" expanded="false" />
-                    <element signature="e#3066#3067#0" expanded="false" />
-                    <element signature="e#3138#3139#0" expanded="false" />
-                    <element signature="e#3185#3186#0" expanded="false" />
-                    <element signature="e#3245#3246#0" expanded="false" />
-                    <element signature="e#3304#3305#0" expanded="false" />
-                    <element signature="e#3527#3528#0" expanded="false" />
-                    <element signature="e#3545#3546#0" expanded="false" />
-                    <element signature="e#3599#3600#0" expanded="false" />
-                    <element signature="e#3618#3619#0" expanded="false" />
-                    <element signature="e#3673#3674#0" expanded="false" />
-                    <element signature="e#3691#3692#0" expanded="false" />
-                    <element signature="e#3903#3904#0" expanded="false" />
-                    <element signature="e#3921#3922#0" expanded="false" />
-                    <element signature="e#3964#3965#0" expanded="false" />
-                    <element signature="e#3986#3987#0" expanded="false" />
-                    <element signature="e#4031#4032#0" expanded="false" />
-                    <element signature="e#4053#4054#0" expanded="false" />
-                    <element signature="e#4106#4107#0" expanded="false" />
-                    <element signature="e#4132#4133#0" expanded="false" />
-                    <element signature="e#4175#4176#0" expanded="false" />
-                    <element signature="e#4197#4198#0" expanded="false" />
-                    <element signature="e#4253#4254#0" expanded="false" />
-                    <element signature="e#4279#4280#0" expanded="false" />
-                    <element signature="e#4323#4324#0" expanded="false" />
-                    <element signature="e#4346#4347#0" expanded="false" />
-                    <element signature="e#4404#4405#0" expanded="false" />
-                    <element signature="e#4437#4438#0" expanded="false" />
-                    <element signature="e#4484#4485#0" expanded="false" />
-                    <element signature="e#4499#4500#0" expanded="false" />
-                    <element signature="e#4544#4545#0" expanded="false" />
-                    <element signature="e#4570#4571#0" expanded="false" />
-                    <element signature="e#4620#4621#0" expanded="false" />
-                    <element signature="e#4654#4655#0" expanded="false" />
-                    <element signature="e#12239#12240#0" expanded="false" />
-                    <element signature="e#12254#12255#0" expanded="false" />
+                    <element signature="e#2573#2574#0" expanded="false" />
+                    <element signature="e#2603#2604#0" expanded="false" />
+                    <element signature="e#2645#2646#0" expanded="false" />
+                    <element signature="e#2662#2663#0" expanded="false" />
+                    <element signature="e#2734#2735#0" expanded="false" />
+                    <element signature="e#2781#2782#0" expanded="false" />
+                    <element signature="e#2841#2842#0" expanded="false" />
+                    <element signature="e#2900#2901#0" expanded="false" />
+                    <element signature="e#3123#3124#0" expanded="false" />
+                    <element signature="e#3141#3142#0" expanded="false" />
+                    <element signature="e#3195#3196#0" expanded="false" />
+                    <element signature="e#3214#3215#0" expanded="false" />
+                    <element signature="e#3269#3270#0" expanded="false" />
+                    <element signature="e#3287#3288#0" expanded="false" />
+                    <element signature="e#3499#3500#0" expanded="false" />
+                    <element signature="e#3517#3518#0" expanded="false" />
+                    <element signature="e#3560#3561#0" expanded="false" />
+                    <element signature="e#3582#3583#0" expanded="false" />
+                    <element signature="e#3627#3628#0" expanded="false" />
+                    <element signature="e#3649#3650#0" expanded="false" />
+                    <element signature="e#3702#3703#0" expanded="false" />
+                    <element signature="e#3728#3729#0" expanded="false" />
+                    <element signature="e#3771#3772#0" expanded="false" />
+                    <element signature="e#3793#3794#0" expanded="false" />
+                    <element signature="e#3849#3850#0" expanded="false" />
+                    <element signature="e#3875#3876#0" expanded="false" />
+                    <element signature="e#3919#3920#0" expanded="false" />
+                    <element signature="e#3942#3943#0" expanded="false" />
+                    <element signature="e#4000#4001#0" expanded="false" />
+                    <element signature="e#4033#4034#0" expanded="false" />
+                    <element signature="e#4080#4081#0" expanded="false" />
+                    <element signature="e#4095#4096#0" expanded="false" />
+                    <element signature="e#4140#4141#0" expanded="false" />
+                    <element signature="e#4166#4167#0" expanded="false" />
+                    <element signature="e#4216#4217#0" expanded="false" />
+                    <element signature="e#4250#4251#0" expanded="false" />
+                    <element signature="e#12626#12627#0" expanded="false" />
+                    <element signature="e#12641#12642#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="MoveTask.java" pinned="false" current-in-tab="true">
+            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.0.0/hive-exec-2.0.0-sources.jar!/org/apache/hadoop/hive/ql/exec/MoveTask.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="276">
+                  <caret line="414" column="39" selection-start-line="414" selection-start-column="39" selection-end-line="414" selection-end-column="39" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -117,261 +119,8 @@
           <file leaf-file-name="HttpHiveServer.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9728">
-                  <caret line="603" column="22" selection-start-line="603" selection-start-column="22" selection-end-line="603" selection-end-column="22" />
-                  <folding>
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#3773#3774#0" expanded="false" />
-                    <element signature="e#3804#3805#0" expanded="false" />
-                    <element signature="e#3864#3865#0" expanded="false" />
-                    <element signature="e#3882#3883#0" expanded="false" />
-                    <element signature="e#3913#3914#0" expanded="false" />
-                    <element signature="e#3937#3938#0" expanded="false" />
-                    <element signature="e#3983#3984#0" expanded="false" />
-                    <element signature="e#4018#4019#0" expanded="false" />
-                    <element signature="e#4049#4050#0" expanded="false" />
-                    <element signature="e#4073#4074#0" expanded="false" />
-                    <element signature="e#4119#4120#0" expanded="false" />
-                    <element signature="e#4154#4155#0" expanded="false" />
-                    <element signature="e#4188#4189#0" expanded="false" />
-                    <element signature="e#4215#4216#0" expanded="false" />
-                    <element signature="e#4267#4268#0" expanded="false" />
-                    <element signature="e#4308#4309#0" expanded="false" />
-                    <element signature="e#4341#4342#0" expanded="false" />
-                    <element signature="e#4364#4365#0" expanded="false" />
-                    <element signature="e#4400#4401#0" expanded="false" />
-                    <element signature="e#4428#4429#0" expanded="false" />
-                    <element signature="e#4465#4466#0" expanded="false" />
-                    <element signature="e#4494#4495#0" expanded="false" />
-                    <element signature="e#4551#4552#0" expanded="false" />
-                    <element signature="e#4596#4597#0" expanded="false" />
-                    <element signature="e#13699#13700#0" expanded="false" />
-                    <element signature="e#13741#13742#0" expanded="false" />
-                    <element signature="e#26888#26889#0" expanded="false" />
-                    <element signature="e#26930#26931#0" expanded="false" />
-                    <element signature="e#26980#26981#0" expanded="false" />
-                    <element signature="e#27010#27011#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="QueryProgress.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/QueryProgress.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="684">
-                  <caret line="66" column="21" selection-start-line="66" selection-start-column="21" selection-end-line="66" selection-end-column="21" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#6851#6852#0" expanded="false" />
-                    <element signature="e#6888#6889#0" expanded="false" />
-                    <element signature="e#7113#7114#0" expanded="false" />
-                    <element signature="e#7143#7144#0" expanded="false" />
-                    <element signature="e#7179#7180#0" expanded="false" />
-                    <element signature="e#7210#7211#0" expanded="false" />
-                    <element signature="e#13569#13570#0" expanded="false" />
-                    <element signature="e#13609#13610#0" expanded="false" />
-                    <element signature="e#14098#14099#0" expanded="false" />
-                    <element signature="e#14159#14160#0" expanded="false" />
-                    <element signature="e#14217#14218#0" expanded="false" />
-                    <element signature="e#14285#14286#0" expanded="false" />
-                    <element signature="e#14472#14473#0" expanded="false" />
-                    <element signature="e#14499#14500#0" expanded="false" />
-                    <element signature="e#14629#14630#0" expanded="false" />
-                    <element signature="e#14656#14657#0" expanded="false" />
-                    <element signature="e#14781#14782#0" expanded="false" />
-                    <element signature="e#14816#14817#0" expanded="false" />
-                    <element signature="e#14942#14943#0" expanded="false" />
-                    <element signature="e#14969#14970#0" expanded="false" />
-                    <element signature="e#15115#15116#0" expanded="false" />
-                    <element signature="e#15202#15203#0" expanded="false" />
-                    <element signature="e#15327#15328#0" expanded="false" />
-                    <element signature="e#15401#15402#0" expanded="false" />
-                    <element signature="e#15562#15563#0" expanded="false" />
-                    <element signature="e#15585#15586#0" expanded="false" />
-                    <element signature="e#15707#15708#0" expanded="false" />
-                    <element signature="e#15790#15791#0" expanded="false" />
-                    <element signature="e#15907#15908#0" expanded="false" />
-                    <element signature="e#15977#15978#0" expanded="false" />
-                    <element signature="e#16138#16139#0" expanded="false" />
-                    <element signature="e#16166#16167#0" expanded="false" />
-                    <element signature="e#16295#16296#0" expanded="false" />
-                    <element signature="e#16323#16324#0" expanded="false" />
-                    <element signature="e#16450#16451#0" expanded="false" />
-                    <element signature="e#16486#16487#0" expanded="false" />
-                    <element signature="e#16618#16619#0" expanded="false" />
-                    <element signature="e#16646#16647#0" expanded="false" />
-                    <element signature="e#16775#16776#0" expanded="false" />
-                    <element signature="e#16803#16804#0" expanded="false" />
-                    <element signature="e#16930#16931#0" expanded="false" />
-                    <element signature="e#16966#16967#0" expanded="false" />
-                    <element signature="e#17095#17096#0" expanded="false" />
-                    <element signature="e#17120#17121#0" expanded="false" />
-                    <element signature="e#17234#17235#0" expanded="false" />
-                    <element signature="e#17259#17260#0" expanded="false" />
-                    <element signature="e#17380#17381#0" expanded="false" />
-                    <element signature="e#17413#17414#0" expanded="false" />
-                    <element signature="e#17540#17541#0" expanded="false" />
-                    <element signature="e#17603#17604#0" expanded="false" />
-                    <element signature="e#17661#17662#0" expanded="false" />
-                    <element signature="e#17731#17732#0" expanded="false" />
-                    <element signature="e#17920#17921#0" expanded="false" />
-                    <element signature="e#17948#17949#0" expanded="false" />
-                    <element signature="e#18082#18083#0" expanded="false" />
-                    <element signature="e#18110#18111#0" expanded="false" />
-                    <element signature="e#18237#18238#0" expanded="false" />
-                    <element signature="e#18273#18274#0" expanded="false" />
-                    <element signature="e#18406#18407#0" expanded="false" />
-                    <element signature="e#18437#18438#0" expanded="false" />
-                    <element signature="e#18608#18609#0" expanded="false" />
-                    <element signature="e#18699#18700#0" expanded="false" />
-                    <element signature="e#18832#18833#0" expanded="false" />
-                    <element signature="e#18910#18911#0" expanded="false" />
-                    <element signature="e#19086#19087#0" expanded="false" />
-                    <element signature="e#19115#19116#0" expanded="false" />
-                    <element signature="e#19274#19275#0" expanded="false" />
-                    <element signature="e#19363#19364#0" expanded="false" />
-                    <element signature="e#19492#19493#0" expanded="false" />
-                    <element signature="e#19568#19569#0" expanded="false" />
-                    <element signature="e#19740#19741#0" expanded="false" />
-                    <element signature="e#19769#19770#0" expanded="false" />
-                    <element signature="e#19928#19929#0" expanded="false" />
-                    <element signature="e#20017#20018#0" expanded="false" />
-                    <element signature="e#20146#20147#0" expanded="false" />
-                    <element signature="e#20222#20223#0" expanded="false" />
-                    <element signature="e#20397#20398#0" expanded="false" />
-                    <element signature="e#20427#20428#0" expanded="false" />
-                    <element signature="e#20594#20595#0" expanded="false" />
-                    <element signature="e#20684#20685#0" expanded="false" />
-                    <element signature="e#20815#20816#0" expanded="false" />
-                    <element signature="e#20892#20893#0" expanded="false" />
-                    <element signature="e#21072#21073#0" expanded="false" />
-                    <element signature="e#21105#21106#0" expanded="false" />
-                    <element signature="e#21521#21522#0" expanded="false" />
-                    <element signature="e#21601#21602#0" expanded="false" />
-                    <element signature="e#21786#21787#0" expanded="false" />
-                    <element signature="e#21855#21856#0" expanded="false" />
-                    <element signature="e#22200#22201#0" expanded="false" />
-                    <element signature="e#22231#22232#0" expanded="false" />
-                    <element signature="e#22381#22382#0" expanded="false" />
-                    <element signature="e#22412#22413#0" expanded="false" />
-                    <element signature="e#22545#22546#0" expanded="false" />
-                    <element signature="e#22584#22585#0" expanded="false" />
-                    <element signature="e#37020#37021#0" expanded="false" />
-                    <element signature="e#37068#37069#0" expanded="false" />
-                    <element signature="e#41842#41843#0" expanded="false" />
-                    <element signature="e#41896#41897#0" expanded="false" />
-                    <element signature="e#52865#52866#0" expanded="false" />
-                    <element signature="e#52916#52917#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="HcatQuery.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2014">
-                  <caret line="159" column="53" selection-start-line="159" selection-start-column="53" selection-end-line="159" selection-end-column="53" />
-                  <folding>
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#858#859#0" expanded="false" />
-                    <element signature="e#896#897#0" expanded="false" />
-                    <element signature="e#1255#1256#0" expanded="false" />
-                    <element signature="e#1281#1282#0" expanded="false" />
-                    <element signature="e#1319#1320#0" expanded="false" />
-                    <element signature="e#1349#1350#0" expanded="false" />
-                    <element signature="e#1380#1381#0" expanded="false" />
-                    <element signature="e#1407#1408#0" expanded="false" />
-                    <element signature="e#1447#1448#0" expanded="false" />
-                    <element signature="e#1479#1480#0" expanded="false" />
-                    <element signature="e#1511#1512#0" expanded="false" />
-                    <element signature="e#1539#1540#0" expanded="false" />
-                    <element signature="e#1582#1583#0" expanded="false" />
-                    <element signature="e#1616#1617#0" expanded="false" />
-                    <element signature="e#1652#1653#0" expanded="false" />
-                    <element signature="e#1684#1685#0" expanded="false" />
-                    <element signature="e#1734#1735#0" expanded="false" />
-                    <element signature="e#1776#1777#0" expanded="false" />
-                    <element signature="e#1814#1815#0" expanded="false" />
-                    <element signature="e#1845#1846#0" expanded="false" />
-                    <element signature="e#1896#1897#0" expanded="false" />
-                    <element signature="e#1936#1937#0" expanded="false" />
-                    <element signature="e#1965#1966#0" expanded="false" />
-                    <element signature="e#1993#1994#0" expanded="false" />
-                    <element signature="e#2032#2033#0" expanded="false" />
-                    <element signature="e#2066#2067#0" expanded="false" />
-                    <element signature="e#2104#2105#0" expanded="false" />
-                    <element signature="e#2138#2139#0" expanded="false" />
-                    <element signature="e#2182#2183#0" expanded="false" />
-                    <element signature="e#2220#2221#0" expanded="false" />
-                    <element signature="e#2252#2253#0" expanded="false" />
-                    <element signature="e#2282#2283#0" expanded="false" />
-                    <element signature="e#2336#2337#0" expanded="false" />
-                    <element signature="e#2382#2383#0" expanded="false" />
-                    <element signature="e#2421#2422#0" expanded="false" />
-                    <element signature="e#2450#2451#0" expanded="false" />
-                    <element signature="e#2500#2501#0" expanded="false" />
-                    <element signature="e#2536#2537#0" expanded="false" />
-                    <element signature="e#2577#2578#0" expanded="false" />
-                    <element signature="e#2609#2610#0" expanded="false" />
-                    <element signature="e#2747#2748#0" expanded="false" />
-                    <element signature="e#2779#2780#0" expanded="false" />
-                    <element signature="e#2834#2835#0" expanded="false" />
-                    <element signature="e#2876#2877#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="SparkClientImpl.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-server/bin/SparkClientImpl.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="285">
-                  <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="15" selection-end-column="3" />
-                  <folding>
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#4858#4859#0" expanded="false" />
-                    <element signature="e#4895#4896#0" expanded="false" />
-                    <element signature="e#4970#4971#0" expanded="false" />
-                    <element signature="e#5004#5005#0" expanded="false" />
-                    <element signature="e#5765#5766#0" expanded="false" />
-                    <element signature="e#5816#5817#0" expanded="false" />
-                    <element signature="e#5867#5868#0" expanded="false" />
-                    <element signature="e#5919#5920#0" expanded="false" />
-                    <element signature="e#5978#5979#0" expanded="false" />
-                    <element signature="e#6025#6026#0" expanded="false" />
-                    <element signature="e#6089#6090#0" expanded="false" />
-                    <element signature="e#6141#6142#0" expanded="false" />
-                    <element signature="e#6184#6185#0" expanded="false" />
-                    <element signature="e#6232#6233#0" expanded="false" />
-                    <element signature="e#6263#6264#0" expanded="false" />
-                    <element signature="e#6295#6296#0" expanded="false" />
-                    <element signature="e#20335#20336#0" expanded="false" />
-                    <element signature="e#20385#20386#0" expanded="false" />
-                    <element signature="e#20415#20416#0" expanded="false" />
-                    <element signature="e#20468#20469#0" expanded="false" />
-                    <element signature="e#22350#22351#0" expanded="false" />
-                    <element signature="e#22419#22420#0" expanded="false" />
-                    <element signature="e#22853#22854#0" expanded="false" />
-                    <element signature="e#22877#22878#0" expanded="false" />
-                    <element signature="e#22907#22908#0" expanded="false" />
-                    <element signature="e#22937#22938#0" expanded="false" />
-                    <element signature="e#23497#23498#0" expanded="false" />
-                    <element signature="e#23521#23522#0" expanded="false" />
-                    <element signature="e#23552#23553#0" expanded="false" />
-                    <element signature="e#23582#23583#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/pom.xml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="114">
-                  <caret line="6" column="2" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
+                <state relative-caret-position="3487">
+                  <caret line="551" column="13" selection-start-line="551" selection-start-column="13" selection-end-line="551" selection-end-column="13" />
                   <folding />
                 </state>
               </provider>
@@ -380,30 +129,9 @@
           <file leaf-file-name="ExecDriver.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/org/apache/hadoop/hive/ql/exec/mr/ExecDriver.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="6175">
-                  <caret line="419" column="0" selection-start-line="419" selection-start-column="0" selection-end-line="419" selection-end-column="0" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#5519#5520#0" expanded="false" />
-                    <element signature="e#5540#5541#0" expanded="false" />
-                    <element signature="e#22818#22819#0" expanded="false" />
-                    <element signature="e#22866#22867#0" expanded="false" />
-                    <element signature="e#22902#22903#0" expanded="false" />
-                    <element signature="e#22953#22954#0" expanded="false" />
-                    <element signature="e#22983#22984#0" expanded="false" />
-                    <element signature="e#23028#23029#0" expanded="false" />
-                    <element signature="e#23061#23062#0" expanded="false" />
-                    <element signature="e#23109#23110#0" expanded="false" />
-                    <element signature="e#30807#30808#0" expanded="false" />
-                    <element signature="e#30878#30879#0" expanded="false" />
-                    <element signature="e#30925#30926#0" expanded="false" />
-                    <element signature="e#30946#30947#0" expanded="false" />
-                    <element signature="e#31258#31259#0" expanded="false" />
-                    <element signature="e#31291#31292#0" expanded="false" />
-                    <element signature="e#31332#31333#0" expanded="false" />
-                    <element signature="e#31357#31358#0" expanded="false" />
-                  </folding>
+                <state relative-caret-position="105">
+                  <caret line="378" column="58" selection-start-line="378" selection-start-column="58" selection-end-line="378" selection-end-column="58" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -489,83 +217,12 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="ShuffleConsumerPlugin.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapred/ShuffleConsumerPlugin.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="247">
-                  <caret line="38" column="29" selection-start-line="38" selection-start-column="29" selection-end-line="38" selection-end-column="29" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="class#Context#0;class#ShuffleConsumerPlugin#0" expanded="false" />
-                    <element signature="e#4826#4827#0" expanded="false" />
-                    <element signature="e#4855#4856#0" expanded="false" />
-                    <element signature="e#4889#4890#0" expanded="false" />
-                    <element signature="e#4917#4918#0" expanded="false" />
-                    <element signature="e#4954#4955#0" expanded="false" />
-                    <element signature="e#4982#4983#0" expanded="false" />
-                    <element signature="e#5032#5033#0" expanded="false" />
-                    <element signature="e#5062#5063#0" expanded="false" />
-                    <element signature="e#5116#5117#0" expanded="false" />
-                    <element signature="e#5154#5155#0" expanded="false" />
-                    <element signature="e#5190#5191#0" expanded="false" />
-                    <element signature="e#5219#5220#0" expanded="false" />
-                    <element signature="e#5260#5261#0" expanded="false" />
-                    <element signature="e#5286#5287#0" expanded="false" />
-                    <element signature="e#5343#5344#0" expanded="false" />
-                    <element signature="e#5377#5378#0" expanded="false" />
-                    <element signature="e#5441#5442#0" expanded="false" />
-                    <element signature="e#5478#5479#0" expanded="false" />
-                    <element signature="e#5535#5536#0" expanded="false" />
-                    <element signature="e#5577#5578#0" expanded="false" />
-                    <element signature="e#5638#5639#0" expanded="false" />
-                    <element signature="e#5684#5685#0" expanded="false" />
-                    <element signature="e#5739#5740#0" expanded="false" />
-                    <element signature="e#5779#5780#0" expanded="false" />
-                    <element signature="e#5833#5834#0" expanded="false" />
-                    <element signature="e#5872#5873#0" expanded="false" />
-                    <element signature="e#5928#5929#0" expanded="false" />
-                    <element signature="e#5969#5970#0" expanded="false" />
-                    <element signature="e#6028#6029#0" expanded="false" />
-                    <element signature="e#6072#6073#0" expanded="false" />
-                    <element signature="e#6108#6109#0" expanded="false" />
-                    <element signature="e#6135#6136#0" expanded="false" />
-                    <element signature="e#6172#6173#0" expanded="false" />
-                    <element signature="e#6202#6203#0" expanded="false" />
-                    <element signature="e#6240#6241#0" expanded="false" />
-                    <element signature="e#6271#6272#0" expanded="false" />
-                    <element signature="e#6305#6306#0" expanded="false" />
-                    <element signature="e#6336#6337#0" expanded="false" />
-                    <element signature="e#6382#6383#0" expanded="false" />
-                    <element signature="e#6416#6417#0" expanded="false" />
-                    <element signature="e#6482#6483#0" expanded="false" />
-                    <element signature="e#6516#6517#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="ReduceTask.java" pinned="false" current-in-tab="false">
             <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapred/ReduceTask.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="5282">
                   <caret line="341" column="5" selection-start-line="341" selection-start-column="5" selection-end-line="341" selection-end-column="5" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#5219#5220#0" expanded="false" />
-                    <element signature="e#5236#5237#0" expanded="false" />
-                    <element signature="e#5755#5756#0" expanded="false" />
-                    <element signature="e#5794#5795#0" expanded="false" />
-                    <element signature="e#6172#6173#0" expanded="false" />
-                    <element signature="e#6194#6195#0" expanded="false" />
-                    <element signature="e#7763#7764#0" expanded="false" />
-                    <element signature="e#7796#7797#0" expanded="false" />
-                    <element signature="e#9486#9487#0" expanded="false" />
-                    <element signature="e#9534#9535#0" expanded="false" />
-                    <element signature="e#21653#21654#0" expanded="false" />
-                    <element signature="e#21699#21700#0" expanded="false" />
-                  </folding>
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -575,10 +232,7 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="266">
                   <caret line="77" column="35" selection-start-line="77" selection-start-column="35" selection-end-line="77" selection-end-column="35" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                  </folding>
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -586,8 +240,8 @@
           <file leaf-file-name="Job.java" pinned="false" current-in-tab="true">
             <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapreduce/Job.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="345">
-                  <caret line="1318" column="3" selection-start-line="1318" selection-start-column="3" selection-end-line="1318" selection-end-column="3" />
+                <state relative-caret-position="478">
+                  <caret line="1313" column="14" selection-start-line="1313" selection-start-column="14" selection-end-line="1313" selection-end-column="14" />
                   <folding />
                 </state>
               </provider>
@@ -598,92 +252,7 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="5890">
                   <caret line="417" column="30" selection-start-line="417" selection-start-column="30" selection-end-line="417" selection-end-column="30" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#5086#5087#0" expanded="false" />
-                    <element signature="e#5144#5145#0" expanded="false" />
-                    <element signature="e#9224#9225#0" expanded="false" />
-                    <element signature="e#9257#9258#0" expanded="false" />
-                    <element signature="e#9410#9411#0" expanded="false" />
-                    <element signature="e#9444#9445#0" expanded="false" />
-                    <element signature="e#9580#9581#0" expanded="false" />
-                    <element signature="e#9620#9621#0" expanded="false" />
-                    <element signature="e#9734#9735#0" expanded="false" />
-                    <element signature="e#9767#9768#0" expanded="false" />
-                    <element signature="e#9932#9933#0" expanded="false" />
-                    <element signature="e#9976#9977#0" expanded="false" />
-                    <element signature="e#10118#10119#0" expanded="false" />
-                    <element signature="e#10153#10154#0" expanded="false" />
-                    <element signature="e#10289#10290#0" expanded="false" />
-                    <element signature="e#10315#10316#0" expanded="false" />
-                    <element signature="e#10543#10544#0" expanded="false" />
-                    <element signature="e#10587#10588#0" expanded="false" />
-                    <element signature="e#10730#10731#0" expanded="false" />
-                    <element signature="e#10772#10773#0" expanded="false" />
-                    <element signature="e#10867#10868#0" expanded="false" />
-                    <element signature="e#10897#10898#0" expanded="false" />
-                    <element signature="e#11015#11016#0" expanded="false" />
-                    <element signature="e#11059#11060#0" expanded="false" />
-                    <element signature="e#12506#12507#0" expanded="false" />
-                    <element signature="e#12533#12534#0" expanded="false" />
-                    <element signature="e#12622#12623#0" expanded="false" />
-                    <element signature="e#12660#12661#0" expanded="false" />
-                    <element signature="e#12736#12737#0" expanded="false" />
-                    <element signature="e#12761#12762#0" expanded="false" />
-                    <element signature="e#12889#12890#0" expanded="false" />
-                    <element signature="e#12923#12924#0" expanded="false" />
-                    <element signature="e#13133#13134#0" expanded="false" />
-                    <element signature="e#13180#13181#0" expanded="false" />
-                    <element signature="e#13301#13302#0" expanded="false" />
-                    <element signature="e#13346#13347#0" expanded="false" />
-                    <element signature="e#13377#13378#0" expanded="false" />
-                    <element signature="e#13405#13406#0" expanded="false" />
-                    <element signature="e#13442#13443#0" expanded="false" />
-                    <element signature="e#13470#13471#0" expanded="false" />
-                    <element signature="e#13502#13503#0" expanded="false" />
-                    <element signature="e#13529#13530#0" expanded="false" />
-                    <element signature="e#13882#13883#0" expanded="false" />
-                    <element signature="e#13907#13908#0" expanded="false" />
-                    <element signature="e#13935#13936#0" expanded="false" />
-                    <element signature="e#13961#13962#0" expanded="false" />
-                    <element signature="e#13991#13992#0" expanded="false" />
-                    <element signature="e#14019#14020#0" expanded="false" />
-                    <element signature="e#14190#14191#0" expanded="false" />
-                    <element signature="e#14230#14231#0" expanded="false" />
-                    <element signature="e#14261#14262#0" expanded="false" />
-                    <element signature="e#14318#14319#0" expanded="false" />
-                    <element signature="e#14554#14555#0" expanded="false" />
-                    <element signature="e#14575#14576#0" expanded="false" />
-                    <element signature="e#14608#14609#0" expanded="false" />
-                    <element signature="e#14634#14635#0" expanded="false" />
-                    <element signature="e#20850#20851#0" expanded="false" />
-                    <element signature="e#20886#20887#0" expanded="false" />
-                    <element signature="e#20920#20921#0" expanded="false" />
-                    <element signature="e#20970#20971#0" expanded="false" />
-                    <element signature="e#21462#21463#0" expanded="false" />
-                    <element signature="e#21509#21510#0" expanded="false" />
-                    <element signature="e#21912#21913#0" expanded="false" />
-                    <element signature="e#21985#21986#0" expanded="false" />
-                    <element signature="e#22970#22971#0" expanded="false" />
-                    <element signature="e#23002#23003#0" expanded="false" />
-                    <element signature="e#42492#42493#0" expanded="false" />
-                    <element signature="e#42518#42519#0" expanded="false" />
-                    <element signature="e#42563#42564#0" expanded="false" />
-                    <element signature="e#42593#42594#0" expanded="false" />
-                    <element signature="e#43347#43348#0" expanded="false" />
-                    <element signature="e#43381#43382#0" expanded="false" />
-                    <element signature="e#46265#46266#0" expanded="false" />
-                    <element signature="e#46292#46293#0" expanded="false" />
-                    <element signature="e#46347#46348#0" expanded="false" />
-                    <element signature="e#46373#46374#0" expanded="false" />
-                    <element signature="e#55420#55421#0" expanded="false" />
-                    <element signature="e#55458#55459#0" expanded="false" />
-                    <element signature="e#56761#56762#0" expanded="false" />
-                    <element signature="e#56787#56788#0" expanded="false" />
-                    <element signature="e#56835#56836#0" expanded="false" />
-                    <element signature="e#56871#56872#0" expanded="false" />
-                  </folding>
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -711,8 +280,16 @@
                     <element signature="imports" expanded="false" />
                     <element signature="e#3495#3496#0" expanded="false" />
                     <element signature="e#3523#3524#0" expanded="false" />
+                    <element signature="e#7731#7744#0" expanded="false" />
+                    <element signature="e#8717#8730#0" expanded="false" />
+                    <element signature="e#8827#8840#0" expanded="false" />
+                    <element signature="e#10669#10695#0" expanded="false" />
+                    <element signature="e#11012#11036#0" expanded="false" />
+                    <element signature="e#11620#11633#0" expanded="false" />
+                    <element signature="e#11709#11722#0" expanded="false" />
                     <element signature="e#22718#22719#0" expanded="false" />
                     <element signature="e#22751#22752#0" expanded="false" />
+                    <element signature="e#23529#23542#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -876,12 +453,17 @@
                   <folding>
                     <element signature="n#!!doc" expanded="false" />
                     <element signature="imports" expanded="false" />
+                    <element signature="e#6170#6178#0" expanded="false" />
+                    <element signature="e#6249#6266#0" expanded="false" />
                     <element signature="e#7525#7526#0" expanded="false" />
                     <element signature="e#7546#7547#0" expanded="false" />
                     <element signature="e#7587#7588#0" expanded="false" />
                     <element signature="e#7613#7614#0" expanded="false" />
+                    <element signature="e#7741#7762#0" expanded="false" />
+                    <element signature="e#15364#15387#0" expanded="false" />
                     <element signature="e#20750#20751#0" expanded="false" />
                     <element signature="e#20775#20776#0" expanded="false" />
+                    <element signature="e#24731#24743#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -920,8 +502,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/ConnectionPool.java" />
-        <option value="$PROJECT_DIR$/hcat-server/localJars/spark-assembly-1.5.0-hadoop2.4.1.jar!/org/apache/spark/deploy/yarn/ApplicationMaster.class" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/parse/ColumAccessAnalyzer.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java" />
         <option value="$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/PublicConstant.java" />
@@ -951,7 +531,6 @@
         <option value="$PROJECT_DIR$/hcat-client/src/main/java/com/hiido/hcat/cli/org/apache/hadoop/hive/cli/CliSession.java" />
         <option value="$PROJECT_DIR$/hcat-server/conf/hive-site.xml" />
         <option value="$PROJECT_DIR$/hcat-server/bin/SparkClientImpl.java" />
-        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/plan/PlanUtils.scala" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/parse/ColumnAccessAnalyzer.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/service/cli/operation/SQLOperation.java" />
@@ -971,6 +550,9 @@
         <option value="$PROJECT_DIR$/hcat-server/README" />
         <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java" />
+        <option value="$PROJECT_DIR$/hcat-server/bin/test_moveTask.java" />
+        <option value="$PROJECT_DIR$/hcat-server/bin/MoveTask.java" />
       </list>
     </option>
   </component>
@@ -1020,9 +602,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -1041,8 +620,277 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apache" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apache" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hadoop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apache" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hadoop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hive" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ql" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apache" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hadoop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hive" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ql" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="exec" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apache" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hadoop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hive" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1051,14 +899,14 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="201" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/exec/MoveTask.java" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="204" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="231" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="234" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="238" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="242" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1092" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1095" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="211" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
@@ -1070,6 +918,7 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="SearchEverywhereHistoryKey" value="spark-submit&#9;null&#9;null&#10;spark.shuffle.manager&#9;null&#9;null" />
     <property name="ignore_missing_gitignore" value="true" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/exec/MoveTask.java" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -1720,28 +1569,28 @@
     <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
     <editor active="false" />
     <layout>
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1933518" sideWeight="0.4948905" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32704404" sideWeight="0.5041783" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290859" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.49679145" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5440252" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1933518" sideWeight="0.4948905" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21274239" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24930748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19612189" sideWeight="0.5051095" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2966457" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Repositories" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.663522" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32704404" sideWeight="0.4958217" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5440252" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Properties" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28197065" sideWeight="0.49786097" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2966457" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -1762,7 +1611,8 @@
     <MESSAGE value="ColumnAccess" />
     <MESSAGE value="validate write path" />
     <MESSAGE value="HcatQuery" />
-    <option name="LAST_COMMIT_MESSAGE" value="HcatQuery" />
+    <MESSAGE value="HcatSession" />
+    <option name="LAST_COMMIT_MESSAGE" value="HcatSession" />
     <option name="CHANGE_BROWSER_SETTINGS">
       <map>
         <entry key="svn">
@@ -1850,34 +1700,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-core_2.10/1.5.0/spark-core_2.10-1.5.0-sources.jar!/org/apache/spark/shuffle/hash/HashShuffleReader.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-core_2.10/1.5.0/spark-core_2.10-1.5.0-sources.jar!/org/apache/spark/storage/ShuffleBlockFetcherIterator.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1007">
-          <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/spark/spark-core_2.10/1.5.0/spark-core_2.10-1.5.0-sources.jar!/org/apache/spark/shuffle/unsafe/UnsafeShuffleManager.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2489">
-          <caret line="152" column="29" selection-start-line="152" selection-start-column="29" selection-end-line="152" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.0.0/hive-exec-2.0.0-sources.jar!/org/apache/hadoop/hive/ql/io/merge/MergeFileInputFormat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="28" column="22" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hcat-server/README">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
@@ -2040,205 +1862,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2356">
-          <caret line="202" column="32" selection-start-line="202" selection-start-column="32" selection-end-line="202" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2977#2978#0" expanded="false" />
-            <element signature="e#3007#3008#0" expanded="false" />
-            <element signature="e#3049#3050#0" expanded="false" />
-            <element signature="e#3066#3067#0" expanded="false" />
-            <element signature="e#3138#3139#0" expanded="false" />
-            <element signature="e#3185#3186#0" expanded="false" />
-            <element signature="e#3245#3246#0" expanded="false" />
-            <element signature="e#3304#3305#0" expanded="false" />
-            <element signature="e#3527#3528#0" expanded="false" />
-            <element signature="e#3545#3546#0" expanded="false" />
-            <element signature="e#3599#3600#0" expanded="false" />
-            <element signature="e#3618#3619#0" expanded="false" />
-            <element signature="e#3673#3674#0" expanded="false" />
-            <element signature="e#3691#3692#0" expanded="false" />
-            <element signature="e#3903#3904#0" expanded="false" />
-            <element signature="e#3921#3922#0" expanded="false" />
-            <element signature="e#3964#3965#0" expanded="false" />
-            <element signature="e#3986#3987#0" expanded="false" />
-            <element signature="e#4031#4032#0" expanded="false" />
-            <element signature="e#4053#4054#0" expanded="false" />
-            <element signature="e#4106#4107#0" expanded="false" />
-            <element signature="e#4132#4133#0" expanded="false" />
-            <element signature="e#4175#4176#0" expanded="false" />
-            <element signature="e#4197#4198#0" expanded="false" />
-            <element signature="e#4253#4254#0" expanded="false" />
-            <element signature="e#4279#4280#0" expanded="false" />
-            <element signature="e#4323#4324#0" expanded="false" />
-            <element signature="e#4346#4347#0" expanded="false" />
-            <element signature="e#4404#4405#0" expanded="false" />
-            <element signature="e#4437#4438#0" expanded="false" />
-            <element signature="e#4484#4485#0" expanded="false" />
-            <element signature="e#4499#4500#0" expanded="false" />
-            <element signature="e#4544#4545#0" expanded="false" />
-            <element signature="e#4570#4571#0" expanded="false" />
-            <element signature="e#4620#4621#0" expanded="false" />
-            <element signature="e#4654#4655#0" expanded="false" />
-            <element signature="e#12239#12240#0" expanded="false" />
-            <element signature="e#12254#12255#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/QueryProgress.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="66" column="21" selection-start-line="66" selection-start-column="21" selection-end-line="66" selection-end-column="21" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#6851#6852#0" expanded="false" />
-            <element signature="e#6888#6889#0" expanded="false" />
-            <element signature="e#7113#7114#0" expanded="false" />
-            <element signature="e#7143#7144#0" expanded="false" />
-            <element signature="e#7179#7180#0" expanded="false" />
-            <element signature="e#7210#7211#0" expanded="false" />
-            <element signature="e#13569#13570#0" expanded="false" />
-            <element signature="e#13609#13610#0" expanded="false" />
-            <element signature="e#14098#14099#0" expanded="false" />
-            <element signature="e#14159#14160#0" expanded="false" />
-            <element signature="e#14217#14218#0" expanded="false" />
-            <element signature="e#14285#14286#0" expanded="false" />
-            <element signature="e#14472#14473#0" expanded="false" />
-            <element signature="e#14499#14500#0" expanded="false" />
-            <element signature="e#14629#14630#0" expanded="false" />
-            <element signature="e#14656#14657#0" expanded="false" />
-            <element signature="e#14781#14782#0" expanded="false" />
-            <element signature="e#14816#14817#0" expanded="false" />
-            <element signature="e#14942#14943#0" expanded="false" />
-            <element signature="e#14969#14970#0" expanded="false" />
-            <element signature="e#15115#15116#0" expanded="false" />
-            <element signature="e#15202#15203#0" expanded="false" />
-            <element signature="e#15327#15328#0" expanded="false" />
-            <element signature="e#15401#15402#0" expanded="false" />
-            <element signature="e#15562#15563#0" expanded="false" />
-            <element signature="e#15585#15586#0" expanded="false" />
-            <element signature="e#15707#15708#0" expanded="false" />
-            <element signature="e#15790#15791#0" expanded="false" />
-            <element signature="e#15907#15908#0" expanded="false" />
-            <element signature="e#15977#15978#0" expanded="false" />
-            <element signature="e#16138#16139#0" expanded="false" />
-            <element signature="e#16166#16167#0" expanded="false" />
-            <element signature="e#16295#16296#0" expanded="false" />
-            <element signature="e#16323#16324#0" expanded="false" />
-            <element signature="e#16450#16451#0" expanded="false" />
-            <element signature="e#16486#16487#0" expanded="false" />
-            <element signature="e#16618#16619#0" expanded="false" />
-            <element signature="e#16646#16647#0" expanded="false" />
-            <element signature="e#16775#16776#0" expanded="false" />
-            <element signature="e#16803#16804#0" expanded="false" />
-            <element signature="e#16930#16931#0" expanded="false" />
-            <element signature="e#16966#16967#0" expanded="false" />
-            <element signature="e#17095#17096#0" expanded="false" />
-            <element signature="e#17120#17121#0" expanded="false" />
-            <element signature="e#17234#17235#0" expanded="false" />
-            <element signature="e#17259#17260#0" expanded="false" />
-            <element signature="e#17380#17381#0" expanded="false" />
-            <element signature="e#17413#17414#0" expanded="false" />
-            <element signature="e#17540#17541#0" expanded="false" />
-            <element signature="e#17603#17604#0" expanded="false" />
-            <element signature="e#17661#17662#0" expanded="false" />
-            <element signature="e#17731#17732#0" expanded="false" />
-            <element signature="e#17920#17921#0" expanded="false" />
-            <element signature="e#17948#17949#0" expanded="false" />
-            <element signature="e#18082#18083#0" expanded="false" />
-            <element signature="e#18110#18111#0" expanded="false" />
-            <element signature="e#18237#18238#0" expanded="false" />
-            <element signature="e#18273#18274#0" expanded="false" />
-            <element signature="e#18406#18407#0" expanded="false" />
-            <element signature="e#18437#18438#0" expanded="false" />
-            <element signature="e#18608#18609#0" expanded="false" />
-            <element signature="e#18699#18700#0" expanded="false" />
-            <element signature="e#18832#18833#0" expanded="false" />
-            <element signature="e#18910#18911#0" expanded="false" />
-            <element signature="e#19086#19087#0" expanded="false" />
-            <element signature="e#19115#19116#0" expanded="false" />
-            <element signature="e#19274#19275#0" expanded="false" />
-            <element signature="e#19363#19364#0" expanded="false" />
-            <element signature="e#19492#19493#0" expanded="false" />
-            <element signature="e#19568#19569#0" expanded="false" />
-            <element signature="e#19740#19741#0" expanded="false" />
-            <element signature="e#19769#19770#0" expanded="false" />
-            <element signature="e#19928#19929#0" expanded="false" />
-            <element signature="e#20017#20018#0" expanded="false" />
-            <element signature="e#20146#20147#0" expanded="false" />
-            <element signature="e#20222#20223#0" expanded="false" />
-            <element signature="e#20397#20398#0" expanded="false" />
-            <element signature="e#20427#20428#0" expanded="false" />
-            <element signature="e#20594#20595#0" expanded="false" />
-            <element signature="e#20684#20685#0" expanded="false" />
-            <element signature="e#20815#20816#0" expanded="false" />
-            <element signature="e#20892#20893#0" expanded="false" />
-            <element signature="e#21072#21073#0" expanded="false" />
-            <element signature="e#21105#21106#0" expanded="false" />
-            <element signature="e#21521#21522#0" expanded="false" />
-            <element signature="e#21601#21602#0" expanded="false" />
-            <element signature="e#21786#21787#0" expanded="false" />
-            <element signature="e#21855#21856#0" expanded="false" />
-            <element signature="e#22200#22201#0" expanded="false" />
-            <element signature="e#22231#22232#0" expanded="false" />
-            <element signature="e#22381#22382#0" expanded="false" />
-            <element signature="e#22412#22413#0" expanded="false" />
-            <element signature="e#22545#22546#0" expanded="false" />
-            <element signature="e#22584#22585#0" expanded="false" />
-            <element signature="e#37020#37021#0" expanded="false" />
-            <element signature="e#37068#37069#0" expanded="false" />
-            <element signature="e#41842#41843#0" expanded="false" />
-            <element signature="e#41896#41897#0" expanded="false" />
-            <element signature="e#52865#52866#0" expanded="false" />
-            <element signature="e#52916#52917#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9728">
-          <caret line="603" column="22" selection-start-line="603" selection-start-column="22" selection-end-line="603" selection-end-column="22" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#3773#3774#0" expanded="false" />
-            <element signature="e#3804#3805#0" expanded="false" />
-            <element signature="e#3864#3865#0" expanded="false" />
-            <element signature="e#3882#3883#0" expanded="false" />
-            <element signature="e#3913#3914#0" expanded="false" />
-            <element signature="e#3937#3938#0" expanded="false" />
-            <element signature="e#3983#3984#0" expanded="false" />
-            <element signature="e#4018#4019#0" expanded="false" />
-            <element signature="e#4049#4050#0" expanded="false" />
-            <element signature="e#4073#4074#0" expanded="false" />
-            <element signature="e#4119#4120#0" expanded="false" />
-            <element signature="e#4154#4155#0" expanded="false" />
-            <element signature="e#4188#4189#0" expanded="false" />
-            <element signature="e#4215#4216#0" expanded="false" />
-            <element signature="e#4267#4268#0" expanded="false" />
-            <element signature="e#4308#4309#0" expanded="false" />
-            <element signature="e#4341#4342#0" expanded="false" />
-            <element signature="e#4364#4365#0" expanded="false" />
-            <element signature="e#4400#4401#0" expanded="false" />
-            <element signature="e#4428#4429#0" expanded="false" />
-            <element signature="e#4465#4466#0" expanded="false" />
-            <element signature="e#4494#4495#0" expanded="false" />
-            <element signature="e#4551#4552#0" expanded="false" />
-            <element signature="e#4596#4597#0" expanded="false" />
-            <element signature="e#13699#13700#0" expanded="false" />
-            <element signature="e#13741#13742#0" expanded="false" />
-            <element signature="e#26888#26889#0" expanded="false" />
-            <element signature="e#26930#26931#0" expanded="false" />
-            <element signature="e#26980#26981#0" expanded="false" />
-            <element signature="e#27010#27011#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/sql/PreparedStatement.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="307">
@@ -2264,89 +1887,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
           <caret line="67" column="6" selection-start-line="67" selection-start-column="6" selection-end-line="67" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2014">
-          <caret line="159" column="53" selection-start-line="159" selection-start-column="53" selection-end-line="159" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#858#859#0" expanded="false" />
-            <element signature="e#896#897#0" expanded="false" />
-            <element signature="e#1255#1256#0" expanded="false" />
-            <element signature="e#1281#1282#0" expanded="false" />
-            <element signature="e#1319#1320#0" expanded="false" />
-            <element signature="e#1349#1350#0" expanded="false" />
-            <element signature="e#1380#1381#0" expanded="false" />
-            <element signature="e#1407#1408#0" expanded="false" />
-            <element signature="e#1447#1448#0" expanded="false" />
-            <element signature="e#1479#1480#0" expanded="false" />
-            <element signature="e#1511#1512#0" expanded="false" />
-            <element signature="e#1539#1540#0" expanded="false" />
-            <element signature="e#1582#1583#0" expanded="false" />
-            <element signature="e#1616#1617#0" expanded="false" />
-            <element signature="e#1652#1653#0" expanded="false" />
-            <element signature="e#1684#1685#0" expanded="false" />
-            <element signature="e#1734#1735#0" expanded="false" />
-            <element signature="e#1776#1777#0" expanded="false" />
-            <element signature="e#1814#1815#0" expanded="false" />
-            <element signature="e#1845#1846#0" expanded="false" />
-            <element signature="e#1896#1897#0" expanded="false" />
-            <element signature="e#1936#1937#0" expanded="false" />
-            <element signature="e#1965#1966#0" expanded="false" />
-            <element signature="e#1993#1994#0" expanded="false" />
-            <element signature="e#2032#2033#0" expanded="false" />
-            <element signature="e#2066#2067#0" expanded="false" />
-            <element signature="e#2104#2105#0" expanded="false" />
-            <element signature="e#2138#2139#0" expanded="false" />
-            <element signature="e#2182#2183#0" expanded="false" />
-            <element signature="e#2220#2221#0" expanded="false" />
-            <element signature="e#2252#2253#0" expanded="false" />
-            <element signature="e#2282#2283#0" expanded="false" />
-            <element signature="e#2336#2337#0" expanded="false" />
-            <element signature="e#2382#2383#0" expanded="false" />
-            <element signature="e#2421#2422#0" expanded="false" />
-            <element signature="e#2450#2451#0" expanded="false" />
-            <element signature="e#2500#2501#0" expanded="false" />
-            <element signature="e#2536#2537#0" expanded="false" />
-            <element signature="e#2577#2578#0" expanded="false" />
-            <element signature="e#2609#2610#0" expanded="false" />
-            <element signature="e#2747#2748#0" expanded="false" />
-            <element signature="e#2779#2780#0" expanded="false" />
-            <element signature="e#2834#2835#0" expanded="false" />
-            <element signature="e#2876#2877#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/org/apache/hadoop/hive/ql/exec/mr/ExecDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6175">
-          <caret line="419" column="0" selection-start-line="419" selection-start-column="0" selection-end-line="419" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#5519#5520#0" expanded="false" />
-            <element signature="e#5540#5541#0" expanded="false" />
-            <element signature="e#22818#22819#0" expanded="false" />
-            <element signature="e#22866#22867#0" expanded="false" />
-            <element signature="e#22902#22903#0" expanded="false" />
-            <element signature="e#22953#22954#0" expanded="false" />
-            <element signature="e#22983#22984#0" expanded="false" />
-            <element signature="e#23028#23029#0" expanded="false" />
-            <element signature="e#23061#23062#0" expanded="false" />
-            <element signature="e#23109#23110#0" expanded="false" />
-            <element signature="e#30807#30808#0" expanded="false" />
-            <element signature="e#30878#30879#0" expanded="false" />
-            <element signature="e#30925#30926#0" expanded="false" />
-            <element signature="e#30946#30947#0" expanded="false" />
-            <element signature="e#31258#31259#0" expanded="false" />
-            <element signature="e#31291#31292#0" expanded="false" />
-            <element signature="e#31332#31333#0" expanded="false" />
-            <element signature="e#31357#31358#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2425,53 +1965,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="247">
           <caret line="38" column="29" selection-start-line="38" selection-start-column="29" selection-end-line="38" selection-end-column="29" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="class#Context#0;class#ShuffleConsumerPlugin#0" expanded="false" />
-            <element signature="e#4826#4827#0" expanded="false" />
-            <element signature="e#4855#4856#0" expanded="false" />
-            <element signature="e#4889#4890#0" expanded="false" />
-            <element signature="e#4917#4918#0" expanded="false" />
-            <element signature="e#4954#4955#0" expanded="false" />
-            <element signature="e#4982#4983#0" expanded="false" />
-            <element signature="e#5032#5033#0" expanded="false" />
-            <element signature="e#5062#5063#0" expanded="false" />
-            <element signature="e#5116#5117#0" expanded="false" />
-            <element signature="e#5154#5155#0" expanded="false" />
-            <element signature="e#5190#5191#0" expanded="false" />
-            <element signature="e#5219#5220#0" expanded="false" />
-            <element signature="e#5260#5261#0" expanded="false" />
-            <element signature="e#5286#5287#0" expanded="false" />
-            <element signature="e#5343#5344#0" expanded="false" />
-            <element signature="e#5377#5378#0" expanded="false" />
-            <element signature="e#5441#5442#0" expanded="false" />
-            <element signature="e#5478#5479#0" expanded="false" />
-            <element signature="e#5535#5536#0" expanded="false" />
-            <element signature="e#5577#5578#0" expanded="false" />
-            <element signature="e#5638#5639#0" expanded="false" />
-            <element signature="e#5684#5685#0" expanded="false" />
-            <element signature="e#5739#5740#0" expanded="false" />
-            <element signature="e#5779#5780#0" expanded="false" />
-            <element signature="e#5833#5834#0" expanded="false" />
-            <element signature="e#5872#5873#0" expanded="false" />
-            <element signature="e#5928#5929#0" expanded="false" />
-            <element signature="e#5969#5970#0" expanded="false" />
-            <element signature="e#6028#6029#0" expanded="false" />
-            <element signature="e#6072#6073#0" expanded="false" />
-            <element signature="e#6108#6109#0" expanded="false" />
-            <element signature="e#6135#6136#0" expanded="false" />
-            <element signature="e#6172#6173#0" expanded="false" />
-            <element signature="e#6202#6203#0" expanded="false" />
-            <element signature="e#6240#6241#0" expanded="false" />
-            <element signature="e#6271#6272#0" expanded="false" />
-            <element signature="e#6305#6306#0" expanded="false" />
-            <element signature="e#6336#6337#0" expanded="false" />
-            <element signature="e#6382#6383#0" expanded="false" />
-            <element signature="e#6416#6417#0" expanded="false" />
-            <element signature="e#6482#6483#0" expanded="false" />
-            <element signature="e#6516#6517#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2479,33 +1972,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5282">
           <caret line="341" column="5" selection-start-line="341" selection-start-column="5" selection-end-line="341" selection-end-column="5" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#5219#5220#0" expanded="false" />
-            <element signature="e#5236#5237#0" expanded="false" />
-            <element signature="e#5755#5756#0" expanded="false" />
-            <element signature="e#5794#5795#0" expanded="false" />
-            <element signature="e#6172#6173#0" expanded="false" />
-            <element signature="e#6194#6195#0" expanded="false" />
-            <element signature="e#7763#7764#0" expanded="false" />
-            <element signature="e#7796#7797#0" expanded="false" />
-            <element signature="e#9486#9487#0" expanded="false" />
-            <element signature="e#9534#9535#0" expanded="false" />
-            <element signature="e#21653#21654#0" expanded="false" />
-            <element signature="e#21699#21700#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/mapreduce/JobSubmitter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="77" column="35" selection-start-line="77" selection-start-column="35" selection-end-line="77" selection-end-column="35" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2513,92 +1980,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5890">
           <caret line="417" column="30" selection-start-line="417" selection-start-column="30" selection-end-line="417" selection-end-column="30" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#5086#5087#0" expanded="false" />
-            <element signature="e#5144#5145#0" expanded="false" />
-            <element signature="e#9224#9225#0" expanded="false" />
-            <element signature="e#9257#9258#0" expanded="false" />
-            <element signature="e#9410#9411#0" expanded="false" />
-            <element signature="e#9444#9445#0" expanded="false" />
-            <element signature="e#9580#9581#0" expanded="false" />
-            <element signature="e#9620#9621#0" expanded="false" />
-            <element signature="e#9734#9735#0" expanded="false" />
-            <element signature="e#9767#9768#0" expanded="false" />
-            <element signature="e#9932#9933#0" expanded="false" />
-            <element signature="e#9976#9977#0" expanded="false" />
-            <element signature="e#10118#10119#0" expanded="false" />
-            <element signature="e#10153#10154#0" expanded="false" />
-            <element signature="e#10289#10290#0" expanded="false" />
-            <element signature="e#10315#10316#0" expanded="false" />
-            <element signature="e#10543#10544#0" expanded="false" />
-            <element signature="e#10587#10588#0" expanded="false" />
-            <element signature="e#10730#10731#0" expanded="false" />
-            <element signature="e#10772#10773#0" expanded="false" />
-            <element signature="e#10867#10868#0" expanded="false" />
-            <element signature="e#10897#10898#0" expanded="false" />
-            <element signature="e#11015#11016#0" expanded="false" />
-            <element signature="e#11059#11060#0" expanded="false" />
-            <element signature="e#12506#12507#0" expanded="false" />
-            <element signature="e#12533#12534#0" expanded="false" />
-            <element signature="e#12622#12623#0" expanded="false" />
-            <element signature="e#12660#12661#0" expanded="false" />
-            <element signature="e#12736#12737#0" expanded="false" />
-            <element signature="e#12761#12762#0" expanded="false" />
-            <element signature="e#12889#12890#0" expanded="false" />
-            <element signature="e#12923#12924#0" expanded="false" />
-            <element signature="e#13133#13134#0" expanded="false" />
-            <element signature="e#13180#13181#0" expanded="false" />
-            <element signature="e#13301#13302#0" expanded="false" />
-            <element signature="e#13346#13347#0" expanded="false" />
-            <element signature="e#13377#13378#0" expanded="false" />
-            <element signature="e#13405#13406#0" expanded="false" />
-            <element signature="e#13442#13443#0" expanded="false" />
-            <element signature="e#13470#13471#0" expanded="false" />
-            <element signature="e#13502#13503#0" expanded="false" />
-            <element signature="e#13529#13530#0" expanded="false" />
-            <element signature="e#13882#13883#0" expanded="false" />
-            <element signature="e#13907#13908#0" expanded="false" />
-            <element signature="e#13935#13936#0" expanded="false" />
-            <element signature="e#13961#13962#0" expanded="false" />
-            <element signature="e#13991#13992#0" expanded="false" />
-            <element signature="e#14019#14020#0" expanded="false" />
-            <element signature="e#14190#14191#0" expanded="false" />
-            <element signature="e#14230#14231#0" expanded="false" />
-            <element signature="e#14261#14262#0" expanded="false" />
-            <element signature="e#14318#14319#0" expanded="false" />
-            <element signature="e#14554#14555#0" expanded="false" />
-            <element signature="e#14575#14576#0" expanded="false" />
-            <element signature="e#14608#14609#0" expanded="false" />
-            <element signature="e#14634#14635#0" expanded="false" />
-            <element signature="e#20850#20851#0" expanded="false" />
-            <element signature="e#20886#20887#0" expanded="false" />
-            <element signature="e#20920#20921#0" expanded="false" />
-            <element signature="e#20970#20971#0" expanded="false" />
-            <element signature="e#21462#21463#0" expanded="false" />
-            <element signature="e#21509#21510#0" expanded="false" />
-            <element signature="e#21912#21913#0" expanded="false" />
-            <element signature="e#21985#21986#0" expanded="false" />
-            <element signature="e#22970#22971#0" expanded="false" />
-            <element signature="e#23002#23003#0" expanded="false" />
-            <element signature="e#42492#42493#0" expanded="false" />
-            <element signature="e#42518#42519#0" expanded="false" />
-            <element signature="e#42563#42564#0" expanded="false" />
-            <element signature="e#42593#42594#0" expanded="false" />
-            <element signature="e#43347#43348#0" expanded="false" />
-            <element signature="e#43381#43382#0" expanded="false" />
-            <element signature="e#46265#46266#0" expanded="false" />
-            <element signature="e#46292#46293#0" expanded="false" />
-            <element signature="e#46347#46348#0" expanded="false" />
-            <element signature="e#46373#46374#0" expanded="false" />
-            <element signature="e#55420#55421#0" expanded="false" />
-            <element signature="e#55458#55459#0" expanded="false" />
-            <element signature="e#56761#56762#0" expanded="false" />
-            <element signature="e#56787#56788#0" expanded="false" />
-            <element signature="e#56835#56836#0" expanded="false" />
-            <element signature="e#56871#56872#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2622,8 +2004,16 @@
             <element signature="imports" expanded="false" />
             <element signature="e#3495#3496#0" expanded="false" />
             <element signature="e#3523#3524#0" expanded="false" />
+            <element signature="e#7731#7744#0" expanded="false" />
+            <element signature="e#8717#8730#0" expanded="false" />
+            <element signature="e#8827#8840#0" expanded="false" />
+            <element signature="e#10669#10695#0" expanded="false" />
+            <element signature="e#11012#11036#0" expanded="false" />
+            <element signature="e#11620#11633#0" expanded="false" />
+            <element signature="e#11709#11722#0" expanded="false" />
             <element signature="e#22718#22719#0" expanded="false" />
             <element signature="e#22751#22752#0" expanded="false" />
+            <element signature="e#23529#23542#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -2781,68 +2171,160 @@
           <folding>
             <element signature="n#!!doc" expanded="false" />
             <element signature="imports" expanded="false" />
+            <element signature="e#6170#6178#0" expanded="false" />
+            <element signature="e#6249#6266#0" expanded="false" />
             <element signature="e#7525#7526#0" expanded="false" />
             <element signature="e#7546#7547#0" expanded="false" />
             <element signature="e#7587#7588#0" expanded="false" />
             <element signature="e#7613#7614#0" expanded="false" />
+            <element signature="e#7741#7762#0" expanded="false" />
+            <element signature="e#15364#15387#0" expanded="false" />
             <element signature="e#20750#20751#0" expanded="false" />
             <element signature="e#20775#20776#0" expanded="false" />
+            <element signature="e#24731#24743#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/mapreduce/JobSubmitter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="77" column="35" selection-start-line="77" selection-start-column="35" selection-end-line="77" selection-end-column="35" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapreduce/Job.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="1318" column="3" selection-start-line="1318" selection-start-column="3" selection-end-line="1318" selection-end-column="3" />
+        <state relative-caret-position="478">
+          <caret line="1313" column="14" selection-start-line="1313" selection-start-column="14" selection-end-line="1313" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="44" selection-start-line="9" selection-start-column="44" selection-end-line="9" selection-end-column="44" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hcat-server/bin/SparkClientImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="15" column="3" selection-start-line="15" selection-start-column="3" selection-end-line="15" selection-end-column="3" />
+        <state relative-caret-position="38">
+          <caret line="17" column="37" selection-start-line="17" selection-start-column="37" selection-end-line="17" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="627">
+          <caret line="67" column="47" selection-start-line="67" selection-start-column="47" selection-end-line="67" selection-end-column="47" />
           <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#4858#4859#0" expanded="false" />
-            <element signature="e#4895#4896#0" expanded="false" />
-            <element signature="e#4970#4971#0" expanded="false" />
-            <element signature="e#5004#5005#0" expanded="false" />
-            <element signature="e#5765#5766#0" expanded="false" />
-            <element signature="e#5816#5817#0" expanded="false" />
-            <element signature="e#5867#5868#0" expanded="false" />
-            <element signature="e#5919#5920#0" expanded="false" />
-            <element signature="e#5978#5979#0" expanded="false" />
-            <element signature="e#6025#6026#0" expanded="false" />
-            <element signature="e#6089#6090#0" expanded="false" />
-            <element signature="e#6141#6142#0" expanded="false" />
-            <element signature="e#6184#6185#0" expanded="false" />
-            <element signature="e#6232#6233#0" expanded="false" />
-            <element signature="e#6263#6264#0" expanded="false" />
-            <element signature="e#6295#6296#0" expanded="false" />
-            <element signature="e#20335#20336#0" expanded="false" />
-            <element signature="e#20385#20386#0" expanded="false" />
-            <element signature="e#20415#20416#0" expanded="false" />
-            <element signature="e#20468#20469#0" expanded="false" />
-            <element signature="e#22350#22351#0" expanded="false" />
-            <element signature="e#22419#22420#0" expanded="false" />
-            <element signature="e#22853#22854#0" expanded="false" />
-            <element signature="e#22877#22878#0" expanded="false" />
-            <element signature="e#22907#22908#0" expanded="false" />
-            <element signature="e#22937#22938#0" expanded="false" />
-            <element signature="e#23497#23498#0" expanded="false" />
-            <element signature="e#23521#23522#0" expanded="false" />
-            <element signature="e#23552#23553#0" expanded="false" />
-            <element signature="e#23582#23583#0" expanded="false" />
+            <element signature="e#2573#2574#0" expanded="false" />
+            <element signature="e#2603#2604#0" expanded="false" />
+            <element signature="e#2645#2646#0" expanded="false" />
+            <element signature="e#2662#2663#0" expanded="false" />
+            <element signature="e#2734#2735#0" expanded="false" />
+            <element signature="e#2781#2782#0" expanded="false" />
+            <element signature="e#2841#2842#0" expanded="false" />
+            <element signature="e#2900#2901#0" expanded="false" />
+            <element signature="e#3123#3124#0" expanded="false" />
+            <element signature="e#3141#3142#0" expanded="false" />
+            <element signature="e#3195#3196#0" expanded="false" />
+            <element signature="e#3214#3215#0" expanded="false" />
+            <element signature="e#3269#3270#0" expanded="false" />
+            <element signature="e#3287#3288#0" expanded="false" />
+            <element signature="e#3499#3500#0" expanded="false" />
+            <element signature="e#3517#3518#0" expanded="false" />
+            <element signature="e#3560#3561#0" expanded="false" />
+            <element signature="e#3582#3583#0" expanded="false" />
+            <element signature="e#3627#3628#0" expanded="false" />
+            <element signature="e#3649#3650#0" expanded="false" />
+            <element signature="e#3702#3703#0" expanded="false" />
+            <element signature="e#3728#3729#0" expanded="false" />
+            <element signature="e#3771#3772#0" expanded="false" />
+            <element signature="e#3793#3794#0" expanded="false" />
+            <element signature="e#3849#3850#0" expanded="false" />
+            <element signature="e#3875#3876#0" expanded="false" />
+            <element signature="e#3919#3920#0" expanded="false" />
+            <element signature="e#3942#3943#0" expanded="false" />
+            <element signature="e#4000#4001#0" expanded="false" />
+            <element signature="e#4033#4034#0" expanded="false" />
+            <element signature="e#4080#4081#0" expanded="false" />
+            <element signature="e#4095#4096#0" expanded="false" />
+            <element signature="e#4140#4141#0" expanded="false" />
+            <element signature="e#4166#4167#0" expanded="false" />
+            <element signature="e#4216#4217#0" expanded="false" />
+            <element signature="e#4250#4251#0" expanded="false" />
+            <element signature="e#12626#12627#0" expanded="false" />
+            <element signature="e#12641#12642#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
+    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/QueryProgress.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="6" column="2" selection-start-line="6" selection-start-column="2" selection-end-line="6" selection-end-column="2" />
+        <state relative-caret-position="19">
+          <caret line="6" column="39" selection-start-line="6" selection-start-column="39" selection-end-line="6" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/bin/test_moveTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatQuery.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="29" column="26" selection-start-line="29" selection-start-column="26" selection-end-line="29" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3487">
+          <caret line="551" column="13" selection-start-line="551" selection-start-column="13" selection-end-line="551" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/org/apache/hadoop/hive/ql/exec/mr/ExecDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="378" column="58" selection-start-line="378" selection-start-column="58" selection-end-line="378" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/bin/MoveTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="565" column="69" selection-start-line="565" selection-start-column="69" selection-end-line="565" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/exec/MoveTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="85" column="5" selection-start-line="85" selection-start-column="5" selection-end-line="85" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.0.0/hive-exec-2.0.0-sources.jar!/org/apache/hadoop/hive/ql/exec/MoveTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="414" column="39" selection-start-line="414" selection-start-column="39" selection-end-line="414" selection-end-column="39" />
           <folding />
         </state>
       </provider>

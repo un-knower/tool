@@ -30,7 +30,7 @@ import org.apache.hive.service.cli.operation.Operation;
 import org.apache.hive.service.cli.operation.OperationManager;
 import org.apache.hive.service.cli.session.HiveSession;
 import org.apache.hive.service.cli.session.SessionManager;
-import org.apache.hive.service.rpc.thrift.TProtocolVersion;
+import org.apache.hive.service.cli.thrift.TProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,7 +248,6 @@ public class HcatSession implements HiveSession {
 		return executeStatementInternal(statement, confOverlay, false);
 	}
 
-	@Override
 	public OperationHandle executeStatement(String statement, Map<String, String> confOverlay,
 									 long queryTimeout) throws HiveSQLException {
 		return executeStatementInternal(statement, confOverlay, false);
@@ -261,7 +260,6 @@ public class HcatSession implements HiveSession {
 		throw new UnsupportedOperationException("Hcat not support run task async.");
 	}
 
-	@Override
 	public OperationHandle executeStatementAsync(String statement, Map<String, String> confOverlay, long queryTimeout) throws HiveSQLException {
 		throw new UnsupportedOperationException("Hcat not support run task async.");
 	}
@@ -345,12 +343,10 @@ public class HcatSession implements HiveSession {
 		}
 	}
 
-	@Override
 	public OperationHandle getPrimaryKeys(String catalog, String schema, String table) throws HiveSQLException {
 		return null;
 	}
 
-	@Override
 	public OperationHandle getCrossReference(String primaryCatalog, String primarySchema, String primaryTable, String foreignCatalog, String foreignSchema, String foreignTable) throws HiveSQLException {
 		return null;
 	}
@@ -405,7 +401,7 @@ public class HcatSession implements HiveSession {
 		}
 		Operation opt = operationManager.getOperation(handle);
 		if(!(opt.isFailed() || opt.isCanceled() || opt.isFinished()))
-			opt.cancel(OperationState.CANCELED);
+			opt.cancel();
 	}
 
 	@Override
@@ -477,7 +473,7 @@ public class HcatSession implements HiveSession {
 		if(runAsync)
 			throw new UnsupportedOperationException("not support async");
 		ExecuteStatementOperation operation = operationManager
-		        .newExecuteStatementOperation(this, statement, confOverlay, runAsync, -1);
+		        .newExecuteStatementOperation(this, statement, confOverlay, runAsync);
 		OperationHandle opHandle = operation.getHandle();
 		synchronized(this.opHandleStack) {
 			if(cancel) {
