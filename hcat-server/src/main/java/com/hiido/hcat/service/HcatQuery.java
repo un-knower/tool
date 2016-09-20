@@ -1,10 +1,12 @@
 package com.hiido.hcat.service;
 
 import com.hiido.hcat.thrift.protocol.Field;
+import org.apache.calcite.avatica.SqlType;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.*;
 
 /**
@@ -152,10 +154,12 @@ public class HcatQuery {
                         builder.append(s).append(",");
                 statement.setString(4, builder.toString());
                 builder.setLength(0);
-                if(hq.fieldList != null && hq.fieldList.size() > 0)
-                    for(Field f :hq.fieldList)
+                if(hq.fieldList != null && hq.fieldList.size() > 0) {
+                    for (Field f : hq.fieldList)
                         builder.append(f.getName()).append("=").append(f.getType()).append(",");
-                statement.setString(5, builder.toString());
+                    statement.setString(5, builder.toString());
+                } else
+                    statement.setNull(5, Types.VARCHAR);
                 statement.setLong(6, hq.resSize);
                 statement.setString(7, hq.qid);
 

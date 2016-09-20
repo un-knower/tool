@@ -1,3 +1,6 @@
+0. spark-assembly 包
+从saprk 源码工程编译出spark-assembly包，hcat-server导入依赖。
+
 1. src/sp/java 中 SparkClientImpl.class 需要打包替换hive-exec-2.0.0.jar 中的SparkClientImpl.class
 
 2. com.hiido.hcat.hadoop.HcatAppMaster 需要打包进 hive-exec-2.0.0.jar 中，提交MR作业添加一个参数：
