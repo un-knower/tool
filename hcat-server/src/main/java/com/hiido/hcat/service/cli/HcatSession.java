@@ -21,15 +21,7 @@ import org.apache.hadoop.hive.ql.processors.SetProcessor;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hive.common.util.HiveVersionInfo;
 import org.apache.hive.service.auth.HiveAuthFactory;
-import org.apache.hive.service.cli.FetchOrientation;
-import org.apache.hive.service.cli.FetchType;
-import org.apache.hive.service.cli.GetInfoType;
-import org.apache.hive.service.cli.GetInfoValue;
-import org.apache.hive.service.cli.HiveSQLException;
-import org.apache.hive.service.cli.OperationHandle;
-import org.apache.hive.service.cli.RowSet;
-import org.apache.hive.service.cli.SessionHandle;
-import org.apache.hive.service.cli.TableSchema;
+import org.apache.hive.service.cli.*;
 import org.apache.hive.service.cli.operation.ExecuteStatementOperation;
 import org.apache.hive.service.cli.operation.GetColumnsOperation;
 import org.apache.hive.service.cli.operation.GetFunctionsOperation;
@@ -38,7 +30,7 @@ import org.apache.hive.service.cli.operation.Operation;
 import org.apache.hive.service.cli.operation.OperationManager;
 import org.apache.hive.service.cli.session.HiveSession;
 import org.apache.hive.service.cli.session.SessionManager;
-import org.apache.hive.service.cli.thrift.TProtocolVersion;
+import org.apache.hive.service.rpc.thrift.TProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,9 +249,19 @@ public class HcatSession implements HiveSession {
 	}
 
 	@Override
+	public OperationHandle executeStatement(String statement, Map<String, String> confOverlay, long queryTimeout) throws HiveSQLException {
+		return null;
+	}
+
+	@Override
 	public OperationHandle executeStatementAsync(String statement, Map<String, String> confOverlay)
 			throws HiveSQLException {
 		throw new UnsupportedOperationException("Hcat not support run task async.");
+	}
+
+	@Override
+	public OperationHandle executeStatementAsync(String statement, Map<String, String> confOverlay, long queryTimeout) throws HiveSQLException {
+		return null;
 	}
 
 	@Override
@@ -342,6 +344,16 @@ public class HcatSession implements HiveSession {
 	}
 
 	@Override
+	public OperationHandle getPrimaryKeys(String catalog, String schema, String table) throws HiveSQLException {
+		return null;
+	}
+
+	@Override
+	public OperationHandle getCrossReference(String primaryCatalog, String primarySchema, String primaryTable, String foreignCatalog, String foreignSchema, String foreignTable) throws HiveSQLException {
+		return null;
+	}
+
+	@Override
 	public void close() throws HiveSQLException {
 		try {
 			List<OperationHandle> ops = null;
@@ -391,7 +403,7 @@ public class HcatSession implements HiveSession {
 		}
 		Operation opt = operationManager.getOperation(handle);
 		if(!(opt.isFailed() || opt.isCanceled() || opt.isFinished()))
-			opt.cancel();
+			opt.cancel(OperationState.CANCELED);
 	}
 
 	@Override
@@ -463,7 +475,7 @@ public class HcatSession implements HiveSession {
 		if(runAsync)
 			throw new UnsupportedOperationException("not support async");
 		ExecuteStatementOperation operation = operationManager
-		        .newExecuteStatementOperation(this, statement, confOverlay, runAsync);
+		        .newExecuteStatementOperation(this, statement, confOverlay, runAsync, -1);
 		OperationHandle opHandle = operation.getHandle();
 		synchronized(this.opHandleStack) {
 			if(cancel) {

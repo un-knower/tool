@@ -18,20 +18,12 @@
 package org.apache.hadoop.hive.ql.parse;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.hadoop.hive.ql.exec.Operator;
 import org.apache.hadoop.hive.ql.exec.TableScanOperator;
 import org.apache.hadoop.hive.ql.metadata.Table;
-import org.apache.hadoop.hive.ql.plan.OperatorDesc;
 
 public class ColumnAccessAnalyzer {
-    private static final Logger   LOG = LoggerFactory.getLogger(ColumnAccessAnalyzer.class.getName());
     private final ParseContext pGraphContext;
 
     public ColumnAccessAnalyzer() {
@@ -42,41 +34,32 @@ public class ColumnAccessAnalyzer {
         pGraphContext = pactx;
     }
 
-    public ColumnAccessInfo analyzeColumnAccess() throws SemanticException {
-        ColumnAccessInfo columnAccessInfo = new ColumnAccessInfo();
-        Collection<Operator<? extends OperatorDesc>> topOps = pGraphContext.getTopOps().values();
-        for (Operator<? extends OperatorDesc> op : topOps) {
-            if (op instanceof TableScanOperator) {
-                TableScanOperator top = (TableScanOperator) op;
+    public ColumnAccessInfo analyzeColumnAccess(ColumnAccessInfo columnAccessInfo) throws SemanticException {
+        if (columnAccessInfo == null) {
+            columnAccessInfo = new ColumnAccessInfo();
+        }
+        Collection<TableScanOperator> topOps = pGraphContext.getTopOps().values();
+        for (TableScanOperator top : topOps) {
+            // if a table is inside view, we do not care about its authorization.
+            if (!top.isInsideView()) {
                 Table table = top.getConf().getTableMetadata();
-
-                if(table.isView())
-                    continue;
                 String tableName = table.getCompleteName();
                 List<String> referenced = top.getReferencedColumns();
-
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("test echo partition columns");
-                    for (FieldSchema field : table.getPartCols()) {
-                        LOG.debug("partition key :" + field.getName().toLowerCase());
-                    }
-                }
                 for (String column : referenced) {
-                    //FIXME
-                    if(table.isPartitionKey(column))
-                        continue;
                     columnAccessInfo.add(tableName, column);
                 }
-                /*
                 if (table.isPartitioned()) {
+                    //FIXME
+                    continue;
+                    /*
                     PrunedPartitionList parts = pGraphContext.getPrunedPartitions(table.getTableName(), top);
                     if (parts.getReferredPartCols() != null) {
                         for (String partKey : parts.getReferredPartCols()) {
                             columnAccessInfo.add(tableName, partKey);
                         }
                     }
+                    */
                 }
-                */
             }
         }
         return columnAccessInfo;

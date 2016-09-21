@@ -45,7 +45,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
     public void postAnalyze(HiveSemanticAnalyzerHookContext context, List<Task<? extends Serializable>> rootTasks)
             throws SemanticException {
 
-        HiveOperation op = SessionState.get().getHiveOperation();
+        HiveOperation op = ((HiveSemanticAnalyzerHookContextImpl)context).getSem().getQueryState().getHiveOperation();
         if (!filterHiveOperation(op))
             return;
 
