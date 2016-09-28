@@ -178,6 +178,7 @@ public class SessionState {
     private Map<String, MapRedStats> mapRedStats;
 
     //FIXME
+    private List<String> applications = new LinkedList<String>();
     private List<String> jobs = new LinkedList<String>();
     private volatile int totalJob;
     private volatile int finished;
@@ -1677,8 +1678,14 @@ public class SessionState {
             jobs.add(job);
     }
 
+    public void putApplicationId(String application) {
+        if(!applications.contains(application)) {
+            applications.add(application);
+        }
+    }
+
     public List<String> getJobs() {
-        return Collections.<String>unmodifiableList(jobs);
+        return Collections.<String>unmodifiableList(applications);
     }
 
     public float getCurProgress() {

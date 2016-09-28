@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 
 public class TestHttpClient {
 
-	static String serveltUrl = "http://localhost:26018/query";
+	static String serveltUrl = "http://14.17.109.51:26021/query";
 
 	public void cancelJob() {
 
@@ -79,11 +79,21 @@ public class TestHttpClient {
 			CliService.Client client = new CliService.Client(lopFactory);
 			//String sql = "use freshman; set hive.exec.mode.local.auto=true;insert overwrite local directory '/tmp/hive-zrc/abc' select school, count(*) from freshman_studs group by school;";
 			//String sql = "use freshman;with q1 as (select freshman_studs.school as sc,count(*) as num from freshman.freshman_studs group by freshman_studs.school) select sc,num from q1";
-			String sql = "use freshman;set hive.cbo.enable=false;select sc, num from freshman.freshman_studs_view";
+			//String sql = "use freshman;set hive.cbo.enable=false;select sc, num from freshman.freshman_studs_view";
 			//String sql = "use freshman;create view freshman_studs_view (sc, num) as select school,count(*) from freshman_studs group by school";
 			//String sql = "use freshman create table freshman_new1(id int,name string);";
+			String sql = "set hive.execution.engine=spark;select count(*) from (\n" +
+					"select distinct uid, sjp from \n" +
+					"yy_mbsdkdo_original where dt >=20160919 and dt<=20160920\n" +
+					"  ) cc";
+			HashMap<String, String> cipher = new HashMap<String, String>();
+			cipher.put("loguser", "dw_zouruochen");
+			cipher.put("curuser", "dw_zouruochen");
+			cipher.put("bususer", "shark");
+			cipher.put("skey","6VdbVqlSi2uZwPXW+TIc8MI=");
+			cipher.put("username", "zouruochen");
 
-			CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(Collections.<String, String> emptyMap());
+			CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher);
 			CommitQueryReply reply = client.commit(cq);
 			if (reply.getHandle().isQuick())
 				//assertEquals(reply.getStatus(), JobStatus.COMPLETE);

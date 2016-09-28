@@ -48,6 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
+import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hive.spark.client.rpc.Rpc;
@@ -442,8 +443,8 @@ class SparkClientImpl implements SparkClient {
                         LOG.info("run spark args : " + Arrays.toString(argv.toArray(new String[argv.size()])));
                         //LOG.info("Running client driver with argv: {}", cmd);
                         SparkSubmit.main(argv.toArray(new String[argv.size()]));
+                        SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
                     } catch(Exception e) {
-                        e.printStackTrace();
                         return e;
                     } finally {
                         properties.delete();
@@ -501,7 +502,7 @@ class SparkClientImpl implements SparkClient {
         FutureTask<Exception> futureTask = new FutureTask<Exception>(runnable);
         Thread thread = new Thread(futureTask);
         thread.setDaemon(true);
-        thread.setName("Driver");
+        thread.setName(Thread.currentThread().getName() + "_spark");
         thread.start();
         return futureTask;
         /*

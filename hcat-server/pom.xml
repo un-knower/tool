@@ -20,6 +20,14 @@
     </dependency>
     -->
 
+          <dependency>
+              <groupId>com.hiido</groupId>
+              <artifactId>saprk-assembly</artifactId>
+              <version>1.6.2</version>
+              <scope>system</scope>
+              <systemPath>${project.basedir}/localJars/spark-assembly-1.6.2-hadoop2.4.1.jar</systemPath>
+          </dependency>
+
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
@@ -238,6 +246,12 @@
        </exclusion>
       </exclusions>
     </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore-nio</artifactId>
+          <version>4.4.4</version>
+      </dependency>
     	
     </dependencies>
     

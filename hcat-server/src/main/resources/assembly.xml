@@ -8,6 +8,12 @@
     <fileSets>
         <fileSet>
             <directory>conf</directory>
+            <includes>
+                <include>hive-site.xml</include>
+                <include>spark-site.xml</include>
+                <include>hive-exec-log4j2.properties</include>
+                <include>log4j.properties</include>
+            </includes>
             <outputDirectory>/conf</outputDirectory>
         </fileSet>
         <fileSet>
@@ -26,6 +32,21 @@
             <directory>spring_conf</directory>
             <outputDirectory>/spring_conf</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>sp</directory>
+            <outputDirectory>/sp</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>udf</directory>
+            <outputDirectory>/udf</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>localJars</directory>
+            <outputDirectory>/lib</outputDirectory>
+        </fileSet>
+
     </fileSets>
     <dependencySets>
         <dependencySet>

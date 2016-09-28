@@ -101,7 +101,9 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
                                 console.printInfo("Job Progress Format\nCurrentTime StageId_StageAttemptId: "
                                         + "SucceededTasksCount(+RunningTasksCount-FailedTasksCount)/TotalTasksCount [StageCost]");
                             }
-
+                            //FIXME
+                            String applicationId = sparkJobStatus.getAppID();
+                            SessionState.get().putApplicationId(applicationId);
                             //printStatus(progressMap, lastProgressMap);
                             //lastProgressMap = progressMap;
                             updateJobStatus(progressMap);

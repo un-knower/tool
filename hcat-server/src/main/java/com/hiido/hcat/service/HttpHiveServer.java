@@ -16,10 +16,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.hiido.hcat.common.util.IOUtils;
 import com.hiido.suit.CipherUser;
-import com.hiido.suit.SuitUser;
 import com.hiido.suit.common.util.ConnectionPool;
 import com.hiido.suit.err.ErrCodeException;
-import com.hiido.suit.security.SecurityCenter;
+import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -29,7 +28,6 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.Context;
 import org.apache.hadoop.hive.ql.Driver;
 import org.apache.hadoop.hive.ql.exec.FetchTask;
-import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.FetchWork;
 import org.apache.hadoop.hive.ql.processors.HiveCommand;
@@ -40,6 +38,25 @@ import org.apache.hive.service.cli.TableSchema;
 import org.apache.hive.service.cli.operation.Operation;
 import org.apache.hive.service.cli.operation.OperationManager;
 import org.apache.hive.service.cli.operation.SQLOperation;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.config.ConnectionConfig;
+import org.apache.http.impl.nio.DefaultHttpClientIODispatch;
+import org.apache.http.impl.nio.pool.BasicNIOConnPool;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.nio.protocol.BasicAsyncRequestProducer;
+import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
+import org.apache.http.nio.protocol.HttpAsyncRequestExecutor;
+import org.apache.http.nio.protocol.HttpAsyncRequester;
+import org.apache.http.nio.reactor.ConnectingIOReactor;
+import org.apache.http.nio.reactor.IOEventDispatch;
+import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.SyncBasicHttpParams;
+import org.apache.http.protocol.*;
 import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
@@ -65,8 +82,6 @@ import com.hiido.hcat.thrift.protocol.QueryStatusReply;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.suit.TokenVerifyStone;
 
-import jline.internal.Log;
-
 public class HttpHiveServer implements CliService.Iface {
 	private static final Logger LOG = Logger.getLogger(HttpHiveServer.class);
 	private final int port;
@@ -79,13 +94,17 @@ public class HttpHiveServer implements CliService.Iface {
 	private int maxThreads = 10;
 	private int minThreads = 2;
 	private int maxIdleTimeMs=30000;
-	
+
 	private HttpServer server;
 	private TokenVerifyStone tokenVerifyStone;
 	private Configuration conf;
 	private Map<String, Task> qid2Task = new ConcurrentHashMap<String, Task>();
 	private BlockingQueue<Task> taskBlockQueue = new LinkedBlockingQueue<Task>();
 	private final BlockingQueue<HcatQuery> sqlQueue = new LinkedBlockingQueue<HcatQuery>();
+	private final HttpAsyncRequester requester;
+	private final BasicNIOConnPool pool;
+	private final HttpHost httpHost;
+	private final HttpParams params;
 
 	public void setConnPool(ConnectionPool connPool) {
 		this.connPool = connPool;
@@ -141,10 +160,50 @@ public class HttpHiveServer implements CliService.Iface {
 
 	private final OperationManager operationManager;
 
-	public HttpHiveServer(String tag, int port) {
+	public HttpHiveServer(String tag, int port, String billHost) throws IOReactorException {
 		this.port = port;
 		serverTag = createServerTag("0.0.0.0", port, tag);
 		operationManager = new OperationManager();
+
+		params = new SyncBasicHttpParams();
+		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
+		params.setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+		params.setParameter(CoreConnectionPNames.SO_KEEPALIVE, false);
+		httpHost = new HttpHost(billHost, 8080, "http");
+		HttpProcessor httpproc = HttpProcessorBuilder.create()
+				// Use standard client-side protocol interceptors
+				.add(new RequestContent())
+				.add(new RequestTargetHost())
+				.add(new RequestConnControl())
+				.add(new RequestUserAgent("http/1.1"))
+				.add(new RequestExpectContinue(true)).build();
+		// Create client-side HTTP protocol handler
+		HttpAsyncRequestExecutor protocolHandler = new HttpAsyncRequestExecutor();
+		// Create client-side I/O event dispatch
+		final IOEventDispatch ioEventDispatch = new DefaultHttpClientIODispatch(protocolHandler,
+				ConnectionConfig.DEFAULT);
+		// Create client-side I/O reactor
+		final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
+		// Create HTTP connection pool
+		pool = new BasicNIOConnPool(ioReactor, params);
+		// Limit total number of connections to just two
+		pool.setDefaultMaxPerRoute(10);
+		pool.setMaxTotal(20);
+		// Run the I/O reactor in a separate thread
+		Thread t = new Thread(new Runnable() {
+
+			public void run() {
+				try {
+					ioReactor.execute(ioEventDispatch);
+				} catch (Exception e) {
+					LOG.error("I/O error: " + e.getMessage());
+				}
+				LOG.info("shutdown ioReactor thread.");
+			}
+
+		});
+		t.start();
+		requester = new HttpAsyncRequester(httpproc);
 	}
 
 	private final AtomicLong commitTotal = new AtomicLong();
@@ -181,6 +240,8 @@ public class HttpHiveServer implements CliService.Iface {
 		final List<String> query;
 		Map<String, String> confOverlay;
 		HcatSession session;
+		String companyId;
+		String userId;
 
 		volatile int running = 0;
 		QueryProgress qp = new QueryProgress();
@@ -215,7 +276,11 @@ public class HttpHiveServer implements CliService.Iface {
 					if(bitSet.get(i)) c1++; else c2++;
 
 				//qp.setProgress((session.getSessionState().getCurProgress() + running) / query.size());
-				double p = (session.getSessionState().getCurProgress()+c2)*0.9/(query.size()-bitSet.cardinality()) + (c1*0.1/bitSet.cardinality());
+				double p = 0.0;
+				if(c1 == 0)
+					p = (session.getSessionState().getCurProgress()+c2)/(query.size());
+				else
+					p = (session.getSessionState().getCurProgress()+c2)*0.9/(query.size()-bitSet.cardinality()) + (c1*0.1/bitSet.cardinality());
 				qp.setProgress( p == Double.NaN ? 0.0 : p );
 				qp.setJobId(session.getSessionState().getJobs());
 			}
@@ -370,6 +435,33 @@ public class HttpHiveServer implements CliService.Iface {
 					session.close();
 					session = null;
 					LOG.info(String.format("finish %s with state %d", qid, this.qp.state));
+
+					for(int i = 0; i < qp.jobId.size(); i++) {
+						URIBuilder builder = new URIBuilder();
+						builder.setPath("/api/postFinishJob.do").addParameter("company_id", companyId == null ? "1" : companyId)
+								.addParameter("user_id", userId == null ? "1":userId)
+								.addParameter("jobid",qp.jobId.get(i).replace("application", "job"));
+						BasicHttpRequest request = new BasicHttpRequest("GET", builder.toString());
+						HttpCoreContext coreContext = HttpCoreContext.create();
+						requester.execute(
+								new BasicAsyncRequestProducer(httpHost, request),
+								new BasicAsyncResponseConsumer(),
+								pool,
+								coreContext,
+								new FutureCallback<HttpResponse>() {
+
+									public void completed(final HttpResponse response) {
+										LOG.debug(response.toString());
+									}
+
+									public void failed(final Exception ex) {
+										LOG.error("failed to connect to bill host.", ex);
+									}
+
+									public void cancelled() {
+									}
+								});
+					}
 				} catch (HiveSQLException e) {
 					LOG.error("close session wrong.", e);
 				}
@@ -706,6 +798,8 @@ public class HttpHiveServer implements CliService.Iface {
 	public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, TException {
 		// 1. 权限验证
 		CipherUser cipherUser = null;
+		String companyId = cq.cipher.get("company_id");
+		String userId = cq.cipher.get("user_id");
 		try {
 			cipherUser = this.tokenVerifyStone.getCipherUser(cq.cipher);
 		}catch(ErrCodeException e) {
@@ -762,10 +856,14 @@ public class HttpHiveServer implements CliService.Iface {
 			String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
 					qidSeq.getAndIncrement());
 			commitQueryRecord(qid, queryStr, cipherUser.getBusUser(), quick);
-			HcatSession session = new HcatSession(cipherUser.getBusUser(), cipherUser.genSKey(), new HiveConf(), cipherUser.getRemoteIP());
+			HiveConf hiveConf = new HiveConf();
+			hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
+			HcatSession session = new HcatSession(cipherUser.getBusUser(), cipherUser.genSKey(), hiveConf, cipherUser.getRemoteIP());
 
 			session.setOperationManager(operationManager);
 			Task task = new Task(qid, session, cmds, quick, bitSet, cq.getConf());
+			task.companyId = companyId;
+			task.userId = userId;
 			qid2Task.put(qid, task);
 			if (quick) {
 				task.run();
@@ -801,7 +899,6 @@ public class HttpHiveServer implements CliService.Iface {
 		try {
 			QueryStatusReply reply = new QueryStatusReply();
 			reply.setQueryProgress(task != null? task.getProgress() : progress);
-			
 			return reply;
 		} catch (Throwable e) {
 			throw new RuntimeException(e.toString());

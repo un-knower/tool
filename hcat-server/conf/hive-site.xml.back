@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+<property>
+	<name>hcat.mr.resultDir</name>
+	<value>hdfs://localhost:9000/tmp/hive-zrc</value>
+</property>
+
+<property>
+	<name>hive.aux.jars.path</name>
+	<value>file:///home/zrc/hiido-uf-v011.jar</value>
+</property>
+
+<property>
+	<name>hive.semantic.analyzer.hook</name>
+	<value>com.hiido.hcat.service.HiveValidationHook</value>
+</property>
+
+<property>
+	<name>hive.stats.collect.scancols</name>
+	<value>true</value>
+</property>
+
+<property>
+  <name>hive.auto.convert.join.noconditionaltask</name>
+  <value>true</value>
+</property>
+
+<property>
+  <name>hcat.optimizers</name>
+  <value>org.apache.hadoop.hive.ql.parse.HcatOptimizer</value>
+</property>
+
+
+<!-- 
+<property>
+  <name>hive.semantic.analyzer.hook</name>
+  <value>com.hiido.suit.hive.driver.BeesHook</value>
+</property>
+ -->
+<property>
+  <name>hive.fileformat.check</name>
+  <value>false</value>
+</property>
+<!--
+<property>
+  <name>hive.querylog.location</name>
+  <value></value>
+</property>
+
+<property>
+  <name>hive.querylog.enable.plan.progress</name>
+  <value>false</value>
+</property>
+-->
+<property>
+  <name>hive.mapred.local.mem</name>
+  <value>100</value>
+</property>
+
+<property>
+  <name>hive.exec.counters.pull.interval</name>
+  <value>20000</value>
+</property>
+
+<property>
+    <name>hive.partition.query.strict</name>
+    <value>true</value>
+</property>
+
+<property>
+    <name>hive.orderby.strict</name>
+    <value>true</value>
+</property>
+
+
+<property>
+    <name>hive.auto.convert.join</name>
+    <value>true</value>
+</property>
+
+<property>
+    <name>hive.cartesian.product.strict</name>
+    <value>true</value>
+</property>
+<!-- 
+<property>
+    <name>mapred.job.queue.name</name>
+    <value>hiidoagent</value>
+</property>
+-->
+<property>
+    <name>hio.hive.json.fetch</name>
+    <value>true</value>
+</property>
+
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>localhost</value>
+    </property>
+
+    <property>
+        <name>hbase.client.scanner.caching</name>
+        <value>2000</value>
+    </property>
+
+    <property>
+        <name>hive.exec.scratchdir</name>
+        <value>/tmp/hive-${user.name}</value>
+        <description>Scratch space for Hive jobs</description>
+    </property>
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/warehouse</value>
+        <description>location of default database for the warehouse</description>
+    </property>
+
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://localhost:3306/hive?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=latin1</value>
+  <description>JDBC connect string for a JDBC metastore</description>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+  <description>Driver class name for a JDBC metastore</description>
+</property>
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>root</value>
+  <description>username to use against metastore database</description>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>mysql</value>
+  <description>password to use against metastore database</description>
+</property>
+
+
+    <property>
+        <name>mapred.output.compress</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>mapred.output.compression.type</name>
+        <value>BLOCK</value>
+    </property>
+
+    <property>
+        <name>io.seqfile.compression.type</name>
+        <value>BLOCK</value>
+    </property>
+
+    <property>
+        <name>hive.exec.compress.output</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>hive.exec.reducers.max</name>
+        <value>24</value>
+    </property>
+    <property>
+        <name>mapred.reduce.tasks</name>
+        <value>-1</value>
+        <description>The default number of reduce tasks per job. Typically set
+            to a prime close to the number of available hosts. Ignored when
+            mapred.job.tracker is "local". Hadoop set this to 1 by default, whereas hive uses -1 as its default value.
+            By setting this property to -1, Hive will automatically figure out what should be the number of reducers.
+        </description>
+    </property>
+
+    <property>
+        <name>hive.exec.reducers.bytes.per.reducer</name>
+        <value>320000000</value>
+    </property>
+
+    <property>
+        <name>mapred.reduce.parallel.copies</name>
+        <value>20</value>
+    </property>
+    <property>
+        <name>hive.security.authorization.createtable.owner.grants</name>
+        <value>ALL</value>
+        <description>the privileges automatically granted to the owner whenever a table gets created.
+            An example like "select,drop" will grant select and drop privilege to the owner of the table
+        </description>
+    </property>
+
+    <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.Multithreaded</name>
+        <value>true</value>
+        <description>Set this to true if multiple threads access metastore through JDO concurrently.</description>
+    </property>
+
+    <!-- https://issues.apache.org/jira/browse/HIVE-5457 -->
+    <property>
+        <name>datanucleus.autoStartMechanism</name>
+        <value>SchemaTable</value>
+    </property>
+
+    <property>
+	<name>datanucleus.schema.autoCreateTables</name>
+	<value>true</value>
+    </property>
+
+<property>
+  <name>datanucleus.connectionPoolingType</name>
+  <value>DBCP</value>
+  <description>Uses a BoneCP connection pool for JDBC metastore</description>
+</property>
+
+<property>
+  <name>hive.hmshandler.retry.attempts</name>
+  <value>10</value>
+</property>
+
+<property>
+  <name>hive.hmshandler.retry.interval</name>
+  <value>30</value>
+</property>
+
+    <property>
+        <name>hcat.authentication.servers</name>
+        <value>10.21.33.13:26008;10.21.33.30:26008;</value>
+    </property>
+
+
+    <property>
+        <name>io.compression.codecs</name>
+        <value>
+            org.apache.hadoop.io.compress.GzipCodec,
+            org.apache.hadoop.io.compress.DefaultCodec,
+            org.apache.hadoop.io.compress.BZip2Codec,
+            org.apache.hadoop.io.compress.SnappyCodec,
+            com.hadoop.compression.lzo.LzoCodec,
+            com.hadoop.compression.lzo.LzopCodec,
+        </value>
+    </property>
+
+    <property>
+        <name>io.compression.codec.lzo.class</name>
+        <value>com.hadoop.compression.lzo.LzoCodec</value>
+    </property>
+
+
+</configuration>
+

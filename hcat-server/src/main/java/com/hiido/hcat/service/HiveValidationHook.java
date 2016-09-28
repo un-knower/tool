@@ -132,7 +132,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                 if (entity.getType() == Type.LOCAL_DIR)
                     throw new AuthorizationException("hcat not support read/write local dir.");
 
-                if (entity.getType() == Type.TABLE) {
+                if (entity.getType() == Type.TABLE && entity.isDirect()) {
                     AuthEntry entry = new AuthEntry();
                     entry.setPrivi_type(PriviType.QUERY.toString());
                     entry.setBusi_type(Business.BusType.HIVE.toString());

@@ -16,8 +16,8 @@ public class HttpHiveServerTest {
 	public static void main(String[] args) {
 		System.out.println(System.currentTimeMillis());
 		Configuration.addDefaultResource("hive-site.xml");
-		HttpHiveServer  server = new HttpHiveServer("eth0", 26018);
 		try {
+			HttpHiveServer  server = new HttpHiveServer("eth0", 26018, "");
 			server.start();
 			Thread.currentThread().join();
 		} catch (Exception e) {

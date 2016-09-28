@@ -260,6 +260,7 @@ public class HadoopJobExecHelper {
                     SessionState ss = SessionState.get();
                     //FIXME
                     ss.putIfAbsent(rj.getID().toString());
+                    ss.putApplicationId(rj.getID().toString());
                     /*
                     String logMapper;
                     String logReducer;
