@@ -46,20 +46,23 @@ public class ColumnAccessAnalyzer {
                 String tableName = table.getCompleteName();
                 List<String> referenced = top.getReferencedColumns();
                 for (String column : referenced) {
+                    //FIXME
+                    if(table.isPartitionKey(column))
+                        continue;
                     columnAccessInfo.add(tableName, column);
                 }
+                //FIXME
+                  /*
                 if (table.isPartitioned()) {
-                    //FIXME
-                    continue;
-                    /*
+
                     PrunedPartitionList parts = pGraphContext.getPrunedPartitions(table.getTableName(), top);
                     if (parts.getReferredPartCols() != null) {
                         for (String partKey : parts.getReferredPartCols()) {
                             columnAccessInfo.add(tableName, partKey);
                         }
                     }
-                    */
                 }
+                */
             }
         }
         return columnAccessInfo;
