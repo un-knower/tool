@@ -74,6 +74,12 @@ public final class HiveConfConstants implements PublicConstant {
     public static final String HCAT_SKEY_AUTH_UDFS = "hcat.skey.auth.udfs";
     public static final String DEF_HCAT_SKEY_AUTH_UDFS = "";
 
+    public static final String HCAT_kEYSTORE_PATH = "hcat.keystore.path";
+    public static final String HCAT_TRUSTSTORE_PATH = "hcat.truststore.path";
+    public static final String HCAT_KEYSTORE_PASS = "hcat.keystore.pass";
+    public static final String HCAT_TRUSTSTORE_PASS = "hcat.truststore.pass";
+    public static final String HCAT_HVASERVER = "hcat.hvaserver";
+
     private static final Set<String> localIgnoreConf = new HashSet<String>();
     static {
         localIgnoreConf.add(HIO_SUIT_USER);
@@ -165,5 +171,25 @@ public final class HiveConfConstants implements PublicConstant {
 	public static String getHcatSkeyAuthUDFs(Configuration conf){
 	    return conf.getTrimmed(HCAT_SKEY_AUTH_UDFS, DEF_HCAT_SKEY_AUTH_UDFS);
 	}
+
+    public static String getHcatkeystorePath(Configuration conf) {
+        return conf.get(HCAT_kEYSTORE_PATH, null);
+    }
+
+    public static String getHcatTruststorePath(Configuration conf) {
+        return conf.get(HCAT_TRUSTSTORE_PATH, null);
+    }
+
+    public static String getHcatKeystorePass(Configuration conf) {
+        return conf.get(HCAT_KEYSTORE_PASS, "");
+    }
+
+    public static String getHcatTruststorePass(Configuration conf) {
+        return conf.get(HCAT_TRUSTSTORE_PASS, "");
+    }
+
+    public static String getHcatHvaserver(Configuration conf) {
+        return conf.get(HCAT_HVASERVER);
+    }
 
 }

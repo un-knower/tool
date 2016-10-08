@@ -185,6 +185,8 @@ public class SessionState {
     private volatile float jobProgress;
     private Map<String, Progress> runningJobs = new ConcurrentHashMap<String, Progress>();
     private long lastUpdateTime = 0l;
+    private int hiidoUserId;
+    private int hiidoCompanyId;
 
     class Progress{
         String taskId;
@@ -1717,6 +1719,22 @@ public class SessionState {
     public void updateFinishTask(String	taskId) {
         this.runningJobs.remove(taskId);
         this.finished++;
+    }
+
+    public void setHiidoUserId(int id) {
+        this.hiidoUserId = id;
+    }
+
+    public int getHiidoUserId() {
+        return hiidoUserId;
+    }
+
+    public void setHiidoCompanyId(int id) {
+        this.hiidoCompanyId = id;
+    }
+
+    public int getHiidoCompanyId() {
+        return hiidoCompanyId;
     }
 
     public ResourceDownloader getResourceDownloader() {
