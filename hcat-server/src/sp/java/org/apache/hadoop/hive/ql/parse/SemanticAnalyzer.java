@@ -11528,10 +11528,12 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
                     rowFormatParams.analyzeRowFormat(child);
                     break;
                 case HiveParser.TOK_TABLELOCATION:
-                    location = unescapeSQLString(child.getChild(0).getText());
-                    location = EximUtil.relativeToAbsolutePath(conf, location);
-                    inputs.add(toReadEntity(location));
-                    break;
+                    //FIXME create table not support location.
+                    //location = unescapeSQLString(child.getChild(0).getText());
+                    //location = EximUtil.relativeToAbsolutePath(conf, location);
+                    //inputs.add(toReadEntity(location));
+                    //break;
+                throw new AssertionError("create table not support token: 'location'.");
                 case HiveParser.TOK_TABLEPROPERTIES:
                     tblProps = DDLSemanticAnalyzer.getProps((ASTNode) child.getChild(0));
                     break;

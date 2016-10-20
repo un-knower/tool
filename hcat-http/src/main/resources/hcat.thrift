@@ -1,4 +1,5 @@
 namespace java com.hiido.hcat.thrift.protocol
+namespace php Thrift.Php.HcatClient
 
 enum recode {
 	SUCESS = 0,

@@ -171,19 +171,6 @@ public class HcatSession implements HiveSession {
 		return handle;
 	}
 
-	//FIXME
-	public void openWithoutStartSs(Map<String, String> sessionConfMap) throws Exception {
-		sessionState = new SessionState(hiveConf, username);
-		sessionState.setUserIpAddress(ipAddress);
-		// sessionState.setIsHiveServerQuery(true);
-		err = new ErrCacheOutputStream();
-		try {
-			sessionHive = Hive.get(hiveConf);
-		} catch (HiveException e) {
-			throw new HiveSQLException("Failed to get metastore connection", e);
-		}
-	}
-
 	@Override
 	public void open(Map<String, String> sessionConfMap) throws Exception {
 		sessionState = new SessionState(hiveConf, username);

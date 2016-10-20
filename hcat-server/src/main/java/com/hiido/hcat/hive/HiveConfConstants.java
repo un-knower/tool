@@ -80,6 +80,8 @@ public final class HiveConfConstants implements PublicConstant {
     public static final String HCAT_TRUSTSTORE_PASS = "hcat.truststore.pass";
     public static final String HCAT_HVASERVER = "hcat.hvaserver";
 
+    public static final String HCAT_WAREHOSUE_DIR_NAME = "hcat.metastore.warehouse.dir.name";
+
     private static final Set<String> localIgnoreConf = new HashSet<String>();
     static {
         localIgnoreConf.add(HIO_SUIT_USER);
@@ -190,6 +192,10 @@ public final class HiveConfConstants implements PublicConstant {
 
     public static String getHcatHvaserver(Configuration conf) {
         return conf.get(HCAT_HVASERVER);
+    }
+
+    public static String getHcatWarehosueDirName(Configuration conf) {
+        return conf.get(HCAT_WAREHOSUE_DIR_NAME);
     }
 
 }

@@ -187,6 +187,8 @@ public class SessionState {
     private long lastUpdateTime = 0l;
     private int hiidoUserId;
     private int hiidoCompanyId;
+    private String companyName;
+    private String companyHdfs;
 
     class Progress{
         String taskId;
@@ -1735,6 +1737,22 @@ public class SessionState {
 
     public int getHiidoCompanyId() {
         return hiidoCompanyId;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public String getCompanyHdfs() {
+        return companyHdfs;
+    }
+
+    public void setCompanyHdfs(String hdfs) {
+        this.companyHdfs = hdfs;
     }
 
     public ResourceDownloader getResourceDownloader() {

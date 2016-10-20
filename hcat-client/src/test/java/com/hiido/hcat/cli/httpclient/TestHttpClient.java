@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.hiido.hcat.thrift.protocol.*;
+import com.hiido.hva.thrift.protocol.SignupReply;
+import com.hiido.hva.thrift.protocol.SignupService;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.CommandNeedRetryException;
@@ -16,19 +19,8 @@ import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
+import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
-
-import com.hiido.hcat.thrift.protocol.AuthorizationException;
-import com.hiido.hcat.thrift.protocol.CancelQuery;
-import com.hiido.hcat.thrift.protocol.CancelQueryReply;
-import com.hiido.hcat.thrift.protocol.CliService;
-import com.hiido.hcat.thrift.protocol.CommitQuery;
-import com.hiido.hcat.thrift.protocol.CommitQueryReply;
-import com.hiido.hcat.thrift.protocol.JobStatus;
-import com.hiido.hcat.thrift.protocol.LoadFile;
-import com.hiido.hcat.thrift.protocol.LoadFileReply;
-import com.hiido.hcat.thrift.protocol.QueryStatus;
-import com.hiido.hcat.thrift.protocol.QueryStatusReply;
 
 import static org.junit.Assert.*;
 
@@ -72,6 +64,25 @@ public class TestHttpClient {
 	}
 
 	@Test
+	public void signup() {
+		try{
+			THttpClient thc = new THttpClient("http://14.17.109.51:26021/signup");
+			TProtocol lopFactory = new TBinaryProtocol(thc);
+			SignupService.Client client = new SignupService.Client(lopFactory);
+			SignupReply reply = client.signup(2, "myopen", 2777);
+			System.out.println(reply.getCode() + reply.getRetMessage());
+		} catch (com.hiido.hcat.thrift.protocol.RuntimeException e) {
+			e.printStackTrace();
+		} catch (TTransportException e) {
+			e.printStackTrace();
+		} catch (AuthorizationException e) {
+			e.printStackTrace();
+		} catch (TException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
 	public void commit() throws InterruptedException {
 		try {
 			THttpClient thc = new THttpClient(serveltUrl);
@@ -92,6 +103,8 @@ public class TestHttpClient {
 			cipher.put("bususer", "shark");
 			cipher.put("skey","6VdbVqlSi2uZwPXW+TIc8MI=");
 			cipher.put("username", "zouruochen");
+			cipher.put("user_id","231");
+			cipher.put("company_id", "199");
 
 			CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher);
 			CommitQueryReply reply = client.commit(cq);
