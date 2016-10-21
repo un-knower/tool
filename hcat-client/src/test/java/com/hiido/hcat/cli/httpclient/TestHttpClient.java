@@ -1,14 +1,13 @@
 package com.hiido.hcat.cli.httpclient;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.hiido.hcat.thrift.protocol.*;
-import com.hiido.hva.thrift.protocol.SignupReply;
-import com.hiido.hva.thrift.protocol.SignupService;
+import com.hiido.hcat.thrift.protocol.SignupReply;
+import com.hiido.hcat.thrift.protocol.SignupService;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.CommandNeedRetryException;
@@ -21,8 +20,6 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class TestHttpClient {
 

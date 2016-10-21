@@ -2,6 +2,7 @@ package com.hiido.suit.net.http.protocol;
 
 import com.hiido.hcat.common.err.ErrCodeException;
 import com.hiido.hcat.common.util.StringUtils;
+import com.hiido.hva.thrift.protocol.RuntimeException;
 
 public abstract class HttpRawProtocol implements HttpProtocol {
     private static final long serialVersionUID = 1L;
@@ -10,7 +11,7 @@ public abstract class HttpRawProtocol implements HttpProtocol {
         try {
             return StringUtils.obj2Json(this);
         } catch (Exception e) {
-            throw new RuntimeException("obj to json failed:" + this.toString(), e);
+            throw new java.lang.RuntimeException("obj to json failed:" + this.toString(), e);
         }
     }
 

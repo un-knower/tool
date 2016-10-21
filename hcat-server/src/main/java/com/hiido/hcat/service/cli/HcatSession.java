@@ -65,6 +65,10 @@ public class HcatSession implements HiveSession {
 		this.ipAddress = ipAddress;
 	}
 
+	public HcatSession(String username, HiveConf serverhiveConf){
+		this(username, null, serverhiveConf, null);
+	}
+
 	private OperationManager getOperationManager() {
 		return operationManager;
 	}

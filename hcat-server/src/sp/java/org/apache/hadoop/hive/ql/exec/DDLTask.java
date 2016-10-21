@@ -3897,6 +3897,13 @@ public class DDLTask extends Task<DDLWork> implements Serializable {
             TProtocol lopFactory = new TBinaryProtocol(thc);
             HvaService.Client hvaClient =new HvaService.Client(lopFactory);
             hvaClient.setPrivileges("hcat", SessionState.get().getHiidoUserId(), crtDb.getName(), "hive", (byte)15);
+
+            Map<String, String> requestMap = new HashMap<String, String>();
+            requestMap.put("requestType", "CREATEDATABASE");
+            requestMap.put("dbName", crtDb.getName());
+            requestMap.put("companyId", String.valueOf(SessionState.get().getHiidoCompanyId()));
+            requestMap.put("location", crtDb.getLocationUri());
+            hvaClient.request("hcat", requestMap);
         }
         catch (AlreadyExistsException ex) {
             if(!crtDb.getIfNotExists())

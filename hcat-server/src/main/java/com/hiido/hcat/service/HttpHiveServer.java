@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.hiido.hcat.CompanyInfo;
 import com.hiido.hcat.common.util.IOUtils;
 import com.hiido.hcat.hive.HiveConfConstants;
+import com.hiido.hcat.thrift.protocol.*;
+import com.hiido.hcat.thrift.protocol.AuthorizationException;
+import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
-import com.hiido.suit.CipherUser;
 import com.hiido.suit.common.util.ConnectionPool;
-import com.hiido.suit.err.ErrCodeException;
 import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -77,24 +78,8 @@ import org.apache.thrift.protocol.TProtocolFactory;
 
 import com.hiido.hcat.common.util.SystemUtils;
 import com.hiido.hcat.service.cli.HcatSession;
-import com.hiido.hcat.thrift.protocol.AuthorizationException;
-import com.hiido.hcat.thrift.protocol.CancelQuery;
-import com.hiido.hcat.thrift.protocol.CancelQueryReply;
-import com.hiido.hcat.thrift.protocol.CliService;
-import com.hiido.hcat.thrift.protocol.CommitQuery;
-import com.hiido.hcat.thrift.protocol.CommitQueryReply;
-import com.hiido.hcat.thrift.protocol.Handle;
-import com.hiido.hcat.thrift.protocol.JobStatus;
-import com.hiido.hcat.thrift.protocol.LoadFile;
-import com.hiido.hcat.thrift.protocol.LoadFileReply;
-import com.hiido.hcat.thrift.protocol.NotFoundException;
-import com.hiido.hcat.thrift.protocol.QueryProgress;
-import com.hiido.hcat.thrift.protocol.QueryStatus;
-import com.hiido.hcat.thrift.protocol.QueryStatusReply;
-import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.suit.TokenVerifyStone;
 import org.apache.thrift.transport.THttpClient;
-import org.apache.thrift.transport.TSSLTransportFactory;
 
 import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
@@ -564,108 +549,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         }
     }
 
-    protected boolean isQuickCmd(String command, Context ctx, ParseDriver pd)
-            throws AuthorizationException, RuntimeException {
-        String[] tokens = command.split("\\s+");
-        HiveCommand hiveCommand = HiveCommand.find(tokens, false);
-
-        // not Driver
-        if (hiveCommand != null)
-            return true;
-        boolean isQuick = true;
-        try {
-            ASTNode tree = pd.parse(command, ctx);
-            tree = ParseUtils.findRootNonNullToken(tree);
-
-            switch (tree.getType()) {
-                case HiveParser.TOK_EXPLAIN:
-                case HiveParser.TOK_EXPLAIN_SQ_REWRITE: // TODO
-                case HiveParser.TOK_EXPORT:
-                case HiveParser.TOK_IMPORT:
-                case HiveParser.TOK_ROLLBACK:
-                case HiveParser.TOK_SET_AUTOCOMMIT:
-                case HiveParser.TOK_LOCKTABLE:
-                case HiveParser.TOK_UNLOCKTABLE:
-                case HiveParser.TOK_LOCKDB:
-                case HiveParser.TOK_UNLOCKDB:
-                case HiveParser.TOK_CREATEROLE:
-                case HiveParser.TOK_DROPROLE:
-                case HiveParser.TOK_GRANT:
-                case HiveParser.TOK_LOAD:
-                case HiveParser.TOK_SHOW_GRANT:
-                case HiveParser.TOK_GRANT_ROLE:
-                case HiveParser.TOK_REVOKE_ROLE:
-                case HiveParser.TOK_SHOW_ROLE_GRANT:
-                case HiveParser.TOK_SHOW_ROLE_PRINCIPALS:
-                case HiveParser.TOK_SHOW_ROLES:
-                    throw new AuthorizationException("not support operation : " + tree.getType());
-                case HiveParser.TOK_ALTERTABLE:
-                case HiveParser.TOK_ALTERVIEW:
-                case HiveParser.TOK_CREATEDATABASE:
-                case HiveParser.TOK_SWITCHDATABASE:
-                case HiveParser.TOK_DROPTABLE:
-                case HiveParser.TOK_DROPVIEW:
-                case HiveParser.TOK_DESCDATABASE:
-                case HiveParser.TOK_DESCTABLE:
-                case HiveParser.TOK_DESCFUNCTION:
-                case HiveParser.TOK_MSCK:
-                case HiveParser.TOK_ALTERINDEX_REBUILD:
-                case HiveParser.TOK_ALTERINDEX_PROPERTIES:
-                case HiveParser.TOK_SHOWDATABASES:
-                case HiveParser.TOK_SHOWTABLES:
-                case HiveParser.TOK_SHOWCOLUMNS:
-                case HiveParser.TOK_SHOW_TABLESTATUS:
-                case HiveParser.TOK_SHOW_TBLPROPERTIES:
-                case HiveParser.TOK_SHOW_CREATEDATABASE:
-                case HiveParser.TOK_SHOW_CREATETABLE:
-                case HiveParser.TOK_SHOWFUNCTIONS:
-                case HiveParser.TOK_SHOWPARTITIONS:
-                case HiveParser.TOK_SHOWINDEXES:
-                case HiveParser.TOK_SHOWLOCKS:
-                case HiveParser.TOK_SHOWDBLOCKS:
-                case HiveParser.TOK_SHOW_COMPACTIONS:
-                case HiveParser.TOK_SHOW_TRANSACTIONS:
-                case HiveParser.TOK_SHOWCONF:
-                case HiveParser.TOK_CREATEINDEX:
-                case HiveParser.TOK_DROPINDEX:
-                case HiveParser.TOK_ALTERTABLE_CLUSTER_SORT:
-                case HiveParser.TOK_REVOKE:
-                case HiveParser.TOK_ALTERDATABASE_PROPERTIES:
-                case HiveParser.TOK_ALTERDATABASE_OWNER:
-                case HiveParser.TOK_TRUNCATETABLE:
-                case HiveParser.TOK_SHOW_SET_ROLE:
-                case HiveParser.TOK_CREATEFUNCTION:
-                case HiveParser.TOK_DROPFUNCTION:
-                case HiveParser.TOK_RELOADFUNCTION:
-                case HiveParser.TOK_ANALYZE:
-                case HiveParser.TOK_CREATEMACRO:
-                case HiveParser.TOK_DROPMACRO:
-                case HiveParser.TOK_UPDATE_TABLE:
-                case HiveParser.TOK_DELETE_FROM:
-                case HiveParser.TOK_START_TRANSACTION:
-                case HiveParser.TOK_COMMIT:
-                    isQuick = true;
-                    break;
-                case HiveParser.TOK_CREATETABLE:
-                    for (int i = 0; i < tree.getChildCount(); i++)
-                        if (tree.getChild(i).getType() == HiveParser.TOK_QUERY) {
-                            isQuick = false;
-                            break;
-                        }
-                    // 默认是true，所以不需要判断
-                    break;
-                default:
-                    isQuick = false;
-            }
-        } catch (AuthorizationException e) {
-            throw e;
-        } catch (Exception e) {
-            LOG.error("failed in parse sql .", e);
-            throw new RuntimeException("failed in parse sql :" + e.toString());
-        }
-        return isQuick;
-    }
-
     private int cleanTaskHistory(boolean force) {
         int count = 0;
         long now = System.currentTimeMillis();
@@ -889,7 +772,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 LOG.error("new validation message : " + reply.message);
                 return new SignupReply(Recode.FAILURE.getValue(), reply.message);
             } else
-                return new SignupReply(Recode.SUCESS.getValue(), null);
+                return new SignupReply(Recode.SUCESS.getValue(), "");
         } catch (SQLException e) {
             err = true;
             LOG.error("failed when connect to mysql server.", e);
@@ -905,9 +788,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     @Override
     public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, TException {
         // 1. 权限验证
-        CipherUser cipherUser = null;
         String companyId = cq.cipher.get("company_id");
         String userId = cq.cipher.get("user_id");
+        String bususer = cq.cipher.get("bususer");
+
         if (id2Company.get(companyId) == null || System.currentTimeMillis() - id2Company.get(companyId).getUpdateTime() > 24 * 60 * 60 * 1000) {
             synchronized (id2Company) {
                 if (id2Company.get(companyId) == null || System.currentTimeMillis() - id2Company.get(companyId).getUpdateTime() > 24 * 60 * 60 * 1000) {
@@ -935,12 +819,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             }
         }
         CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
-        try {
-            cipherUser = this.tokenVerifyStone.getCipherUser(cq.cipher);
-        } catch (ErrCodeException e) {
-            LOG.error("failed to verify token: ", e);
-            throw new AuthorizationException(e.toString());
-        }
         CommitQueryReply reply = new CommitQueryReply();
         String queryStr = cq.getQuery();
         String line;
@@ -988,10 +866,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
             String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
                     qidSeq.getAndIncrement());
-            commitQueryRecord(qid, queryStr, cipherUser.getBusUser(), quick);
+            commitQueryRecord(qid, queryStr, bususer, quick);
             HiveConf hiveConf = new HiveConf();
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
-            HcatSession session = new HcatSession(cipherUser.getBusUser(), cipherUser.genSKey(), hiveConf, cipherUser.getRemoteIP());
+            HcatSession session = new HcatSession(bususer, hiveConf);
 
             session.setOperationManager(operationManager);
             Task task = new Task(qid, companyInfo, session, cmds, quick, bitSet, cq.getConf());
@@ -1065,5 +943,107 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     public TokenVerifyStone getTokenVerifyStone() {
         return tokenVerifyStone;
+    }
+
+    public static boolean isQuickCmd(String command, Context ctx, ParseDriver pd)
+            throws AuthorizationException, RuntimeException {
+        String[] tokens = command.split("\\s+");
+        HiveCommand hiveCommand = HiveCommand.find(tokens, false);
+
+        // not Driver
+        if (hiveCommand != null)
+            return true;
+        boolean isQuick = true;
+        try {
+            ASTNode tree = pd.parse(command, ctx);
+            tree = ParseUtils.findRootNonNullToken(tree);
+
+            switch (tree.getType()) {
+                case HiveParser.TOK_EXPLAIN:
+                case HiveParser.TOK_EXPLAIN_SQ_REWRITE: // TODO
+                case HiveParser.TOK_EXPORT:
+                case HiveParser.TOK_IMPORT:
+                case HiveParser.TOK_ROLLBACK:
+                case HiveParser.TOK_SET_AUTOCOMMIT:
+                case HiveParser.TOK_LOCKTABLE:
+                case HiveParser.TOK_UNLOCKTABLE:
+                case HiveParser.TOK_LOCKDB:
+                case HiveParser.TOK_UNLOCKDB:
+                case HiveParser.TOK_CREATEROLE:
+                case HiveParser.TOK_DROPROLE:
+                case HiveParser.TOK_GRANT:
+                case HiveParser.TOK_LOAD:
+                case HiveParser.TOK_SHOW_GRANT:
+                case HiveParser.TOK_GRANT_ROLE:
+                case HiveParser.TOK_REVOKE_ROLE:
+                case HiveParser.TOK_SHOW_ROLE_GRANT:
+                case HiveParser.TOK_SHOW_ROLE_PRINCIPALS:
+                case HiveParser.TOK_SHOW_ROLES:
+                    throw new AuthorizationException("not support operation : " + tree.getType());
+                case HiveParser.TOK_ALTERTABLE:
+                case HiveParser.TOK_ALTERVIEW:
+                case HiveParser.TOK_CREATEDATABASE:
+                case HiveParser.TOK_SWITCHDATABASE:
+                case HiveParser.TOK_DROPTABLE:
+                case HiveParser.TOK_DROPVIEW:
+                case HiveParser.TOK_DESCDATABASE:
+                case HiveParser.TOK_DESCTABLE:
+                case HiveParser.TOK_DESCFUNCTION:
+                case HiveParser.TOK_MSCK:
+                case HiveParser.TOK_ALTERINDEX_REBUILD:
+                case HiveParser.TOK_ALTERINDEX_PROPERTIES:
+                case HiveParser.TOK_SHOWDATABASES:
+                case HiveParser.TOK_SHOWTABLES:
+                case HiveParser.TOK_SHOWCOLUMNS:
+                case HiveParser.TOK_SHOW_TABLESTATUS:
+                case HiveParser.TOK_SHOW_TBLPROPERTIES:
+                case HiveParser.TOK_SHOW_CREATEDATABASE:
+                case HiveParser.TOK_SHOW_CREATETABLE:
+                case HiveParser.TOK_SHOWFUNCTIONS:
+                case HiveParser.TOK_SHOWPARTITIONS:
+                case HiveParser.TOK_SHOWINDEXES:
+                case HiveParser.TOK_SHOWLOCKS:
+                case HiveParser.TOK_SHOWDBLOCKS:
+                case HiveParser.TOK_SHOW_COMPACTIONS:
+                case HiveParser.TOK_SHOW_TRANSACTIONS:
+                case HiveParser.TOK_SHOWCONF:
+                case HiveParser.TOK_CREATEINDEX:
+                case HiveParser.TOK_DROPINDEX:
+                case HiveParser.TOK_ALTERTABLE_CLUSTER_SORT:
+                case HiveParser.TOK_REVOKE:
+                case HiveParser.TOK_ALTERDATABASE_PROPERTIES:
+                case HiveParser.TOK_ALTERDATABASE_OWNER:
+                case HiveParser.TOK_TRUNCATETABLE:
+                case HiveParser.TOK_SHOW_SET_ROLE:
+                case HiveParser.TOK_CREATEFUNCTION:
+                case HiveParser.TOK_DROPFUNCTION:
+                case HiveParser.TOK_RELOADFUNCTION:
+                case HiveParser.TOK_ANALYZE:
+                case HiveParser.TOK_CREATEMACRO:
+                case HiveParser.TOK_DROPMACRO:
+                case HiveParser.TOK_UPDATE_TABLE:
+                case HiveParser.TOK_DELETE_FROM:
+                case HiveParser.TOK_START_TRANSACTION:
+                case HiveParser.TOK_COMMIT:
+                    isQuick = true;
+                    break;
+                case HiveParser.TOK_CREATETABLE:
+                    for (int i = 0; i < tree.getChildCount(); i++)
+                        if (tree.getChild(i).getType() == HiveParser.TOK_QUERY) {
+                            isQuick = false;
+                            break;
+                        }
+                    // 默认是true，所以不需要判断
+                    break;
+                default:
+                    isQuick = false;
+            }
+        } catch (AuthorizationException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error("failed in parse sql .", e);
+            throw new RuntimeException("failed in parse sql :" + e.toString());
+        }
+        return isQuick;
     }
 }

@@ -9,6 +9,7 @@ import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hiido.hva.thrift.protocol.RuntimeException;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -106,7 +107,7 @@ public final class HttpApacheClient extends AbstractHttpProtocolClient implement
         try {
             m.setRequestEntity(new StringRequestEntity(content, CONTENT_TYPE, CONTENT_CHARSET));
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new java.lang.RuntimeException(e);
         }
         return doMethod(url, m);
 
