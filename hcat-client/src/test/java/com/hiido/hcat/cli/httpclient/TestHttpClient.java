@@ -8,6 +8,7 @@ import java.util.List;
 import com.hiido.hcat.thrift.protocol.*;
 import com.hiido.hcat.thrift.protocol.SignupReply;
 import com.hiido.hcat.thrift.protocol.SignupService;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.CommandNeedRetryException;
@@ -56,8 +57,32 @@ public class TestHttpClient {
 		}
 	}
 
-	public QueryStatusReply queryJobStatus(CliService.Client client, String qid) throws TException {
-		return client.queryJobStatus(new QueryStatus().setQueryId(qid));
+	@Test
+	public void queryJobStatus() throws TException, InterruptedException {
+		String qid = "14_17_109_51_26021_20161026172054587_1";
+		THttpClient thc = new THttpClient(serveltUrl);
+		TProtocol lopFactory = new TBinaryProtocol(thc);
+		CliService.Client client = new CliService.Client(lopFactory);
+		HashMap<String, String> cipher = new HashMap<String, String>();
+		cipher.put("loguser", "dw_zouruochen");
+		cipher.put("curuser", "dw_zouruochen");
+		cipher.put("bususer", "shark");
+		cipher.put("skey","6VdbVqlSi2uZwPXW+TIc8MI=");
+		cipher.put("username", "zouruochen");
+		cipher.put("user_id","471");
+		cipher.put("company_id", "189");
+		QueryStatusReply status = client.queryJobStatus(new QueryStatus(cipher, qid));
+		while(status.retCode == 0 && status.getQueryProgress().state == 1) {
+			for(String job : status.getQueryProgress().jobId){
+				System.out.println("job id:" + job);
+			}
+			System.out.println("progress: " + status.getQueryProgress().progress);
+			Thread.sleep(5000);
+			status = client.queryJobStatus(new QueryStatus(cipher, qid));
+		}
+		if(status.retMessage != null)
+			System.out.println(status.retMessage);
+		System.out.println("Query is completed.");
 	}
 
 	@Test
@@ -90,18 +115,18 @@ public class TestHttpClient {
 			//String sql = "use freshman;set hive.cbo.enable=false;select sc, num from freshman.freshman_studs_view";
 			//String sql = "use freshman;create view freshman_studs_view (sc, num) as select school,count(*) from freshman_studs group by school";
 			//String sql = "use freshman create table freshman_new1(id int,name string);";
-			String sql = "set hive.execution.engine=spark;select count(*) from (\n" +
-					"select distinct uid, sjp from \n" +
-					"yy_mbsdkdo_original where dt >=20160919 and dt<=20160920\n" +
-					"  ) cc";
+			String sql = "set hiido.mapreduce.job.translate.map.limit.num=100;\n" +
+					"set hiido.mapreduce.job.translate.queue.names=root.hiidoagent:root.default;\n" +
+					"select count(*) from \n" +
+					"yy_mbsdkdo_original where dt >=20160917 and dt<=20160920";
 			HashMap<String, String> cipher = new HashMap<String, String>();
 			cipher.put("loguser", "dw_zouruochen");
 			cipher.put("curuser", "dw_zouruochen");
 			cipher.put("bususer", "shark");
 			cipher.put("skey","6VdbVqlSi2uZwPXW+TIc8MI=");
 			cipher.put("username", "zouruochen");
-			cipher.put("user_id","231");
-			cipher.put("company_id", "199");
+			cipher.put("user_id","471");
+			cipher.put("company_id", "189");
 
 			CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher);
 			CommitQueryReply reply = client.commit(cq);
@@ -109,6 +134,21 @@ public class TestHttpClient {
 				//assertEquals(reply.getStatus(), JobStatus.COMPLETE);
 				System.out.println(reply.getHandle().running);
 			else {
+				String qid = reply.getHandle().getQueryId();
+				System.out.println(qid + " started");
+				QueryStatusReply status = client.queryJobStatus(new QueryStatus(cipher, qid));
+				while(status.retCode == 0 && status.getQueryProgress().state == 1) {
+					for(String job : status.getQueryProgress().jobId){
+						System.out.println("job id:" + job);
+					}
+					System.out.println("progress: " + status.getQueryProgress().progress);
+					Thread.sleep(5000);
+					status = client.queryJobStatus(new QueryStatus(cipher, qid));
+				}
+				if(status.retMessage != null)
+					System.out.println(status.retMessage);
+				System.out.println("Query is completed.");
+
 				/*
 				QueryStatusReply status = queryJobStatus(client, reply.getHandle().queryId);
 				while (status.queryProgress.state != JobStatus.COMPLETE.getValue() && status.queryProgress.state != JobStatus.FAILURE.getValue()

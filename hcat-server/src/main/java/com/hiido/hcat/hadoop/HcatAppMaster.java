@@ -229,6 +229,7 @@ public class HcatAppMaster extends CompositeService {
 			maps = writeNewSplits(new org.apache.hadoop.mapreduce.Job(conf), submitJobDir);
 		else
 			maps = writeOldSplits(jConf, submitJobDir);
+		translateQueueName(jConf, maps);
 		conf.setInt(MRJobConfig.NUM_MAPS, maps);
 		LOG.info("number of splits:" + maps);
 	}
@@ -298,6 +299,65 @@ public class HcatAppMaster extends CompositeService {
 				throw new RuntimeException("exception in compare", ie);
 			}
 		}
+	}
+
+	//FIXME
+	/**
+	 * 按照指定配置切换队列
+	 * @param conf
+	 * @param mapNums
+	 * @return
+	 */
+	private void translateQueueName(Configuration conf, int mapNums){
+
+		String limitMapNums = conf.get("hiido.mapreduce.job.translate.map.limit.num","2000");
+		int limitNum = 2000;
+		if(isNumeric(limitMapNums)){
+			limitNum = Integer.parseInt(limitMapNums);
+		}
+
+		Map<String,String> map = new HashMap<String, String>();
+		String queues = conf.get("hiido.mapreduce.job.translate.queue.names", "");
+		if (!isEmpty(queues)) {
+			String values[] = queues.split(",");
+			for (String value : values) {
+				String temps[] = value.split(":");
+				if (temps.length == 2) {
+					map.put(temps[0], temps[1]);
+				}
+			}
+		}
+
+		if(!map.isEmpty() && mapNums >= limitNum) {
+			String originQueueName = conf.get(MRJobConfig.QUEUE_NAME,
+					JobConf.DEFAULT_QUEUE_NAME);
+			String newQueueName = map.get(originQueueName);
+			if(!isEmpty(newQueueName)){
+				conf.set(MRJobConfig.QUEUE_NAME,newQueueName);
+			}
+		}
+	}
+
+	//FIXME
+	public static boolean isNumeric(CharSequence cs) {
+		if(isEmpty(cs)) {
+			return false;
+		} else {
+			int sz = cs.length();
+
+			for(int i = 0; i < sz; ++i) {
+				if(!Character.isDigit(cs.charAt(i))) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	//FIXME
+	public static boolean isEmpty(CharSequence cs) {
+		return cs == null || cs.length() == 0;
 	}
 
 	@Override
