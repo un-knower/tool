@@ -60,8 +60,7 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
                     try {
                         AuthEntry entry = SecurityObject
                                 .buildAuthEntry4Table(PriviType.QUERY, PublicConstant.METASTORE, "udf", className.replace('.', '_'));
-                        SecurityAuth auth = SecurityObject.buildSecurityAuth(SecurityAuth.REQUEST_TYPE_AUTH, "", entry);
-                        //a3.A3(auth);
+                        authInfo.add(entry);
                     } catch (Exception e) {
                         throw new AuthorizationException("failed to a3 of " + e.getClass().getName() + ":" + (e.getMessage() == null ? "" : e.getMessage()), e);
                     }

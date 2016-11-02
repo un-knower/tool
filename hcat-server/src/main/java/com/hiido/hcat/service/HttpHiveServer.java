@@ -463,6 +463,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             } catch (Exception e) {
                 LOG.error("[" + qid + "]", e);
                 qp.state = JobStatus.FAILURE.getValue();
+                qp.errmsg = "The server threw an exception, please contact the administrator.";
                 this.serverException = new RuntimeException(
                         "The server threw an exception, please contact the administrator.");
             } finally {
@@ -599,7 +600,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 progress.setIsFetchTask(set.getBoolean(6));
                 progress.setResSize(set.getLong(7));
             }
-            LOG.debug(progress.toString());
             return hasRecord ? progress : null;
         } catch (Exception e) {
             LOG.error(String.format("failed search qid %s from database.", qid), e);

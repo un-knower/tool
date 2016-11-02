@@ -7,6 +7,8 @@
 package com.hiido.hva.thrift.protocol;
 
 
+import java.util.Map;
+import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum RoleType implements TEnum {

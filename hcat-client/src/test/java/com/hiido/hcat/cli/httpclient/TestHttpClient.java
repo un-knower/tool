@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-	static String serveltUrl = "http://14.17.109.51:26021/query";
+	static String serveltUrl = "http://14.17.109.45:26022/query";
 
 	public void cancelJob() {
 
@@ -88,7 +88,7 @@ public class TestHttpClient {
 	@Test
 	public void signup() {
 		try{
-			THttpClient thc = new THttpClient("http://14.17.109.51:26021/signup");
+			THttpClient thc = new THttpClient("http://14.17.109.49:26021/signup");
 			TProtocol lopFactory = new TBinaryProtocol(thc);
 			SignupService.Client client = new SignupService.Client(lopFactory);
 			SignupReply reply = client.signup(2, "myopen", 2777);
@@ -115,9 +115,7 @@ public class TestHttpClient {
 			//String sql = "use freshman;set hive.cbo.enable=false;select sc, num from freshman.freshman_studs_view";
 			//String sql = "use freshman;create view freshman_studs_view (sc, num) as select school,count(*) from freshman_studs group by school";
 			//String sql = "use freshman create table freshman_new1(id int,name string);";
-			String sql = "set hiido.mapreduce.job.translate.map.limit.num=100;\n" +
-					"set hiido.mapreduce.job.translate.queue.names=root.hiidoagent:root.default;\n" +
-					"select count(*) from \n" +
+			String sql ="select count(*) from \n" +
 					"yy_mbsdkdo_original where dt >=20160917 and dt<=20160920";
 			HashMap<String, String> cipher = new HashMap<String, String>();
 			cipher.put("loguser", "dw_zouruochen");

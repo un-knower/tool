@@ -73,7 +73,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
             if (verifyUDF != null) {
                 String className = BaseSemanticAnalyzer.unescapeSQLString(ast.getChild(1).getText());
                 if (verifyUDF != null && verifyUDF.contains(className)) {
-                    Obj obj = new Obj(className, "func", (byte)1);
+                    Obj obj = new Obj(className, "func", (byte) 1);
                     authSet.add(obj);
 
                     //old validation
@@ -82,6 +82,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                     authInfo.add(entry);
                 }
             }
+            validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
 
         } else if (sem instanceof DDLSemanticAnalyzer) {
             if (op == HiveOperation.DROPDATABASE) {
@@ -116,6 +117,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                     }
                 }
             }
+            validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
         } else {
             ColumnAccessInfo columnAccess = sem.getColumnAccessInfo();
             Set<WriteEntity> writeSet = context.getOutputs();
@@ -156,8 +158,8 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                 if (entity.getWriteType() == WriteEntity.WriteType.PATH_WRITE) {
                     if (entity.getName().startsWith(HiveConf.getVar(conf, HiveConf.ConfVars.SCRATCHDIR)))
                         continue;
-                    else if(entity.getType() == Entity.Type.DFS_DIR) {
-                        if(entity.getName().startsWith(ss.getCompanyHdfs()))
+                    else if (entity.getType() == Entity.Type.DFS_DIR) {
+                        if (entity.getName().startsWith(ss.getCompanyHdfs()))
                             continue;
                         else {
                             Obj obj = new Obj(entity.getName(), "hdfs", (byte) 2);
@@ -203,6 +205,10 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                 }
             }
         }
+        validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
+    }
+
+    private void validate(HiveSemanticAnalyzerHookContext context, Set<Obj> authSet, HiidoUser hiidoUser, List<SecurityAuth.AuthEntry> authInfo, boolean hasInvalidOpt4Old) {
         if (authSet.size() == 0)
             return;
 
