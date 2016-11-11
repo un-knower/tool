@@ -19,6 +19,9 @@ import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.processors.SetProcessor;
 import org.apache.hadoop.hive.ql.session.SessionState;
+import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.client.api.YarnClient;
+import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hive.common.util.HiveVersionInfo;
 import org.apache.hive.service.auth.HiveAuthFactory;
 import org.apache.hive.service.cli.*;
@@ -395,6 +398,19 @@ public class HcatSession implements HiveSession {
 		Operation opt = operationManager.getOperation(handle);
 		if(!(opt.isFailed() || opt.isCanceled() || opt.isFinished()))
 			opt.cancel(OperationState.CANCELED);
+
+		if(this.sessionState != null && sessionState.getJobs().size() > 0) {
+			List<String> jobs = sessionState.getJobs();
+			String job = jobs.get(jobs.size() - 1);
+			try(YarnClient client = YarnClient.createYarnClient()) {
+				client.init(sessionState.getConf());
+				client.start();
+				ApplicationId appId = ConverterUtils.toApplicationId(job.replace("job", "application"));
+				client.killApplication(appId);
+			}catch(Exception e) {
+				LOG.warn("failed to kill applicationId :" + job);
+			}
+		}
 	}
 
 	@Override

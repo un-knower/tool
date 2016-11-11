@@ -786,7 +786,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     }
 
     @Override
-    public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, TException {
+    public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, RuntimeException {
         // 1. 权限验证
         String companyId = cq.cipher.get("company_id");
         String userId = cq.cipher.get("user_id");
@@ -833,7 +833,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             }
         } catch (IOException e) {
             LOG.error("failed when committing query.", e);
-            throw new RuntimeException("server-side exception when committing query.");
+            throw new AuthorizationException("server-side exception when committing query.");
         }
 
         boolean quick = true;
@@ -884,13 +884,13 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             Handle handle = new Handle().setQuick(quick).setQueryId(qid).setTotalN(cmds.size()).setRunning(false).setStderr(task.getProgress().errmsg);
             reply.setHandle(handle);
             return reply;
-        } catch (AuthorizationException e1) {
-            throw e1;
         } catch (Exception e1) {
-            if (e1 instanceof RuntimeException)
-                throw ((RuntimeException) e1);
+            if(e1 instanceof AuthorizationException)
+                throw (AuthorizationException)e1;
+            else if (e1 instanceof RuntimeException)
+                throw new AuthorizationException(((RuntimeException)e1).getMsg());
             else {
-                throw new RuntimeException().setMsg(e1.toString());
+                throw new AuthorizationException().setMsg(e1.toString());
             }
         } finally {
         }

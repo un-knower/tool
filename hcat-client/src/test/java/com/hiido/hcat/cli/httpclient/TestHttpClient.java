@@ -115,8 +115,7 @@ public class TestHttpClient {
 			//String sql = "use freshman;set hive.cbo.enable=false;select sc, num from freshman.freshman_studs_view";
 			//String sql = "use freshman;create view freshman_studs_view (sc, num) as select school,count(*) from freshman_studs group by school";
 			//String sql = "use freshman create table freshman_new1(id int,name string);";
-			String sql ="select count(*) from \n" +
-					"yy_mbsdkdo_original where dt >=20160917 and dt<=20160920";
+			String sql ="create database test_zrc";
 			HashMap<String, String> cipher = new HashMap<String, String>();
 			cipher.put("loguser", "dw_zouruochen");
 			cipher.put("curuser", "dw_zouruochen");

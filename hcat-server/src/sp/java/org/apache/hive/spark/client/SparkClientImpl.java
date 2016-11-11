@@ -201,12 +201,12 @@ class SparkClientImpl implements SparkClient {
 
         if (conf.containsKey(SparkClientFactory.CONF_KEY_IN_PROCESS)) {
             //FIXME
-            /*
+
             // Mostly for testing things quickly. Do not do this in production.
             LOG.warn("!!!! Running remote driver in-process. !!!!");
-            runnable = new Runnable() {
+            runnable = new Callable() {
                 @Override
-                public void run() {
+                public Object call() {
                     List<String> args = Lists.newArrayList();
                     args.add("--remote-host");
                     args.add(serverAddress);
@@ -226,9 +226,10 @@ class SparkClientImpl implements SparkClient {
                     } catch (Exception e) {
                         LOG.error("Error running driver.", e);
                     }
+                    return null;
                 }
             };
-            */
+
         } else {
             // If a Spark installation is provided, use the spark-submit script. Otherwise, call the
             // SparkSubmit class directly, which has some caveats (like having to provide a proper
@@ -443,7 +444,7 @@ class SparkClientImpl implements SparkClient {
                         LOG.info("run spark args : " + Arrays.toString(argv.toArray(new String[argv.size()])));
                         //LOG.info("Running client driver with argv: {}", cmd);
                         SparkSubmit.main(argv.toArray(new String[argv.size()]));
-                        SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
+                        //SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
                     } catch(Exception e) {
                         return e;
                     } finally {
