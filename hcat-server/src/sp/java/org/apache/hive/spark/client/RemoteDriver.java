@@ -22,13 +22,8 @@ import com.google.common.io.Files;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -74,7 +69,7 @@ public class RemoteDriver {
     private final Object shutdownLock;
     private final ExecutorService executor;
     private final NioEventLoopGroup egroup;
-    private final Rpc clientRpc;
+    private  Rpc clientRpc;
     private final DriverProtocol protocol;
     // a local temp dir specific to this driver
     private final File localTmpDir;
@@ -139,9 +134,26 @@ public class RemoteDriver {
                         .build());
         this.protocol = new DriverProtocol();
 
+        //FIXME SparkSubmitArguments.ignoreNonSparkProperties() Ignoring non-spark config property
+        mapConf.put("hive.spark.client.connect.timeout", "90000");
         // The RPC library takes care of timing out this.
-        this.clientRpc = Rpc.createClient(mapConf, egroup, serverAddress, serverPort,
-                clientId, secret, protocol).get();
+        //FIXME
+        int retry = 0;
+        while(true) {
+            try {
+                this.clientRpc = Rpc.createClient(mapConf, egroup, serverAddress, serverPort,
+                        clientId, secret, protocol).get();
+                break;
+            } catch(Exception e) {
+                LOG.warn("failed create client.", e);
+                retry++;
+                if(retry >= 3)
+                    throw e;
+                try{
+                    Thread.sleep(10 * 1000);
+                }catch (Exception ex){}
+            }
+        }
         this.running = true;
 
         this.clientRpc.addListener(new Rpc.Listener() {
@@ -188,6 +200,7 @@ public class RemoteDriver {
         } catch (IOException e) {
             LOG.warn("Failed to delete local tmp dir: " + localTmpDir, e);
         }
+
         //FIXME
         finally {
             if(this.jc != null)

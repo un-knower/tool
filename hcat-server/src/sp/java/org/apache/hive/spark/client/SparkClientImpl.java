@@ -201,7 +201,7 @@ class SparkClientImpl implements SparkClient {
 
         if (conf.containsKey(SparkClientFactory.CONF_KEY_IN_PROCESS)) {
             //FIXME
-
+            /*
             // Mostly for testing things quickly. Do not do this in production.
             LOG.warn("!!!! Running remote driver in-process. !!!!");
             runnable = new Callable() {
@@ -229,6 +229,7 @@ class SparkClientImpl implements SparkClient {
                     return null;
                 }
             };
+            */
 
         } else {
             // If a Spark installation is provided, use the spark-submit script. Otherwise, call the
@@ -416,11 +417,15 @@ class SparkClientImpl implements SparkClient {
             argv.add("--class");
             argv.add(RemoteDriver.class.getName());
 
+            //FIXME
             String jar = "spark-internal";
             if (SparkContext.jarOfClass(this.getClass()).isDefined()) {
                 jar = SparkContext.jarOfClass(this.getClass()).get();
             }
+            argv.add(hiveConf.get("hcat.spark.run.jar", jar));
+            /*
             argv.add(jar);
+            */
 
             argv.add("--remote-host");
             argv.add(serverAddress);

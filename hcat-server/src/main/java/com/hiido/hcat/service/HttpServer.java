@@ -46,10 +46,6 @@ public class HttpServer {
 		this.port = builder.port;
 
 		webServer = new Server();
-		QueuedThreadPool pool = new QueuedThreadPool(builder.maxThreads);
-		pool.setMinThreads(builder.minThreads);
-		pool.setMaxIdleTimeMs(builder.maxIdleTimeMs);
-		webServer.setThreadPool(pool);
 		if(ipAccessHandler != null)
 			webServer.setHandler(ipAccessHandler);
 		appDir = getWebAppsPath(builder.name);
@@ -218,6 +214,8 @@ public class HttpServer {
 	void initializeWebServer(Builder b) {
 		// Create the thread pool for the web server to handle HTTP requests
 		QueuedThreadPool threadPool = new QueuedThreadPool();
+		threadPool.setMinThreads(b.minThreads);
+		threadPool.setMaxIdleTimeMs(b.maxIdleTimeMs);
 		if (b.maxThreads > 0) {
 			threadPool.setMaxThreads(b.maxThreads);
 		}

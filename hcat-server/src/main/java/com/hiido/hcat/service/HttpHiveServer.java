@@ -310,7 +310,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     p = (session.getSessionState().getCurProgress() + c2) / (query.size());
                 else
                     p = (session.getSessionState().getCurProgress() + c2) * 0.9 / (query.size() - bitSet.cardinality()) + (c1 * 0.1 / bitSet.cardinality());
-                qp.setProgress(p == Double.NaN ? 0.0 : p);
+                qp.setProgress(p == Double.NaN ? 0.0 : (p > 1.0 ? 0.99 : p));
                 qp.setJobId(session.getSessionState().getJobs());
             }
 
@@ -792,9 +792,9 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         String userId = cq.cipher.get("user_id");
         String bususer = cq.cipher.get("bususer");
 
-        if (id2Company.get(companyId) == null || System.currentTimeMillis() - id2Company.get(companyId).getUpdateTime() > 24 * 60 * 60 * 1000) {
+        if (id2Company.get(Integer.valueOf(companyId)) == null || System.currentTimeMillis() - id2Company.get(Integer.valueOf(companyId)).getUpdateTime() > 24 * 60 * 60 * 1000) {
             synchronized (id2Company) {
-                if (id2Company.get(companyId) == null || System.currentTimeMillis() - id2Company.get(companyId).getUpdateTime() > 24 * 60 * 60 * 1000) {
+                if (id2Company.get(Integer.valueOf(companyId)) == null || System.currentTimeMillis() - id2Company.get(Integer.valueOf(companyId)).getUpdateTime() > 24 * 60 * 60 * 1000) {
                     java.sql.Connection conn = null;
                     boolean err = false;
                     try {

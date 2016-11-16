@@ -1173,9 +1173,11 @@ public class Driver implements CommandProcessor {
         //Save compile-time PerfLogging for WebUI.
         //Execution-time Perf logs are done by either another thread's PerfLogger
         //or a reset PerfLogger.
+        /*  FIXME
         PerfLogger perfLogger = SessionState.getPerfLogger();
         queryDisplay.setPerfLogStarts(QueryDisplay.Phase.COMPILATION, perfLogger.getStartTimes());
         queryDisplay.setPerfLogEnds(QueryDisplay.Phase.COMPILATION, perfLogger.getEndTimes());
+        */
         return ret;
     }
 
