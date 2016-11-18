@@ -451,6 +451,7 @@ class SparkClientImpl implements SparkClient {
                         SparkSubmit.main(argv.toArray(new String[argv.size()]));
                         //SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
                     } catch(Exception e) {
+                        LOG.error("Driver thread ERROR: ", e);
                         return e;
                     } finally {
                         properties.delete();
