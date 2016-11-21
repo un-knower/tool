@@ -444,26 +444,25 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 }
                 qp.state = JobStatus.COMPLETE.getValue();
             } catch (HiveSQLException e) {
-                // this.hiveException = e.toTStatus();
                 if (session.getErr() != null)
-                    qp.errmsg = session.getErr().returnAndClear();
+                    qp.setErrmsg(session.getErr().returnAndClear());
                 if (StringUtils.isEmpty(qp.errmsg))
-                    qp.errmsg = e.toString();
-                qp.state = JobStatus.FAILURE.getValue();
+                    qp.setErrmsg(e.toString());
+                qp.setState(JobStatus.FAILURE.getValue());
                 LOG.error("[" + qid + "]", e);
             } catch (SecurityException e) {
                 String msg = e.getMessage();
                 if (msg != null && (msg.equals(HcatSecurityManager.ExitStatus.NORMAL.name()))) {
                     LOG.warn("Task thread do not support System.exit with '0' argument.", e);
                 } else {
-                    qp.state = JobStatus.FAILURE.getValue();
+                    qp.setState(JobStatus.FAILURE.getValue());
                     LOG.warn("Task thread do not support System.exit function.", e);
                 }
 
             } catch (Exception e) {
                 LOG.error("[" + qid + "]", e);
-                qp.state = JobStatus.FAILURE.getValue();
-                qp.errmsg = "The server threw an exception, please contact the administrator.";
+                qp.setState(JobStatus.FAILURE.getValue());
+                qp.setErrmsg("The server threw an exception, please contact the administrator.");
                 this.serverException = new RuntimeException(
                         "The server threw an exception, please contact the administrator.");
             } finally {

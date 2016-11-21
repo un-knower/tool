@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-    static String serveltUrl = "http://14.17.109.45:26022/query";
+    static String serveltUrl = "http://14.17.109.51:26021/query";
 
     public void cancelJob() {
 
@@ -106,7 +106,7 @@ public class TestHttpClient {
 
     @Test
     public void commit() throws InterruptedException {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 100; i++) {
             try {
                 THttpClient thc = new THttpClient(serveltUrl);
                 TProtocol lopFactory = new TBinaryProtocol(thc);

@@ -112,7 +112,7 @@ class SparkClientImpl implements SparkClient {
                 driverThread.get();
             } catch (Exception ie) {
                 // Give up.
-                LOG.debug("Interrupted before driver thread was finished.");
+                LOG.warn("Interrupted before driver thread was finished.");
             }
             throw Throwables.propagate(e);
         }
@@ -451,7 +451,11 @@ class SparkClientImpl implements SparkClient {
                         SparkSubmit.main(argv.toArray(new String[argv.size()]));
                         //SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
                     } catch(Exception e) {
-                        LOG.error("Driver thread ERROR: ", e);
+                        if(e instanceof InterruptedException) {
+                            LOG.warn("Waiting thread interrupted, killing child process.");
+                            Thread.interrupted();
+                        } else
+                            LOG.error("Driver thread ERROR: ", e);
                         return e;
                     } finally {
                         properties.delete();
