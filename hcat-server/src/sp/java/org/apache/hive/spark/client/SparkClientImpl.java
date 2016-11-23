@@ -27,8 +27,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.GenericFutureListener;
-import io.netty.util.concurrent.Promise;
+import io.netty.util.concurrent.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -44,6 +43,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -93,12 +93,14 @@ class SparkClientImpl implements SparkClient {
 
         String clientId = UUID.randomUUID().toString();
         String secret = rpcServer.createSecret();
-        this.driverThread = startDriver(rpcServer, clientId, secret);
         this.protocol = new ClientProtocol();
+        io.netty.util.concurrent.Future<Rpc> future = rpcServer.registerClient(clientId, secret, protocol);
+        this.driverThread = startDriver(rpcServer, clientId, secret);
 
         try {
+            String value = conf.get(HiveConf.ConfVars.SPARK_RPC_CLIENT_HANDSHAKE_TIMEOUT.varname);
             // The RPC server will take care of timeouts here.
-            this.driverRpc = rpcServer.registerClient(clientId, secret, protocol).get();
+            this.driverRpc = future.get(value != null ? Integer.parseInt(value) : 60000, TimeUnit.MILLISECONDS);
         } catch (Throwable e) {
             if (e.getCause() instanceof TimeoutException) {
                 LOG.error("Timed out waiting for client to connect.\nPossible reasons include network " +
@@ -456,6 +458,14 @@ class SparkClientImpl implements SparkClient {
                             Thread.interrupted();
                         } else
                             LOG.error("Driver thread ERROR: ", e);
+                        if(e instanceof SparkException) {
+                            Iterator<JobHandleImpl<?>> iterator = jobs.values().iterator();
+                            while(iterator.hasNext()) {
+                                JobHandleImpl<?> handle = iterator.next();
+                                if(handle.getState().ordinal() <= JobHandle.State.STARTED.ordinal())
+                                    handle.changeState(JobHandle.State.FAILED);
+                            }
+                        }
                         return e;
                     } finally {
                         properties.delete();

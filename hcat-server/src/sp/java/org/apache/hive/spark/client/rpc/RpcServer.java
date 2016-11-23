@@ -104,20 +104,7 @@ public class RpcServer implements Closeable {
                         SaslServerHandler saslHandler = new SaslServerHandler(config);
                         final Rpc newRpc = Rpc.createServer(saslHandler, config, ch, group);
                         saslHandler.rpc = newRpc;
-
                         timeSchedule.register(newRpc);
-                        /*
-                        Runnable cancelTask = new Runnable() {
-                            @Override
-                            public void run() {
-                                LOG.warn("Timed out waiting for hello from client.");
-                                newRpc.close();
-                            }
-                        };
-                        saslHandler.cancelTask = group.schedule(cancelTask,
-                                RpcServer.this.config.getServerConnectTimeoutMs(),
-                                TimeUnit.MILLISECONDS);
-                        */
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 1)
@@ -149,20 +136,7 @@ public class RpcServer implements Closeable {
     Future<Rpc> registerClient(final String clientId, String secret,
                                RpcDispatcher serverDispatcher, final long clientTimeoutMs) {
         final Promise<Rpc> promise = group.next().newPromise();
-        timeSchedule.register(promise);
 
-        /*
-        Runnable timeout = new Runnable() {
-            @Override
-            public void run() {
-                //FIXME
-                promise.setFailure(new TimeoutException("Timed out[" + clientTimeoutMs + "] waiting for client connection."));
-            }
-        };
-        ScheduledFuture<?> timeoutFuture = group.schedule(timeout,
-                clientTimeoutMs,
-                TimeUnit.MILLISECONDS);
-        */
         final ClientInfo client = new ClientInfo(clientId, promise, secret, serverDispatcher
                 /*timeoutFuture */);
 
@@ -194,9 +168,6 @@ public class RpcServer implements Closeable {
             // Nothing to be done here.
             return;
         }
-        //cinfo.timeoutFuture.cancel(true);
-        timeSchedule.remove(cinfo.promise);
-
         if (!cinfo.promise.isDone()) {
             cinfo.promise.setFailure(new RuntimeException(
                     String.format("Cancel client '%s'. Error: " + msg, clientId)));
@@ -275,7 +246,6 @@ public class RpcServer implements Closeable {
                 Preconditions.checkArgument(client != null,
                         "Unexpected client ID '%s' in SASL handshake.", clientId);
             }
-
             return new Rpc.SaslMessage(server.evaluateResponse(challenge.payload));
         }
 
@@ -299,28 +269,23 @@ public class RpcServer implements Closeable {
 
         @Override
         protected void onComplete() throws Exception {
-            //cancelTask.cancel(true);
             timeSchedule.remove(rpc);
-            //client.timeoutFuture.cancel(true);
-            timeSchedule.remove(client.promise);
-
             rpc.setDispatcher(client.dispatcher);
-            client.promise.setSuccess(rpc);
             pendingClients.remove(client.id);
+            client.promise.setSuccess(rpc);
+
         }
 
         @Override
         protected void onError(Throwable error) {
-            //cancelTask.cancel(true);
             timeSchedule.remove(rpc);
             if (client != null) {
-                //client.timeoutFuture.cancel(true);
-                timeSchedule.remove(client.promise);
-
+                pendingClients.remove(client.id);
                 if (!client.promise.isDone()) {
                     client.promise.setFailure(error);
                 }
             }
+            rpc.close();
         }
 
         @Override
@@ -361,9 +326,6 @@ public class RpcServer implements Closeable {
     //FIXME
     private class TimeSchedule implements Runnable {
 
-        private Map<Promise, Long> promiseMap = new ConcurrentHashMap<Promise, Long>();
-        private Set<Promise> timeoutpromises = new HashSet<Promise>();
-
         private Map<Rpc, Long> rpcMap = new ConcurrentHashMap<Rpc, Long>();
         private Set<Rpc> timeoutRpcs = new HashSet<Rpc>();
 
@@ -379,28 +341,15 @@ public class RpcServer implements Closeable {
         public long period = 15 * 1000;
         public TimeUnit unit = TimeUnit.MILLISECONDS;
 
-        public void register(Promise promise) {
-            promiseMap.put(promise, System.currentTimeMillis());
-        }
 
         public void register(Rpc rpc) {
             rpcMap.put(rpc, System.currentTimeMillis());
         }
 
-        public void remove(Promise promise) {
-
-            mapLock.readLock().lock();
-            try {
-                promiseMap.remove(promise);
-            } finally {
-                mapLock.readLock().unlock();
-            }
-        }
-
         public void remove(Rpc rpc) {
             mapLock.readLock().lock();
             try {
-                promiseMap.remove(rpc);
+                rpcMap.remove(rpc);
             } finally {
                 mapLock.readLock().unlock();
             }
@@ -411,11 +360,6 @@ public class RpcServer implements Closeable {
 
             setLock.writeLock().lock();
             try {
-                Iterator<Promise> iterator = timeoutpromises.iterator();
-                while (iterator.hasNext()) {
-                    iterator.next().setFailure(new TimeoutException("Timed out waiting for client connection."));
-                    iterator.remove();
-                }
                 Iterator<Rpc> rpcIterator = timeoutRpcs.iterator();
                 while(rpcIterator.hasNext()) {
                     rpcIterator.next().close();
@@ -429,23 +373,13 @@ public class RpcServer implements Closeable {
 
             mapLock.writeLock().lock();
             try {
-                Iterator<Map.Entry<Promise, Long>> iterator = promiseMap.entrySet().iterator();
-                long current = System.currentTimeMillis();
-                while(iterator.hasNext()) {
-                    Map.Entry<Promise, Long> entry = iterator.next();
-                    if(current - entry.getValue() > timeout) {
-                        timeoutpromises.add(entry.getKey());
-                        iterator.remove();
-                    }
-                }
-
                 Iterator<Map.Entry<Rpc, Long>> rpcIterator = rpcMap.entrySet().iterator();
-                current = System.currentTimeMillis();
+                long current = System.currentTimeMillis();
                 while(rpcIterator.hasNext()) {
                     Map.Entry<Rpc, Long> entry = rpcIterator.next();
-                    if(current - entry.getValue() > timeout) {
+                    if(current - entry.getValue().longValue() > timeout) {
                         timeoutRpcs.add(entry.getKey());
-                        iterator.remove();
+                        rpcIterator.remove();
                     }
                 }
             } catch (Exception e) {
@@ -455,5 +389,4 @@ public class RpcServer implements Closeable {
             }
         }
     }
-
 }

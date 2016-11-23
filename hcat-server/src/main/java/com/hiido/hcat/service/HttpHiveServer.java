@@ -25,6 +25,7 @@ import com.hiido.hcat.thrift.protocol.AuthorizationException;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.common.util.ConnectionPool;
+import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
 import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -236,6 +237,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     public void start() throws Exception {
         conf = new Configuration();
+        conf.addResource("spark-site.xml");
+
         HttpServer.Builder builder = new HttpServer.Builder();
         server = builder.setName("hiido").setHost("0.0.0.0").setPort(this.port).setMaxThreads(maxThreads).setMinThreads(minThreads).setMaxIdleTimeMs(maxIdleTimeMs)
                 .setConf(new HiveConf(conf, this.getClass())).setUseSSL(false).build();
@@ -248,6 +251,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         disper.start();
         queryDB.start();
         server.start();
+
+        HiveConf conf = new HiveConf();
+        conf.addResource("spark-site.xml");
+        SparkSessionManagerImpl.getInstance().setup(conf);
+
     }
 
     protected String createServerTag(String host, int port, String ifname) {

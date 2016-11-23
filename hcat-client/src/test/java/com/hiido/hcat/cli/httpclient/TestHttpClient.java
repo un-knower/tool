@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-    static String serveltUrl = "http://14.17.109.51:26021/query";
+    static String serveltUrl = "http://14.17.109.45:26022/query";
 
     public void cancelJob() {
 
@@ -106,7 +106,7 @@ public class TestHttpClient {
 
     @Test
     public void commit() throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 3; i++) {
             try {
                 THttpClient thc = new THttpClient(serveltUrl);
                 TProtocol lopFactory = new TBinaryProtocol(thc);
@@ -119,10 +119,6 @@ public class TestHttpClient {
                         "(select '7.x' as version,count(distinct uid) as login_num\n" +
                         "from default.yy_yylogin_original\n" +
                         "where dt='20161111' and ver like '7.%' and hour<='09'\n" +
-                        "union all\n" +
-                        "select '8.x' as version,count(distinct uid) as login_num\n" +
-                        "from default.yy_yylogin_original\n" +
-                        "where dt='20161111' and ver like '8.%' and hour<='09'\n" +
                         "union all\n" +
                         "select ver as version,count(distinct uid) as login_num\n" +
                         "from default.yy_yylogin_original\n" +
