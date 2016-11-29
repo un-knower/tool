@@ -19,7 +19,8 @@ package org.apache.hive.spark.client;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 import java.io.*;
@@ -32,6 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.hive.common.classification.InterfaceAudience;
 import org.apache.hive.spark.client.metrics.Metrics;
@@ -137,23 +139,8 @@ public class RemoteDriver {
         //FIXME SparkSubmitArguments.ignoreNonSparkProperties() Ignoring non-spark config property
         mapConf.put("hive.spark.client.connect.timeout", "90000");
         // The RPC library takes care of timing out this.
-        //FIXME
-        int retry = 0;
-        while(true) {
-            try {
-                this.clientRpc = Rpc.createClient(mapConf, egroup, serverAddress, serverPort,
-                        clientId, secret, protocol).get();
-                break;
-            } catch(Exception e) {
-                LOG.warn("failed create client.", e);
-                retry++;
-                if(retry >= 3)
-                    throw e;
-                try{
-                    Thread.sleep(10 * 1000);
-                }catch (Exception ex){}
-            }
-        }
+        this.clientRpc = Rpc.createClient(mapConf, egroup, serverAddress, serverPort,
+                clientId, secret, protocol).get();
         this.running = true;
 
         this.clientRpc.addListener(new Rpc.Listener() {

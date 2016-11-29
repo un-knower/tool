@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="8c7fce1e-72ac-42e2-acb5-98d075051a71" name="Default" comment="create hcat-databus module">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/pom.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/hcat-databus/pom.xml" afterPath="$PROJECT_DIR$/hcat-http/pom.xml" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" />
@@ -20,9 +20,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" afterPath="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-http/pom.xml" afterPath="$PROJECT_DIR$/hcat-http/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java" afterPath="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
     </list>
     <list id="84acc146-5515-4f8b-8b26-6bbd18e8e901" name="Rejected commit: Default" comment="Rejected commit: Default" />
     <ignored path="hiido.hcat.iws" />
@@ -65,7 +63,37 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="6346">
                   <caret line="440" column="25" selection-start-line="440" selection-start-column="25" selection-end-line="440" selection-end-column="25" />
-                  <folding />
+                  <folding>
+                    <element signature="imports" expanded="false" />
+                    <element signature="e#6330#6331#0" expanded="false" />
+                    <element signature="e#6370#6371#0" expanded="false" />
+                    <element signature="e#6436#6437#0" expanded="false" />
+                    <element signature="e#6463#6464#0" expanded="false" />
+                    <element signature="e#6497#6498#0" expanded="false" />
+                    <element signature="e#6530#6531#0" expanded="false" />
+                    <element signature="e#6579#6580#0" expanded="false" />
+                    <element signature="e#6623#6624#0" expanded="false" />
+                    <element signature="e#6657#6658#0" expanded="false" />
+                    <element signature="e#6690#6691#0" expanded="false" />
+                    <element signature="e#6739#6740#0" expanded="false" />
+                    <element signature="e#6783#6784#0" expanded="false" />
+                    <element signature="e#6820#6821#0" expanded="false" />
+                    <element signature="e#6856#6857#0" expanded="false" />
+                    <element signature="e#6911#6912#0" expanded="false" />
+                    <element signature="e#6961#6962#0" expanded="false" />
+                    <element signature="e#6997#6998#0" expanded="false" />
+                    <element signature="e#7029#7030#0" expanded="false" />
+                    <element signature="e#7068#7069#0" expanded="false" />
+                    <element signature="e#7105#7106#0" expanded="false" />
+                    <element signature="e#7145#7146#0" expanded="false" />
+                    <element signature="e#7183#7184#0" expanded="false" />
+                    <element signature="e#7243#7244#0" expanded="false" />
+                    <element signature="e#7297#7298#0" expanded="false" />
+                    <element signature="e#41549#41550#0" expanded="false" />
+                    <element signature="e#41600#41601#0" expanded="false" />
+                    <element signature="e#41653#41654#0" expanded="false" />
+                    <element signature="e#41692#41693#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -133,21 +161,21 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/pom.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="418">
-                  <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+                <state relative-caret-position="76">
+                  <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
+          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/hcat-http/pom.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="171">
-                  <caret line="9" column="28" selection-start-line="9" selection-start-column="28" selection-end-line="9" selection-end-column="28" />
+                <state relative-caret-position="114">
+                  <caret line="6" column="32" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
                   <folding />
                 </state>
               </provider>
@@ -365,7 +393,20 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="1026">
                   <caret line="106" column="8" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="8" />
-                  <folding />
+                  <folding>
+                    <element signature="e#0#11349#0" expanded="false" />
+                    <element signature="imports" expanded="false" />
+                    <element signature="e#5658#5659#0" expanded="false" />
+                    <element signature="e#5760#5761#0" expanded="false" />
+                    <element signature="e#7514#7515#0" expanded="false" />
+                    <element signature="e#7538#7539#0" expanded="false" />
+                    <element signature="e#7564#7565#0" expanded="false" />
+                    <element signature="e#7585#7586#0" expanded="false" />
+                    <element signature="e#8386#8387#0" expanded="false" />
+                    <element signature="e#8426#8427#0" expanded="false" />
+                    <element signature="e#8499#8500#0" expanded="false" />
+                    <element signature="e#8563#8564#0" expanded="false" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -376,7 +417,9 @@
                 <state relative-caret-position="95">
                   <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
                   <folding>
-                    <element signature="imports" expanded="true" />
+                    <element signature="e#0#3935#0" expanded="false" />
+                    <element signature="e#2128#2129#0" expanded="false" />
+                    <element signature="e#2154#2155#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -388,8 +431,28 @@
                 <state relative-caret-position="912">
                   <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
                   <folding>
-                    <element signature="e#1237#1238#0" expanded="true" />
-                    <element signature="e#1263#1264#0" expanded="true" />
+                    <element signature="e#0#3804#0" expanded="false" />
+                    <element signature="imports" expanded="false" />
+                    <element signature="e#1282#1283#0" expanded="false" />
+                    <element signature="e#1306#1307#0" expanded="false" />
+                    <element signature="e#1650#1651#0" expanded="false" />
+                    <element signature="e#1674#1675#0" expanded="false" />
+                    <element signature="e#2133#2134#0" expanded="false" />
+                    <element signature="e#2175#2176#0" expanded="false" />
+                    <element signature="e#2420#2421#0" expanded="false" />
+                    <element signature="e#2450#2451#0" expanded="false" />
+                    <element signature="e#2928#2929#0" expanded="false" />
+                    <element signature="e#2970#2971#0" expanded="false" />
+                    <element signature="e#3089#3090#0" expanded="false" />
+                    <element signature="e#3115#3116#0" expanded="false" />
+                    <element signature="e#3135#3136#0" expanded="false" />
+                    <element signature="e#3159#3160#0" expanded="false" />
+                    <element signature="e#3538#3539#0" expanded="false" />
+                    <element signature="e#3566#3567#0" expanded="false" />
+                    <element signature="e#3718#3719#0" expanded="false" />
+                    <element signature="e#3746#3747#0" expanded="false" />
+                    <element signature="e#3770#3771#0" expanded="false" />
+                    <element signature="e#3794#3795#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -499,8 +562,8 @@
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcConfig.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/resources/rpc.thrift" />
-        <option value="$PROJECT_DIR$/hcat-databus/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/hcat-databus/pom.xml" />
       </list>
     </option>
   </component>
@@ -578,7 +641,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-databus" />
+              <option name="myItemId" value="hcat-http" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -595,22 +658,22 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="204" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hcat-databus" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="203" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="234" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="232" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="242" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="240" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1095" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1087" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="213" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="211" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="229" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="227" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="237" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="235" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="1096" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="1089" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="SearchEverywhereHistoryKey" value="spark-submit&#9;null&#9;null&#10;spark.shuffle.manager&#9;null&#9;null" />
     <property name="ignore_missing_gitignore" value="true" />
@@ -1444,13 +1507,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/7.6.0.v20120127/jetty-util-7.6.0.v20120127-sources.jar!/org/eclipse/jetty/util/ssl/SslContextFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="71" column="13" selection-start-line="71" selection-start-column="13" selection-end-line="71" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../hva/src/main/java/com/hiido/hva/service/HttpServer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="779">
@@ -1502,14 +1558,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-http/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="20" column="46" selection-start-line="20" selection-start-column="46" selection-end-line="20" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hcat-client/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
@@ -1548,13 +1596,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/service.java" />
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="42" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpServer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -1854,7 +1895,9 @@
         <state relative-caret-position="95">
           <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#0#3935#0" expanded="false" />
+            <element signature="e#2128#2129#0" expanded="false" />
+            <element signature="e#2154#2155#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1863,7 +1906,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1026">
           <caret line="106" column="8" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="8" />
-          <folding />
+          <folding>
+            <element signature="e#0#11349#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#5658#5659#0" expanded="false" />
+            <element signature="e#5760#5761#0" expanded="false" />
+            <element signature="e#7514#7515#0" expanded="false" />
+            <element signature="e#7538#7539#0" expanded="false" />
+            <element signature="e#7564#7565#0" expanded="false" />
+            <element signature="e#7585#7586#0" expanded="false" />
+            <element signature="e#8386#8387#0" expanded="false" />
+            <element signature="e#8426#8427#0" expanded="false" />
+            <element signature="e#8499#8500#0" expanded="false" />
+            <element signature="e#8563#8564#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1872,8 +1928,28 @@
         <state relative-caret-position="912">
           <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
           <folding>
-            <element signature="e#1237#1238#0" expanded="true" />
-            <element signature="e#1263#1264#0" expanded="true" />
+            <element signature="e#0#3804#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1282#1283#0" expanded="false" />
+            <element signature="e#1306#1307#0" expanded="false" />
+            <element signature="e#1650#1651#0" expanded="false" />
+            <element signature="e#1674#1675#0" expanded="false" />
+            <element signature="e#2133#2134#0" expanded="false" />
+            <element signature="e#2175#2176#0" expanded="false" />
+            <element signature="e#2420#2421#0" expanded="false" />
+            <element signature="e#2450#2451#0" expanded="false" />
+            <element signature="e#2928#2929#0" expanded="false" />
+            <element signature="e#2970#2971#0" expanded="false" />
+            <element signature="e#3089#3090#0" expanded="false" />
+            <element signature="e#3115#3116#0" expanded="false" />
+            <element signature="e#3135#3136#0" expanded="false" />
+            <element signature="e#3159#3160#0" expanded="false" />
+            <element signature="e#3538#3539#0" expanded="false" />
+            <element signature="e#3566#3567#0" expanded="false" />
+            <element signature="e#3718#3719#0" expanded="false" />
+            <element signature="e#3746#3747#0" expanded="false" />
+            <element signature="e#3770#3771#0" expanded="false" />
+            <element signature="e#3794#3795#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1918,7 +1994,37 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6346">
           <caret line="440" column="25" selection-start-line="440" selection-start-column="25" selection-end-line="440" selection-end-column="25" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#6330#6331#0" expanded="false" />
+            <element signature="e#6370#6371#0" expanded="false" />
+            <element signature="e#6436#6437#0" expanded="false" />
+            <element signature="e#6463#6464#0" expanded="false" />
+            <element signature="e#6497#6498#0" expanded="false" />
+            <element signature="e#6530#6531#0" expanded="false" />
+            <element signature="e#6579#6580#0" expanded="false" />
+            <element signature="e#6623#6624#0" expanded="false" />
+            <element signature="e#6657#6658#0" expanded="false" />
+            <element signature="e#6690#6691#0" expanded="false" />
+            <element signature="e#6739#6740#0" expanded="false" />
+            <element signature="e#6783#6784#0" expanded="false" />
+            <element signature="e#6820#6821#0" expanded="false" />
+            <element signature="e#6856#6857#0" expanded="false" />
+            <element signature="e#6911#6912#0" expanded="false" />
+            <element signature="e#6961#6962#0" expanded="false" />
+            <element signature="e#6997#6998#0" expanded="false" />
+            <element signature="e#7029#7030#0" expanded="false" />
+            <element signature="e#7068#7069#0" expanded="false" />
+            <element signature="e#7105#7106#0" expanded="false" />
+            <element signature="e#7145#7146#0" expanded="false" />
+            <element signature="e#7183#7184#0" expanded="false" />
+            <element signature="e#7243#7244#0" expanded="false" />
+            <element signature="e#7297#7298#0" expanded="false" />
+            <element signature="e#41549#41550#0" expanded="false" />
+            <element signature="e#41600#41601#0" expanded="false" />
+            <element signature="e#41653#41654#0" expanded="false" />
+            <element signature="e#41692#41693#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1972,14 +2078,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="28" selection-start-line="9" selection-start-column="28" selection-end-line="9" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/hiido.hcat.iml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1988,10 +2086,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="26" column="25" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+        <state relative-caret-position="76">
+          <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/readme">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-http/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="32" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
           <folding />
         </state>
       </provider>
@@ -2050,7 +2180,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>hcat.http</last-edited>
+          <last-edited>hcat.databus</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
