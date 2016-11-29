@@ -19,6 +19,7 @@
   	<module>hcat-client</module>
   	<module>hcat-http</module>
 	<module>hcat-server</module>
+    <module>hcat-databus</module>
   </modules>
   
   <dependencyManagement>
