@@ -1,0 +1,49 @@
+package rpc;
+option java_package = "com.hiido.hcat.databus.protocol";
+
+
+
+
+message HeartbeatReq {
+
+}
+
+message HeartbeatResp {
+    required int64 pending = 1;
+}
+
+message SigninMss {
+    required string hostname = 1;
+    required int32 port = 2;
+}
+
+message SigninReply {
+    required int32 recode = 1;
+    optional string message = 2;
+}
+
+message SignoutMss {
+    required int32 pending = 1;
+}
+
+message SignoutReply {
+    required int32 recode = 1;
+}
+
+message PushMss {
+    required string jobId = 1;
+    required string task = 2;
+}
+
+message PushReply {
+    required int32 recode = 1;
+    optional int64 pending = 2;
+}
+
+message TaskDoneMss {
+    required string jobId = 1;
+    required int32 status = 2;
+}
+
+
+
