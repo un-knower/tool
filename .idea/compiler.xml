@@ -24,6 +24,7 @@
         <processorPath useClasspath="true" />
         <module name="hcat.client" />
         <module name="hcat.common" />
+        <module name="hcat.databus" />
         <module name="hcat.http" />
         <module name="hcat.server" />
         <module name="hiido.validation" />

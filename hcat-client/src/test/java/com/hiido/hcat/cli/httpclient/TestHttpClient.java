@@ -59,7 +59,7 @@ public class TestHttpClient {
 
     @Test
     public void queryJobStatus() throws TException, InterruptedException {
-        String qid = "14_17_109_51_26021_20161026172054587_1";
+        String qid = "14_17_109_45_26022_20161130174422301_26493";
         THttpClient thc = new THttpClient(serveltUrl);
         TProtocol lopFactory = new TBinaryProtocol(thc);
         CliService.Client client = new CliService.Client(lopFactory);
@@ -72,14 +72,14 @@ public class TestHttpClient {
         cipher.put("user_id", "471");
         cipher.put("company_id", "189");
         QueryStatusReply status = client.queryJobStatus(new QueryStatus(cipher, qid));
-        while (status.retCode == 0 && status.getQueryProgress().state == 1) {
+        //while (status.retCode == 0 && status.getQueryProgress().state == 1) {
             for (String job : status.getQueryProgress().jobId) {
                 System.out.println("job id:" + job);
             }
             System.out.println("progress: " + status.getQueryProgress().progress);
             Thread.sleep(5000);
             status = client.queryJobStatus(new QueryStatus(cipher, qid));
-        }
+        //}
         if (status.retMessage != null)
             System.out.println(status.retMessage);
         System.out.println("Query is completed.");
@@ -106,7 +106,7 @@ public class TestHttpClient {
 
     @Test
     public void commit() throws InterruptedException {
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
             try {
                 THttpClient thc = new THttpClient(serveltUrl);
                 TProtocol lopFactory = new TBinaryProtocol(thc);

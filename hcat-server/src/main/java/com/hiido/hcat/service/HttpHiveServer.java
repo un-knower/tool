@@ -1,9 +1,6 @@
 package com.hiido.hcat.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.security.*;
 import java.sql.*;
@@ -15,6 +12,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.hiido.hcat.CompanyInfo;
@@ -26,6 +25,7 @@ import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.common.util.ConnectionPool;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
+import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -82,6 +82,11 @@ import com.hiido.hcat.service.cli.HcatSession;
 import com.hiido.suit.TokenVerifyStone;
 import org.apache.thrift.transport.THttpClient;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
@@ -131,6 +136,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     private final BasicNIOConnPool pool;
     private final HttpHost httpHost;
     private final HttpParams params;
+
+    private final AtomicBoolean close = new AtomicBoolean(false);
+    private final AtomicBoolean closeSignal = new AtomicBoolean(false);
+    private final AtomicInteger runningTask = new AtomicInteger(0);
 
     private static Map<Integer, CompanyInfo> id2Company = new ConcurrentHashMap<Integer, CompanyInfo>();
 
@@ -246,16 +255,23 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 new TBinaryProtocol.Factory(true, true)));
         server.addServlet("signup", "/signup", new SignUpServlet(new SignupService.Processor<HttpHiveServer>(this),
                 new TBinaryProtocol.Factory(true, true)));
+        server.addServlet("reject", "/reject", new RejectServlet());
         Thread disper = new Thread(new Disper(), "task-dipser");
         Thread queryDB = new Thread(new QueryDB(), "queryDb");
-        disper.start();
-        queryDB.start();
-        server.start();
 
         HiveConf conf = new HiveConf();
         conf.addResource("spark-site.xml");
         SparkSessionManagerImpl.getInstance().setup(conf);
 
+        disper.start();
+        queryDB.start();
+        server.start();
+    }
+
+    private void close() throws Exception {
+        closeSignal.set(true);
+        SparkSessionManagerImpl.getInstance().shutdown();
+        server.stop();
     }
 
     protected String createServerTag(String host, int port, String ifname) {
@@ -512,6 +528,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     }
                 } catch (HiveSQLException e) {
                     LOG.error("close session wrong.", e);
+                } finally {
+                    runningTask.decrementAndGet();
                 }
             }
         }
@@ -523,7 +541,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         private long lastCleanTime = System.currentTimeMillis();
 
         public void run() {
-            while (true) {
+            while (!closeSignal.get()) {
                 Task task = null;
                 try {
                     task = taskBlockQueue.poll(3, TimeUnit.SECONDS);
@@ -555,6 +573,33 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         public QueryServlet(TProcessor processor, TProtocolFactory protocolFactory) {
             super(processor, protocolFactory);
         }
+    }
+
+    public class RejectServlet extends HttpServlet {
+
+        public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            InputStreamReader reader = new InputStreamReader(req.getInputStream());
+
+            String key = "hiidosys_closeserverkey";
+            char[] array = new char[key.length()];
+            reader.read(array, 0, key.length());
+            if(!key.equals(String.valueOf(array)))
+                return;
+            if(!close.get())
+                close.set(true);
+            else
+                return;
+
+            resp.getOutputStream().flush();
+            LOG.info("closing HttpHiveServer......");
+            final Thread t = new Thread(new SoftReject());
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+            }
+        }
+
     }
 
     private int cleanTaskHistory(boolean force) {
@@ -658,7 +703,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         }
 
         public void run() {
-            while (true) {
+            while (closeSignal.get()) {
                 try {
                     list.clear();
                     HcatQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
@@ -794,6 +839,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     @Override
     public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, RuntimeException {
+        if(close.get())
+            throw new RuntimeException("Server is closing.");
         // 1. 权限验证
         String companyId = cq.cipher.get("company_id");
         String userId = cq.cipher.get("user_id");
@@ -846,6 +893,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         boolean quick = true;
         List<String> cmds = new LinkedList<String>();
         try {
+            runningTask.incrementAndGet();
             Context ctx = new Context(conf, false);
             ParseDriver pd = new ParseDriver();
             String command = "";
@@ -892,6 +940,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             reply.setHandle(handle);
             return reply;
         } catch (Exception e1) {
+            runningTask.decrementAndGet();
             if(e1 instanceof AuthorizationException)
                 throw (AuthorizationException)e1;
             else if (e1 instanceof RuntimeException)
@@ -1052,5 +1101,31 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             throw new RuntimeException("failed in parse sql :" + e.toString());
         }
         return isQuick;
+    }
+
+    private class SoftReject implements Runnable {
+
+        @Override
+        public void run() {
+            while(close.get()) {
+                SystemUtils.sleep(5000);
+                if(runningTask.get() <= 0  && sqlQueue.peek() == null && taskBlockQueue.peek() == null)
+                    break;
+                else {
+                    LOG.info(String.format("waiting for running task: %d, sqlQueue: %s, taskBlockQueue: %d",
+                            runningTask.get(),
+                            sqlQueue.peek() == null ? "null" : sqlQueue.peek().getQid(),
+                            taskBlockQueue.peek() == null ? "null" : taskBlockQueue.peek().qid));
+                }
+            }
+            LOG.warn("HttpHiveServer closed.");
+            try {
+                close();
+            } catch (Exception e) {
+                LOG.warn("Err when closing server.", e);
+            }
+
+            System.exit(0);
+        }
     }
 }

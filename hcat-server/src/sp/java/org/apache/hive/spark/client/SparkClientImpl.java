@@ -45,6 +45,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
@@ -64,6 +66,7 @@ class SparkClientImpl implements SparkClient {
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = LoggerFactory.getLogger(SparkClientImpl.class);
+    private static final Lock lock = new ReentrantLock();
 
     private static final long DEFAULT_SHUTDOWN_TIMEOUT = 10000; // In milliseconds
     private static final long MAX_ERR_LOG_LINES_FOR_RPC = 1000;
@@ -95,7 +98,12 @@ class SparkClientImpl implements SparkClient {
         String secret = rpcServer.createSecret();
         this.protocol = new ClientProtocol();
         io.netty.util.concurrent.Future<Rpc> future = rpcServer.registerClient(clientId, secret, protocol);
-        this.driverThread = startDriver(rpcServer, clientId, secret);
+        lock.lock();
+        try{
+            this.driverThread = startDriver(rpcServer, clientId, secret);
+        } finally {
+            lock.unlock();
+        }
 
         try {
             String value = conf.get(HiveConf.ConfVars.SPARK_RPC_CLIENT_HANDSHAKE_TIMEOUT.varname);
@@ -289,8 +297,10 @@ class SparkClientImpl implements SparkClient {
             for (Map.Entry<String, String> e : conf.entrySet()) {
                 allProps.put(e.getKey(), conf.get(e.getKey()));
             }
-            allProps.put(SparkClientFactory.CONF_CLIENT_ID, clientId);
-            allProps.put(SparkClientFactory.CONF_KEY_SECRET, secret);
+
+            //FIXME
+            //allProps.put(SparkClientFactory.CONF_CLIENT_ID, clientId);
+            //allProps.put(SparkClientFactory.CONF_KEY_SECRET, secret);
             allProps.put(DRIVER_OPTS_KEY, driverJavaOpts);
             allProps.put(EXECUTOR_OPTS_KEY, executorJavaOpts);
 
@@ -433,6 +443,12 @@ class SparkClientImpl implements SparkClient {
             argv.add(serverAddress);
             argv.add("--remote-port");
             argv.add(serverPort);
+
+            //FIXME
+            argv.add("--client-id");
+            argv.add(clientId);
+            argv.add("--secret");
+            argv.add(secret);
 
             //hive.spark.* keys are passed down to the RemoteDriver via --conf,
             //as --properties-file contains the spark.* keys that are meant for SparkConf object.

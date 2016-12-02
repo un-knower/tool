@@ -127,6 +127,8 @@ public class RemoteDriver {
         String secret = mapConf.get(SparkClientFactory.CONF_KEY_SECRET);
         Preconditions.checkArgument(secret != null, "No secret provided.");
 
+        LOG.info("Client info: {} {}", clientId, secret);
+
         int threadCount = new RpcConfiguration(mapConf).getRpcThreadCount();
         this.egroup = new NioEventLoopGroup(
                 threadCount,

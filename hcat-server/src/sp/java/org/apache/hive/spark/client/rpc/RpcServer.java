@@ -107,8 +107,9 @@ public class RpcServer implements Closeable {
                         timeSchedule.register(newRpc);
                     }
                 })
-                .option(ChannelOption.SO_BACKLOG, 1)
+                .option(ChannelOption.SO_BACKLOG, 100)
                 .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .bind(0)
                 .sync()

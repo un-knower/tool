@@ -9,12 +9,8 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$USER_HOME$/ideaProjects/calc/security/pom.xml" />
         <option value="$PROJECT_DIR$/../hva/pom.xml" />
-      </list>
-    </option>
-    <option name="ignoredFiles">
-      <set>
         <option value="$PROJECT_DIR$/hcat-databus/pom.xml" />
-      </set>
+      </list>
     </option>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">

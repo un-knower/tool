@@ -71,7 +71,7 @@ public class RpcServer implements Closeable {
                         //ch.pipeline().addLast(new ProtobufDecoder(RpcProtocol.))
                     }
                 })
-                .option(ChannelOption.SO_BACKLOG, 50)
+                .option(ChannelOption.SO_BACKLOG, 100)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .bind(address, port)

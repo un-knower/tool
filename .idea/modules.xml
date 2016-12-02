@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/hcat-client/hcat.client.iml" filepath="$PROJECT_DIR$/hcat-client/hcat.client.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-common/hcat.common.iml" filepath="$PROJECT_DIR$/hcat-common/hcat.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hcat-databus/hcat.databus.iml" filepath="$PROJECT_DIR$/hcat-databus/hcat.databus.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-http/hcat.http.iml" filepath="$PROJECT_DIR$/hcat-http/hcat.http.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-server/hcat.server.iml" filepath="$PROJECT_DIR$/hcat-server/hcat.server.iml" />
       <module fileurl="file://$PROJECT_DIR$/hiido.hcat.iml" filepath="$PROJECT_DIR$/hiido.hcat.iml" />
