@@ -24,6 +24,7 @@ import com.hiido.hcat.thrift.protocol.AuthorizationException;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.common.util.ConnectionPool;
+import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.http.HttpHost;
@@ -288,6 +289,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     final class Task implements Runnable {
         final String qid;
         final boolean quick;
+        final boolean reqFetch;
         final BitSet bitSet;
         final List<String> query;
         Map<String, String> confOverlay;
@@ -313,6 +315,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             this.confOverlay = confOverlay;
             this.qp.setJobId(new LinkedList<String>()).setState(JobStatus.READY.getValue()).setN(query.size())
                     .setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
+
+            //for hcat-databus
+            if(confOverlay != null & confOverlay.containsKey("hcat.query.return.fetch"))
+                reqFetch = true;
+            else
+                reqFetch = false;
         }
 
         boolean isFinished() {
@@ -435,7 +443,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                                     qp.resSize += s.getLen();
                         }
 
-                        if (needToMove) {
+                        if ((!reqFetch) && needToMove) {
                             FileSystem fs = work.getPathLists().get(0).getFileSystem(session.getHiveConf());
                             Path parent = new Path(new Path(tblDir.toUri().getScheme(), tblDir.toUri().getAuthority(), conf.get("hcat.mr.resultDir")), this.qid);
                             if (!fs.exists(parent))
@@ -454,9 +462,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                                 }
                                 work.setPartDir(partDir);
                             }
+                        //for hcat-databus
+                        } else if(reqFetch) {
+                            qp.fetchDirs = new LinkedList<String>();
+                            qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
                         }
-                        qp.fetchDirs = new LinkedList<String>();
-                        //qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
+
                         TableSchema schema = sqlOpt.getResultSetSchema();
                         qp.fields = new LinkedList<com.hiido.hcat.thrift.protocol.Field>();
                         for (ColumnDescriptor column : schema.getColumnDescriptors()) {
@@ -1112,10 +1123,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 if(runningTask.get() <= 0  && sqlQueue.peek() == null && taskBlockQueue.peek() == null)
                     break;
                 else {
-                    LOG.info(String.format("waiting for running task: %d, sqlQueue: %s, taskBlockQueue: %d",
-                            runningTask.get(),
-                            sqlQueue.peek() == null ? "null" : sqlQueue.peek().getQid(),
-                            taskBlockQueue.peek() == null ? "null" : taskBlockQueue.peek().qid));
+                    LOG.info(String.format("waiting for %d tasks to be done.",
+                            runningTask.get()));
                 }
             }
             LOG.warn("HttpHiveServer closed.");

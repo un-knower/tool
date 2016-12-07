@@ -2,7 +2,6 @@ package com.hiido.hcat.databus.network;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hiido.hcat.databus.Config;
-import com.hiido.hcat.databus.protocol.RpcProtocol;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -11,7 +10,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,8 @@ import javax.security.sasl.SaslServer;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by zrc on 16-11-30.
@@ -41,6 +41,9 @@ public class RpcServer implements Closeable {
 
     int rpcBossThreadCount = 0;
     int rpcWorkThreadCount = 0;
+
+    String clientId = UUID.randomUUID().toString();
+    String secret = createSecret();
 
     public RpcServer(Config mapConf) throws IOException, InterruptedException {
         this.address = mapConf.getStrVar(Config.Vars.RPCSERVER_ADDRESS);
@@ -99,8 +102,10 @@ public class RpcServer implements Closeable {
         }
 
         @Override
-        protected Rpc.SaslMessage update(Rpc.SaslMessage challenge) throws IOException {
-            return new Rpc.SaslMessage(server.evaluateResponse(challenge.payload));
+        protected Rpc.RpcMessage update(Rpc.RpcMessage challenge) throws IOException {
+            //TODO
+            return null;
+            //return new Rpc.RpcMessage(server.evaluateResponse(challenge.payload));
         }
 
         @Override
@@ -112,6 +117,23 @@ public class RpcServer implements Closeable {
         public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
         }
+    }
+
+    /**
+     * Creates a secret for identifying a client connection.
+     */
+    public String createSecret() {
+        byte[] secret = new byte[256 / 8];
+        new Random().nextBytes(secret);
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : secret) {
+            if (b < 10) {
+                sb.append("0");
+            }
+            sb.append(Integer.toHexString(b));
+        }
+        return sb.toString();
     }
 
     @Override

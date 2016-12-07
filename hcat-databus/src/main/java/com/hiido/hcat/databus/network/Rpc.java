@@ -6,19 +6,23 @@ package com.hiido.hcat.databus.network;
 public class Rpc {
 
 
-    static class SaslMessage {
-        final byte[] payload;
-
-        SaslMessage() {
-            payload = null;
-        }
-
-        SaslMessage(byte[] payload) {
-            this.payload = payload;
-        }
+    public static class MessageHeader {
+        byte type;
+        long size;
+        long reqId;
+        long respId;
     }
 
-    static class HeartBeatMessage {
+    public static class MessageBody {
+        long messageSize;
+        byte[] data;
     }
+
+    public static class RpcMessage {
+        MessageHeader header;
+        MessageBody body;
+    }
+
+
 
 }

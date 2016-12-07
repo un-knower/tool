@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by zrc on 16-11-30.
  */
-public abstract class SaslHandler extends SimpleChannelInboundHandler<Rpc.SaslMessage> {
+public abstract class SaslHandler extends SimpleChannelInboundHandler<Rpc.RpcMessage> {
 
     private final Logger LOG;
     private boolean hasAuthResponse = false;
@@ -24,9 +24,9 @@ public abstract class SaslHandler extends SimpleChannelInboundHandler<Rpc.SaslMe
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Rpc.SaslMessage msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Rpc.RpcMessage msg) throws Exception {
         LOG.debug("Handling SASL challenge message...");
-        Rpc.SaslMessage response = update(msg);
+        Rpc.RpcMessage response = update(msg);
         if(response != null) {
             LOG.debug("Sending SASL challenge response...");
             hasAuthResponse = true;
@@ -45,7 +45,7 @@ public abstract class SaslHandler extends SimpleChannelInboundHandler<Rpc.SaslMe
 
     protected abstract String getNegotiatedProperty(String name);
 
-    protected abstract Rpc.SaslMessage update(Rpc.SaslMessage challenge) throws IOException;
+    protected abstract Rpc.RpcMessage update(Rpc.RpcMessage challenge) throws IOException;
 
     protected abstract void onComplete() throws Exception;
 

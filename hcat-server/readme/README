@@ -2,3 +2,5 @@
 
 2. com.hiido.hcat.hadoop.HcatAppMaster 需要打包进 hive-exec-2.0.0.jar 中，提交MR作业添加一个参数：
 	set hadoop.applicationmaster.class=com.hiido.hcat.hadoop.HcatAppMaster;
+
+3. RemoteDriver 修改后要重新打包到hive-exec-2.x.x.jar 中，作为hive on spark ApplicationMaster 启动的main方法。

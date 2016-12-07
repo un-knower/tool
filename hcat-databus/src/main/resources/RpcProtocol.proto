@@ -2,14 +2,14 @@ package rpc;
 option java_package = "com.hiido.hcat.databus.protocol";
 
 message HeartbeatMss {
-    required int32 type = 1;
-    optional int64 workPending = 2;
+    required int64 id = 1;
 }
 
 message SignMss {
-    required int32 type = 1;
-    optional hostname = 2;
-    optional int32 port = 3;
+    required int64 id = 1;
+    required int32 type = 2;
+    optional hostname = 3;
+    optional int32 port = 4;
 }
 
 message TaskMss {
@@ -39,6 +39,17 @@ message TaskDoneMss {
     required string jobId = 1;
     required int32 status = 2;
 }
+
+enum Recode {
+    SUCCESS = 0;
+    FAILES = 1;
+}
+
+message Reply {
+    required int64 id = 1;
+    required Recode recode = 2;
+}
+
 
 
 
