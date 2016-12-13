@@ -16,6 +16,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.hiido</groupId>
             <artifactId>hcat.http</artifactId>
             <version>${project.version}</version>
@@ -52,7 +57,23 @@
             <version>15.0</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.hiido</groupId>
+            <artifactId>security</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

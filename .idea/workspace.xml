@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="8c7fce1e-72ac-42e2-acb5-98d075051a71" name="Default" comment="create hcat-databus module">
+    <list default="true" readonly="true" id="8c7fce1e-72ac-42e2-acb5-98d075051a71" name="Default" comment="hcat-databus module">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/HiidoRateLimiter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/FetchScheduler.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/HcatDatabusServer.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/io/DatabusFormatter.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpProtocol.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/test/java/com/hiido/hcat/databus/TestFetchScheduler.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hcat-databus/src/test/java/org/apache/hive/spark/client/rpc/TestRpcServer.java" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business$BusType.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/Business.class" />
       <change type="MODIFICATION" beforePath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" afterPath="$USER_HOME$/ideaProjects/calc/security/target/classes/com/hiido/suit/PublicConstant.class" />
@@ -17,12 +24,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" afterPath="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/hcat.databus.iml" afterPath="$PROJECT_DIR$/hcat-databus/hcat.databus.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/pom.xml" afterPath="$PROJECT_DIR$/hcat-databus/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HeartBeatHandler.java" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HeartBeatHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcServer.java" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SaslHandler.java" afterPath="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SaslHandler.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto" afterPath="$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/readme/README" afterPath="$PROJECT_DIR$/hcat-server/readme/README" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java" afterPath="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java" />
     </list>
     <list id="84acc146-5515-4f8b-8b26-6bbd18e8e901" name="Rejected commit: Default" comment="Rejected commit: Default" />
@@ -72,203 +74,118 @@
     </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.568787">
+    <splitter split-orientation="horizontal" split-proportion="0.5213068">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
+          <file leaf-file-name="ErrCacheOutputStream.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/ErrCacheOutputStream.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="114">
-                  <caret line="6" column="36" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+                <state relative-caret-position="285">
+                  <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="QueryProgress.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/QueryProgress.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="646">
-                  <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
-                  <folding>
-                    <element signature="n#!!doc" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#6851#6852#0" expanded="false" />
-                    <element signature="e#6888#6889#0" expanded="false" />
-                    <element signature="e#7113#7114#0" expanded="false" />
-                    <element signature="e#7143#7144#0" expanded="false" />
-                    <element signature="e#7179#7180#0" expanded="false" />
-                    <element signature="e#7210#7211#0" expanded="false" />
-                    <element signature="e#13569#13570#0" expanded="false" />
-                    <element signature="e#13609#13610#0" expanded="false" />
-                    <element signature="e#14098#14099#0" expanded="false" />
-                    <element signature="e#14159#14160#0" expanded="false" />
-                    <element signature="e#14217#14218#0" expanded="false" />
-                    <element signature="e#14285#14286#0" expanded="false" />
-                    <element signature="e#14472#14473#0" expanded="false" />
-                    <element signature="e#14499#14500#0" expanded="false" />
-                    <element signature="e#14629#14630#0" expanded="false" />
-                    <element signature="e#14656#14657#0" expanded="false" />
-                    <element signature="e#14781#14782#0" expanded="false" />
-                    <element signature="e#14816#14817#0" expanded="false" />
-                    <element signature="e#14942#14943#0" expanded="false" />
-                    <element signature="e#14969#14970#0" expanded="false" />
-                    <element signature="e#15115#15116#0" expanded="false" />
-                    <element signature="e#15202#15203#0" expanded="false" />
-                    <element signature="e#15327#15328#0" expanded="false" />
-                    <element signature="e#15401#15402#0" expanded="false" />
-                    <element signature="e#15562#15563#0" expanded="false" />
-                    <element signature="e#15585#15586#0" expanded="false" />
-                    <element signature="e#15707#15708#0" expanded="false" />
-                    <element signature="e#15790#15791#0" expanded="false" />
-                    <element signature="e#15907#15908#0" expanded="false" />
-                    <element signature="e#15977#15978#0" expanded="false" />
-                    <element signature="e#16138#16139#0" expanded="false" />
-                    <element signature="e#16166#16167#0" expanded="false" />
-                    <element signature="e#16295#16296#0" expanded="false" />
-                    <element signature="e#16323#16324#0" expanded="false" />
-                    <element signature="e#16450#16451#0" expanded="false" />
-                    <element signature="e#16486#16487#0" expanded="false" />
-                    <element signature="e#16618#16619#0" expanded="false" />
-                    <element signature="e#16646#16647#0" expanded="false" />
-                    <element signature="e#16775#16776#0" expanded="false" />
-                    <element signature="e#16803#16804#0" expanded="false" />
-                    <element signature="e#16930#16931#0" expanded="false" />
-                    <element signature="e#16966#16967#0" expanded="false" />
-                    <element signature="e#17095#17096#0" expanded="false" />
-                    <element signature="e#17120#17121#0" expanded="false" />
-                    <element signature="e#17234#17235#0" expanded="false" />
-                    <element signature="e#17259#17260#0" expanded="false" />
-                    <element signature="e#17380#17381#0" expanded="false" />
-                    <element signature="e#17413#17414#0" expanded="false" />
-                    <element signature="e#17540#17541#0" expanded="false" />
-                    <element signature="e#17603#17604#0" expanded="false" />
-                    <element signature="e#17661#17662#0" expanded="false" />
-                    <element signature="e#17731#17732#0" expanded="false" />
-                    <element signature="e#17920#17921#0" expanded="false" />
-                    <element signature="e#17948#17949#0" expanded="false" />
-                    <element signature="e#18082#18083#0" expanded="false" />
-                    <element signature="e#18110#18111#0" expanded="false" />
-                    <element signature="e#18237#18238#0" expanded="false" />
-                    <element signature="e#18273#18274#0" expanded="false" />
-                    <element signature="e#18406#18407#0" expanded="false" />
-                    <element signature="e#18437#18438#0" expanded="false" />
-                    <element signature="e#18608#18609#0" expanded="false" />
-                    <element signature="e#18699#18700#0" expanded="false" />
-                    <element signature="e#18832#18833#0" expanded="false" />
-                    <element signature="e#18910#18911#0" expanded="false" />
-                    <element signature="e#19086#19087#0" expanded="false" />
-                    <element signature="e#19115#19116#0" expanded="false" />
-                    <element signature="e#19274#19275#0" expanded="false" />
-                    <element signature="e#19363#19364#0" expanded="false" />
-                    <element signature="e#19492#19493#0" expanded="false" />
-                    <element signature="e#19568#19569#0" expanded="false" />
-                    <element signature="e#19740#19741#0" expanded="false" />
-                    <element signature="e#19769#19770#0" expanded="false" />
-                    <element signature="e#19928#19929#0" expanded="false" />
-                    <element signature="e#20017#20018#0" expanded="false" />
-                    <element signature="e#20146#20147#0" expanded="false" />
-                    <element signature="e#20222#20223#0" expanded="false" />
-                    <element signature="e#20397#20398#0" expanded="false" />
-                    <element signature="e#20427#20428#0" expanded="false" />
-                    <element signature="e#20594#20595#0" expanded="false" />
-                    <element signature="e#20684#20685#0" expanded="false" />
-                    <element signature="e#20815#20816#0" expanded="false" />
-                    <element signature="e#20892#20893#0" expanded="false" />
-                    <element signature="e#21072#21073#0" expanded="false" />
-                    <element signature="e#21105#21106#0" expanded="false" />
-                    <element signature="e#21521#21522#0" expanded="false" />
-                    <element signature="e#21601#21602#0" expanded="false" />
-                    <element signature="e#21786#21787#0" expanded="false" />
-                    <element signature="e#21855#21856#0" expanded="false" />
-                    <element signature="e#22200#22201#0" expanded="false" />
-                    <element signature="e#22231#22232#0" expanded="false" />
-                    <element signature="e#22381#22382#0" expanded="false" />
-                    <element signature="e#22412#22413#0" expanded="false" />
-                    <element signature="e#22545#22546#0" expanded="false" />
-                    <element signature="e#22584#22585#0" expanded="false" />
-                    <element signature="e#37020#37021#0" expanded="false" />
-                    <element signature="e#37068#37069#0" expanded="false" />
-                    <element signature="e#41842#41843#0" expanded="false" />
-                    <element signature="e#41896#41897#0" expanded="false" />
-                    <element signature="e#52865#52866#0" expanded="false" />
-                    <element signature="e#52916#52917#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="RpcServer.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcServer.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="421">
-                  <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#3649#3650#0" expanded="true" />
-                    <element signature="e#3699#3700#0" expanded="true" />
-                    <element signature="e#3780#3781#0" expanded="true" />
-                    <element signature="e#3856#3857#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="SaslServer.java" pinned="false" current-in-tab="false">
-            <entry file="jar:///opt/jdk1.7.0_79/src.zip!/javax/security/sasl/SaslServer.java">
+          <file leaf-file-name="FetchScheduler.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/FetchScheduler.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="307">
-                  <caret line="119" column="27" selection-start-line="119" selection-start-column="27" selection-end-line="119" selection-end-column="27" />
+                  <caret line="180" column="11" selection-start-line="180" selection-start-column="11" selection-end-line="180" selection-end-column="11" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#1616#1617#0" expanded="true" />
+                    <element signature="e#1657#1658#0" expanded="true" />
+                    <element signature="e#1739#1745#0" expanded="true" />
+                    <element signature="e#1814#1828#0" expanded="true" />
+                    <element signature="e#2039#2655#0" expanded="true" />
+                    <element signature="e#2654#2655#0" expanded="true" />
+                    <element signature="e#5271#5272#0" expanded="true" />
+                    <element signature="e#5311#5312#0" expanded="true" />
+                    <element signature="e#6795#6796#0" expanded="true" />
+                    <element signature="e#6837#6838#0" expanded="true" />
+                    <element signature="e#6864#6865#0" expanded="true" />
+                    <element signature="e#6902#6903#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="HcatDatabusServer.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/HcatDatabusServer.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="281">
+                  <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Driver.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/Driver.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="231">
+                  <caret line="410" column="64" selection-start-line="410" selection-start-column="64" selection-end-line="410" selection-end-column="64" />
+                  <folding>
+                    <element signature="e#12875#12876#0" expanded="true" />
+                    <element signature="e#12920#12921#0" expanded="true" />
+                    <element signature="e#14956#15384#0" expanded="true" />
+                    <element signature="e#15383#15384#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="SemanticAnalyzerFactory.java" pinned="false" current-in-tab="false">
+            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/SemanticAnalyzerFactory.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="459">
+                  <caret line="173" column="26" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="26" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="SaslHandler.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SaslHandler.java">
+          <file leaf-file-name="SemanticAnalyzer.java" pinned="false" current-in-tab="true">
+            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/SemanticAnalyzer.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="57">
-                  <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+                <state relative-caret-position="286">
+                  <caret line="1407" column="50" selection-start-line="1407" selection-start-column="50" selection-end-line="1407" selection-end-column="50" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RateLimiter.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hbase/hbase-server/1.1.1/hbase-server-1.1.1-sources.jar!/org/apache/hadoop/hbase/quotas/RateLimiter.java">
+          <file leaf-file-name="AuthorizationException.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/AuthorizationException.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-494">
-                  <caret line="69" column="23" selection-start-line="69" selection-start-column="23" selection-end-line="69" selection-end-column="23" />
+                <state relative-caret-position="307">
+                  <caret line="121" column="9" selection-start-line="121" selection-start-column="9" selection-end-line="121" selection-end-column="9" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ChannelHandlerContext.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.1.6.Final/netty-all-4.1.6.Final-sources.jar!/io/netty/channel/ChannelHandlerContext.java">
+          <file leaf-file-name="HttpProtocol.java" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpProtocol.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="456">
-                  <caret line="54" column="33" selection-start-line="54" selection-start-column="33" selection-end-line="54" selection-end-column="33" />
-                  <folding />
+                <state relative-caret-position="-1026">
+                  <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
+                  <folding>
+                    <element signature="e#4479#4480#0" expanded="true" />
+                    <element signature="e#4517#4518#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RpcProtocol.proto" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto">
+          <file leaf-file-name="Queue.java" pinned="false" current-in-tab="false">
+            <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/util/Queue.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="418">
-                  <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Rpc.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="399">
-                  <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+                <state relative-caret-position="770">
+                  <caret line="216" column="6" selection-start-line="216" selection-start-column="6" selection-end-line="216" selection-end-column="6" />
                   <folding />
                 </state>
               </provider>
@@ -277,228 +194,146 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="SaslHandler.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/SaslHandler.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="209">
-                  <caret line="33" column="69" selection-start-line="33" selection-start-column="69" selection-end-line="33" selection-end-column="69" />
-                  <folding>
-                    <element signature="e#0#4169#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#2162#2163#0" expanded="false" />
-                    <element signature="e#2194#2195#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="RpcServer.java" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/RpcServer.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="86">
-                  <caret line="235" column="54" selection-start-line="235" selection-start-column="54" selection-end-line="235" selection-end-column="54" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Rpc.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/Rpc.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="5263">
-                  <caret line="347" column="5" selection-start-line="347" selection-start-column="5" selection-end-line="347" selection-end-column="5" />
-                  <folding>
-                    <element signature="e#0#17406#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#9870#9871#0" expanded="false" />
-                    <element signature="e#9909#9910#0" expanded="false" />
-                    <element signature="e#10229#10230#0" expanded="false" />
-                    <element signature="e#10273#10274#0" expanded="false" />
-                    <element signature="e#10306#10307#0" expanded="false" />
-                    <element signature="e#10347#10348#0" expanded="false" />
-                    <element signature="e#11989#11990#0" expanded="false" />
-                    <element signature="e#12038#12039#0" expanded="false" />
-                    <element signature="e#12089#12090#0" expanded="false" />
-                    <element signature="e#12119#12120#0" expanded="false" />
-                    <element signature="e#13277#13278#0" expanded="false" />
-                    <element signature="e#13315#13316#0" expanded="false" />
-                    <element signature="e#13597#13598#0" expanded="false" />
-                    <element signature="e#13637#13638#0" expanded="false" />
-                    <element signature="e#13676#13677#0" expanded="false" />
-                    <element signature="e#13719#13720#0" expanded="false" />
-                    <element signature="e#15054#15055#0" expanded="false" />
-                    <element signature="e#15104#15105#0" expanded="false" />
-                    <element signature="e#15185#15186#0" expanded="false" />
-                    <element signature="e#15259#15260#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="KryoMessageCodec.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/KryoMessageCodec.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="437">
-                  <caret line="58" column="39" selection-start-line="58" selection-start-column="39" selection-end-line="58" selection-end-column="39" />
-                  <folding>
-                    <element signature="e#0#5658#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#2036#2412#0" expanded="false" />
-                    <element signature="e#2411#2412#0" expanded="false" />
-                    <element signature="e#5389#5390#0" expanded="false" />
-                    <element signature="e#5431#5432#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="ByteToMessageCodec.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.0.23.Final/netty-all-4.0.23.Final-sources.jar!/io/netty/handler/codec/ByteToMessageCodec.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="95">
-                  <caret line="25" column="3" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
-                  <folding>
-                    <element signature="e#0#5565#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#2039#2040#0" expanded="false" />
-                    <element signature="e#2065#2066#0" expanded="false" />
-                    <element signature="e#2249#2250#0" expanded="false" />
-                    <element signature="e#2296#2297#0" expanded="false" />
-                    <element signature="e#5152#5153#0" expanded="false" />
-                    <element signature="e#5195#5196#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="KryoMessageCodec.class" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0.jar!/org/apache/hive/spark/client/rpc/KryoMessageCodec.class">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="475">
-                  <caret line="47" column="11" selection-start-line="47" selection-start-column="11" selection-end-line="47" selection-end-column="11" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="RemoteDriver.java" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4180">
-                  <caret line="279" column="23" selection-start-line="279" selection-start-column="23" selection-end-line="279" selection-end-column="23" />
-                  <folding>
-                    <element signature="e#0#19202#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#6121#6346#0" expanded="false" />
-                    <element signature="e#6345#6346#0" expanded="false" />
-                    <element signature="e#9841#9842#0" expanded="false" />
-                    <element signature="e#9902#9903#0" expanded="false" />
-                    <element signature="e#11791#12169#0" expanded="false" />
-                    <element signature="e#12168#12169#0" expanded="false" />
-                    <element signature="e#13108#13434#0" expanded="false" />
-                    <element signature="e#13433#13434#0" expanded="false" />
-                    <element signature="e#15066#15067#0" expanded="false" />
-                    <element signature="e#15125#15126#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="BaseProtocol.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/BaseProtocol.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="95">
-                  <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#0#3804#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#1237#1238#0" expanded="false" />
-                    <element signature="e#1263#1264#0" expanded="false" />
-                    <element signature="e#1282#1283#0" expanded="false" />
-                    <element signature="e#1306#1307#0" expanded="false" />
-                    <element signature="e#1650#1651#0" expanded="false" />
-                    <element signature="e#1674#1675#0" expanded="false" />
-                    <element signature="e#2133#2134#0" expanded="false" />
-                    <element signature="e#2175#2176#0" expanded="false" />
-                    <element signature="e#2420#2421#0" expanded="false" />
-                    <element signature="e#2450#2451#0" expanded="false" />
-                    <element signature="e#2928#2929#0" expanded="false" />
-                    <element signature="e#2970#2971#0" expanded="false" />
-                    <element signature="e#3089#3090#0" expanded="false" />
-                    <element signature="e#3115#3116#0" expanded="false" />
-                    <element signature="e#3135#3136#0" expanded="false" />
-                    <element signature="e#3159#3160#0" expanded="false" />
-                    <element signature="e#3538#3539#0" expanded="false" />
-                    <element signature="e#3566#3567#0" expanded="false" />
-                    <element signature="e#3718#3719#0" expanded="false" />
-                    <element signature="e#3746#3747#0" expanded="false" />
-                    <element signature="e#3770#3771#0" expanded="false" />
-                    <element signature="e#3794#3795#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="RpcDispatcher.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/RpcDispatcher.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1482">
-                  <caret line="110" column="28" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
-                  <folding>
-                    <element signature="e#0#7264#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#2309#2325#0" expanded="false" />
-                    <element signature="e#2486#2487#0" expanded="false" />
-                    <element signature="e#2529#2530#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="Rpc.java" pinned="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/Rpc.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="5149">
-                  <caret line="356" column="18" selection-start-line="356" selection-start-column="18" selection-end-line="356" selection-end-column="18" />
-                  <folding>
-                    <element signature="e#0#15475#0" expanded="false" />
-                    <element signature="imports" expanded="false" />
-                    <element signature="e#4698#4868#0" expanded="false" />
-                    <element signature="e#4867#4868#0" expanded="false" />
-                    <element signature="e#5167#5708#0" expanded="false" />
-                    <element signature="e#5707#5708#0" expanded="false" />
-                    <element signature="e#5779#5974#0" expanded="false" />
-                    <element signature="e#5973#5974#0" expanded="false" />
-                    <element signature="e#7871#7887#0" expanded="false" />
-                    <element signature="e#8867#9021#0" expanded="false" />
-                    <element signature="e#9020#9021#0" expanded="false" />
-                    <element signature="e#9300#9301#0" expanded="false" />
-                    <element signature="e#9338#9339#0" expanded="false" />
-                    <element signature="e#9369#9370#0" expanded="false" />
-                    <element signature="e#9404#9405#0" expanded="false" />
-                    <element signature="e#9997#10385#0" expanded="false" />
-                    <element signature="e#10384#10385#0" expanded="false" />
-                    <element signature="e#10854#10855#0" expanded="false" />
-                    <element signature="e#10897#10898#0" expanded="false" />
-                    <element signature="e#10944#10945#0" expanded="false" />
-                    <element signature="e#10968#10969#0" expanded="false" />
-                    <element signature="e#11938#11939#0" expanded="false" />
-                    <element signature="e#11966#11967#0" expanded="false" />
-                    <element signature="e#12208#12209#0" expanded="false" />
-                    <element signature="e#12238#12239#0" expanded="false" />
-                    <element signature="e#12273#12274#0" expanded="false" />
-                    <element signature="e#12306#12307#0" expanded="false" />
-                    <element signature="e#13459#13460#0" expanded="false" />
-                    <element signature="e#13499#13500#0" expanded="false" />
-                    <element signature="e#13572#13573#0" expanded="false" />
-                    <element signature="e#13636#13637#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
+        <splitter split-orientation="vertical" split-proportion="0.78640777">
+          <split-first>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="TestHttpClient.java" pinned="false" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="95">
+                      <caret line="103" column="9" selection-start-line="103" selection-start-column="9" selection-end-line="103" selection-end-column="9" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/Config.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="323">
+                      <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+                      <folding>
+                        <element signature="e#5884#5885#0" expanded="true" />
+                        <element signature="e#5946#5947#0" expanded="true" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="LazySimpleSerDe.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/lazy/LazySimpleSerDe.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="418">
+                      <caret line="68" column="45" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="AbstractEncodingAwareSerDe.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/AbstractEncodingAwareSerDe.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="361">
+                      <caret line="45" column="8" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="FetchFormatter.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/FetchFormatter.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="209">
+                      <caret line="31" column="17" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="Driver.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/Driver.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="136">
+                      <caret line="1924" column="7" selection-start-line="1924" selection-start-column="7" selection-end-line="1924" selection-end-column="7" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="HiveParser.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/HiveParser.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="156">
+                      <caret line="465" column="28" selection-start-line="465" selection-start-column="28" selection-end-line="465" selection-end-column="28" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="SemanticAnalyzer.java" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/parse/SemanticAnalyzer.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="270">
+                      <caret line="1406" column="48" selection-start-line="1406" selection-start-column="48" selection-end-line="1406" selection-end-column="48" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="380">
+                      <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-first>
+          <split-second>
+            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+              <file leaf-file-name="ThriftFormatter.java" pinned="false" current-in-tab="true">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/thrift/ThriftFormatter.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="24">
+                      <caret line="40" column="17" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
+                      <folding />
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="SerDeUtils.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/SerDeUtils.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="2793">
+                      <caret line="199" column="25" selection-start-line="199" selection-start-column="25" selection-end-line="199" selection-end-column="25" />
+                      <folding>
+                        <element signature="n#!!doc" expanded="false" />
+                        <element signature="imports" expanded="false" />
+                        <element signature="e#7054#7055#0" expanded="false" />
+                        <element signature="e#7102#7103#0" expanded="false" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+              <file leaf-file-name="ObjectInspector.java" pinned="false" current-in-tab="false">
+                <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/objectinspector/ObjectInspector.java">
+                  <provider selected="true" editor-type-id="text-editor">
+                    <state relative-caret-position="532">
+                      <caret line="44" column="39" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="39" />
+                      <folding>
+                        <element signature="n#!!doc" expanded="false" />
+                      </folding>
+                    </state>
+                  </provider>
+                </entry>
+              </file>
+            </leaf>
+          </split-second>
+        </splitter>
       </split-second>
     </splitter>
   </component>
@@ -531,15 +366,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HvaHook.java" />
-        <option value="$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hva/thrift/protocol/AuthorizationException.java" />
-        <option value="$PROJECT_DIR$/../hva/src/resources/validation.thrift" />
-        <option value="$PROJECT_DIR$/../hva/src/main/java/com/hiido/hva/thrift/protocol/AuthorizationException.java" />
-        <option value="$PROJECT_DIR$/../hva/src/main/java/com/hiido/hva/model/HiveValidationImpl.java" />
-        <option value="$PROJECT_DIR$/../hva/src/test/java/com/hiido/hva/cli/TestHttpsClient.java" />
-        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java" />
-        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/ServiceMain.java" />
-        <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/HcatSparkClient.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpServer.java" />
         <option value="$PROJECT_DIR$/hcat-server/readme/SparkClientImpl.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/metastore/ObjectStore.java" />
@@ -571,17 +397,26 @@
         <option value="$PROJECT_DIR$/hcat-server/src/test/java/com/hiido/hcat/service/TestUUID.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/SparkClientImpl.java" />
-        <option value="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HeartBeatHandler.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SignHandler.java" />
         <option value="$PROJECT_DIR$/hcat-server/readme/README" />
-        <option value="$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto" />
         <option value="$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/RpcServer.java" />
-        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java" />
-        <option value="$PROJECT_DIR$/hcat-databus/pom.xml" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SaslHandler.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java" />
+        <option value="$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/HiidoRateLimitter.java" />
+        <option value="$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/HiidoRateLimiter.java" />
         <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcServer.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/com/hiido/hcat/databus/io/DatabusFormatter.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/io/DatabusFormatter.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpProtocol.java" />
+        <option value="$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/test/java/com/hiido/hcat/databus/TestFetchScheduler.java" />
+        <option value="$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/FetchScheduler.java" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/resources/Hcat-databus.thrift" />
+        <option value="$PROJECT_DIR$/hcat-databus/pom.xml" />
+        <option value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/HcatDatabusServer.java" />
       </list>
     </option>
   </component>
@@ -603,9 +438,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="-4" />
+    <option name="y" value="24" />
     <option name="width" value="1855" />
-    <option name="height" value="1084" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -632,7 +467,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -707,7 +541,39 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-http" />
+              <option name="myItemId" value="hcat-databus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-databus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-databus" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -720,90 +586,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-http" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hiido" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-databus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-databus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tool-original" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="hcat-databus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -834,6 +616,40 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="databus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tool-original" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hcat-databus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="databus" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="protocol" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -873,8 +689,9 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -883,7 +700,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../message-transfer" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../loadcat" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="203" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="232" />
@@ -902,7 +719,7 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="SearchEverywhereHistoryKey" value="spark-submit&#9;null&#9;null&#10;spark.shuffle.manager&#9;null&#9;null" />
     <property name="ignore_missing_gitignore" value="true" />
-    <property name="last_directory_selection" value="$PROJECT_DIR$/hcat-server/src/test/java/org/apache/hive/spark/client" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -1217,36 +1034,20 @@
     <configuration default="true" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings" />
-        <option name="myRunnerSettings">
-          <MavenRunnerSettings>
-            <option name="environmentProperties">
-              <map />
-            </option>
-            <option name="jreName" value="#USE_PROJECT_JDK" />
-            <option name="mavenProperties">
-              <map />
-            </option>
-            <option name="passParentEnv" value="true" />
-            <option name="runMavenInBackground" value="true" />
-            <option name="skipTests" value="true" />
-            <option name="vmOptions" value="" />
-          </MavenRunnerSettings>
-        </option>
+        <option name="myRunnerSettings" />
         <option name="myRunnerParameters">
           <MavenRunnerParameters>
             <option name="profiles">
               <set />
             </option>
             <option name="goals">
-              <list>
-                <option value="package" />
-              </list>
+              <list />
             </option>
             <option name="profilesMap">
               <map />
             </option>
             <option name="resolveToWorkspace" value="false" />
-            <option name="workingDirPath" value="$PROJECT_DIR$" />
+            <option name="workingDirPath" value="" />
           </MavenRunnerParameters>
         </option>
       </MavenSettings>
@@ -1367,60 +1168,6 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="false" name="installSecur" type="MavenRunConfiguration" factoryName="Maven">
-      <MavenSettings>
-        <option name="myGeneralSettings">
-          <MavenGeneralSettings>
-            <option name="alwaysUpdateSnapshots" value="false" />
-            <option name="checksumPolicy" value="NOT_SET" />
-            <option name="failureBehavior" value="NOT_SET" />
-            <option name="localRepository" value="" />
-            <option name="mavenHome" value="/opt/apache-maven-3.3.9" />
-            <option name="nonRecursive" value="false" />
-            <option name="outputLevel" value="INFO" />
-            <option name="pluginUpdatePolicy" value="DEFAULT" />
-            <option name="printErrorStackTraces" value="false" />
-            <option name="threads" />
-            <option name="usePluginRegistry" value="false" />
-            <option name="userSettingsFile" value="/opt/apache-maven-3.3.9/conf/settings.xml" />
-            <option name="workOffline" value="false" />
-          </MavenGeneralSettings>
-        </option>
-        <option name="myRunnerSettings">
-          <MavenRunnerSettings>
-            <option name="environmentProperties">
-              <map />
-            </option>
-            <option name="jreName" value="#USE_PROJECT_JDK" />
-            <option name="mavenProperties">
-              <map />
-            </option>
-            <option name="passParentEnv" value="true" />
-            <option name="runMavenInBackground" value="true" />
-            <option name="skipTests" value="true" />
-            <option name="vmOptions" value="" />
-          </MavenRunnerSettings>
-        </option>
-        <option name="myRunnerParameters">
-          <MavenRunnerParameters>
-            <option name="profiles">
-              <set />
-            </option>
-            <option name="goals">
-              <list>
-                <option value="install" />
-              </list>
-            </option>
-            <option name="profilesMap">
-              <map />
-            </option>
-            <option name="resolveToWorkspace" value="false" />
-            <option name="workingDirPath" value="$PROJECT_DIR$/../security" />
-          </MavenRunnerParameters>
-        </option>
-      </MavenSettings>
-      <method />
-    </configuration>
     <configuration default="false" name="build_hcat" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>
         <option name="myGeneralSettings">
@@ -1476,9 +1223,63 @@
       </MavenSettings>
       <method />
     </configuration>
+    <configuration default="false" name="installSecur" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings">
+          <MavenGeneralSettings>
+            <option name="alwaysUpdateSnapshots" value="false" />
+            <option name="checksumPolicy" value="NOT_SET" />
+            <option name="failureBehavior" value="NOT_SET" />
+            <option name="localRepository" value="" />
+            <option name="mavenHome" value="/opt/apache-maven-3.3.9" />
+            <option name="nonRecursive" value="false" />
+            <option name="outputLevel" value="INFO" />
+            <option name="pluginUpdatePolicy" value="DEFAULT" />
+            <option name="printErrorStackTraces" value="false" />
+            <option name="threads" />
+            <option name="usePluginRegistry" value="false" />
+            <option name="userSettingsFile" value="/opt/apache-maven-3.3.9/conf/settings.xml" />
+            <option name="workOffline" value="false" />
+          </MavenGeneralSettings>
+        </option>
+        <option name="myRunnerSettings">
+          <MavenRunnerSettings>
+            <option name="environmentProperties">
+              <map />
+            </option>
+            <option name="jreName" value="#USE_PROJECT_JDK" />
+            <option name="mavenProperties">
+              <map />
+            </option>
+            <option name="passParentEnv" value="true" />
+            <option name="runMavenInBackground" value="true" />
+            <option name="skipTests" value="true" />
+            <option name="vmOptions" value="" />
+          </MavenRunnerSettings>
+        </option>
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="install" />
+              </list>
+            </option>
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$/../security" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method />
+    </configuration>
     <list size="7">
-      <item index="0" class="java.lang.String" itemvalue="Maven.installSecur" />
-      <item index="1" class="java.lang.String" itemvalue="Maven.build_hcat" />
+      <item index="0" class="java.lang.String" itemvalue="Maven.build_hcat" />
+      <item index="1" class="java.lang.String" itemvalue="Maven.installSecur" />
       <item index="2" class="java.lang.String" itemvalue="JUnit.TestRpcServer.testRegisterClient" />
       <item index="3" class="java.lang.String" itemvalue="JUnit.TestRpcServer.testMap" />
       <item index="4" class="java.lang.String" itemvalue="JUnit.TestHttpClient.commit" />
@@ -1526,34 +1327,34 @@
     </option>
   </component>
   <component name="TestHistory">
-    <history-entry file="TestHttpClient_commit - 2016.12.02 at 18h 02m 31s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 11h 01m 01s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.02 at 18h 19m 40s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 11h 10m 11s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.02 at 18h 27m 34s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 11h 10m 22s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.02 at 18h 33m 18s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 11h 10m 33s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.05 at 08h 50m 56s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 14h 28m 36s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.05 at 08h 51m 24s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 14h 28m 49s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_commit - 2016.12.05 at 17h 56m 48s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 14h 29m 00s.xml">
       <configuration name="TestHttpClient.commit" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_queryJobStatus - 2016.12.02 at 15h 06m 26s.xml">
+    <history-entry file="TestHttpClient_commit - 2016.12.13 at 15h 20m 48s.xml">
+      <configuration name="TestHttpClient.commit" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestHttpClient_queryJobStatus - 2016.12.13 at 10h 42m 18s.xml">
       <configuration name="TestHttpClient.queryJobStatus" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestHttpClient_queryJobStatus - 2016.12.02 at 15h 07m 21s.xml">
-      <configuration name="TestHttpClient.queryJobStatus" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="TestHttpClient_queryJobStatus - 2016.12.02 at 15h 07m 37s.xml">
+    <history-entry file="TestHttpClient_queryJobStatus - 2016.12.13 at 10h 42m 35s.xml">
       <configuration name="TestHttpClient.queryJobStatus" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -1567,33 +1368,33 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
+    <frame x="65" y="24" width="1855" height="1056" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Tool Output" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3259958" sideWeight="0.4958217" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32704404" sideWeight="0.5041783" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290859" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.49679145" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3616352" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1767313" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2199446" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2442348" sideWeight="0.49786097" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19279778" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24930748" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41090146" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Repositories" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.663522" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3259958" sideWeight="0.4958217" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3616352" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Properties" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914045" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2498615" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4077568" sideWeight="0.49786097" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41090146" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="UnknownFeatures">
@@ -1633,10 +1434,11 @@
     <MESSAGE value="fix timeout" />
     <MESSAGE value="fix time out" />
     <MESSAGE value="fix netty timeout" />
-    <MESSAGE value="create hcat-databus module" />
     <MESSAGE value="new rpc protocol" />
     <MESSAGE value="softreject" />
-    <option name="LAST_COMMIT_MESSAGE" value="softreject" />
+    <MESSAGE value="create hcat-databus module" />
+    <MESSAGE value="hcat-databus module" />
+    <option name="LAST_COMMIT_MESSAGE" value="hcat-databus module" />
     <option name="CHANGE_BROWSER_SETTINGS">
       <map>
         <entry key="svn">
@@ -1712,12 +1514,6 @@
           <option name="timeStamp" value="67" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/parse/SemanticAnalyzer.java</url>
-          <line>1362</line>
-          <properties />
-          <option name="timeStamp" value="68" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../hva/src/test/java/com/hiido/hva/cli/TestHttpClient.java</url>
           <line>45</line>
           <properties />
@@ -1727,7 +1523,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="93" />
+      <option name="time" value="100" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1736,445 +1532,76 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapreduce/protocol/ClientProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-core/2.4.1/hadoop-mapreduce-client-core-2.4.1-sources.jar!/org/apache/hadoop/mapreduce/Job.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="79">
-          <caret line="302" column="3" selection-start-line="302" selection-start-column="3" selection-end-line="302" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/exec/mr/ExecDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="435" column="36" selection-start-line="435" selection-start-column="36" selection-end-line="435" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="104" column="5" selection-start-line="104" selection-start-column="5" selection-end-line="104" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0.jar!/org/apache/hive/spark/client/rpc/RpcConfiguration.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="51" column="8" selection-start-line="51" selection-start-column="8" selection-end-line="51" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/RpcConfiguration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="89" column="60" selection-start-line="89" selection-start-column="60" selection-end-line="89" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/SparkClientFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="40" column="24" selection-start-line="40" selection-start-column="24" selection-end-line="40" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-common/2.1.0/hive-common-2.1.0-sources.jar!/org/apache/hadoop/hive/conf/HiveConf.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10">
-          <caret line="2854" column="61" selection-start-line="2854" selection-start-column="61" selection-end-line="2854" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/SparkClientImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="88" column="37" selection-start-line="88" selection-start-column="37" selection-end-line="88" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.0.23.Final/netty-all-4.0.23.Final-sources.jar!/io/netty/handler/codec/protobuf/ProtobufVarint32FrameDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="36" column="52" selection-start-line="36" selection-start-column="52" selection-end-line="36" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0.jar!/org/apache/hive/spark/client/BaseProtocol.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1237">
-          <caret line="14" column="15" selection-start-line="14" selection-start-column="15" selection-end-line="14" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/protocol/RpcProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="15" column="5" selection-start-line="15" selection-start-column="5" selection-end-line="15" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/hcat-server/localJars/spark-assembly-1.6.2-hadoop2.4.1.jar!/io/netty/handler/codec/ByteToMessageCodec.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HeartBeatHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/KryoMessageCodec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="58" column="39" selection-start-line="58" selection-start-column="39" selection-end-line="58" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#5658#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2036#2412#0" expanded="false" />
-            <element signature="e#2411#2412#0" expanded="false" />
-            <element signature="e#5389#5390#0" expanded="false" />
-            <element signature="e#5431#5432#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.0.23.Final/netty-all-4.0.23.Final-sources.jar!/io/netty/handler/codec/ByteToMessageCodec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="25" column="3" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
-          <folding>
-            <element signature="e#0#5565#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2039#2040#0" expanded="false" />
-            <element signature="e#2065#2066#0" expanded="false" />
-            <element signature="e#2249#2250#0" expanded="false" />
-            <element signature="e#2296#2297#0" expanded="false" />
-            <element signature="e#5152#5153#0" expanded="false" />
-            <element signature="e#5195#5196#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0.jar!/org/apache/hive/spark/client/rpc/KryoMessageCodec.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="47" column="11" selection-start-line="47" selection-start-column="11" selection-end-line="47" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/RemoteDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4180">
-          <caret line="279" column="23" selection-start-line="279" selection-start-column="23" selection-end-line="279" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#19202#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#6121#6346#0" expanded="false" />
-            <element signature="e#6345#6346#0" expanded="false" />
-            <element signature="e#9841#9842#0" expanded="false" />
-            <element signature="e#9902#9903#0" expanded="false" />
-            <element signature="e#11791#12169#0" expanded="false" />
-            <element signature="e#12168#12169#0" expanded="false" />
-            <element signature="e#13108#13434#0" expanded="false" />
-            <element signature="e#13433#13434#0" expanded="false" />
-            <element signature="e#15066#15067#0" expanded="false" />
-            <element signature="e#15125#15126#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/BaseProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#3804#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#1237#1238#0" expanded="false" />
-            <element signature="e#1263#1264#0" expanded="false" />
-            <element signature="e#1282#1283#0" expanded="false" />
-            <element signature="e#1306#1307#0" expanded="false" />
-            <element signature="e#1650#1651#0" expanded="false" />
-            <element signature="e#1674#1675#0" expanded="false" />
-            <element signature="e#2133#2134#0" expanded="false" />
-            <element signature="e#2175#2176#0" expanded="false" />
-            <element signature="e#2420#2421#0" expanded="false" />
-            <element signature="e#2450#2451#0" expanded="false" />
-            <element signature="e#2928#2929#0" expanded="false" />
-            <element signature="e#2970#2971#0" expanded="false" />
-            <element signature="e#3089#3090#0" expanded="false" />
-            <element signature="e#3115#3116#0" expanded="false" />
-            <element signature="e#3135#3136#0" expanded="false" />
-            <element signature="e#3159#3160#0" expanded="false" />
-            <element signature="e#3538#3539#0" expanded="false" />
-            <element signature="e#3566#3567#0" expanded="false" />
-            <element signature="e#3718#3719#0" expanded="false" />
-            <element signature="e#3746#3747#0" expanded="false" />
-            <element signature="e#3770#3771#0" expanded="false" />
-            <element signature="e#3794#3795#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/RpcDispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1482">
-          <caret line="110" column="28" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#7264#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2309#2325#0" expanded="false" />
-            <element signature="e#2486#2487#0" expanded="false" />
-            <element signature="e#2529#2530#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/spark-client/2.0.0/spark-client-2.0.0-sources.jar!/org/apache/hive/spark/client/rpc/Rpc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5149">
-          <caret line="356" column="18" selection-start-line="356" selection-start-column="18" selection-end-line="356" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#15475#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#4698#4868#0" expanded="false" />
-            <element signature="e#4867#4868#0" expanded="false" />
-            <element signature="e#5167#5708#0" expanded="false" />
-            <element signature="e#5707#5708#0" expanded="false" />
-            <element signature="e#5779#5974#0" expanded="false" />
-            <element signature="e#5973#5974#0" expanded="false" />
-            <element signature="e#7871#7887#0" expanded="false" />
-            <element signature="e#8867#9021#0" expanded="false" />
-            <element signature="e#9020#9021#0" expanded="false" />
-            <element signature="e#9300#9301#0" expanded="false" />
-            <element signature="e#9338#9339#0" expanded="false" />
-            <element signature="e#9369#9370#0" expanded="false" />
-            <element signature="e#9404#9405#0" expanded="false" />
-            <element signature="e#9997#10385#0" expanded="false" />
-            <element signature="e#10384#10385#0" expanded="false" />
-            <element signature="e#10854#10855#0" expanded="false" />
-            <element signature="e#10897#10898#0" expanded="false" />
-            <element signature="e#10944#10945#0" expanded="false" />
-            <element signature="e#10968#10969#0" expanded="false" />
-            <element signature="e#11938#11939#0" expanded="false" />
-            <element signature="e#11966#11967#0" expanded="false" />
-            <element signature="e#12208#12209#0" expanded="false" />
-            <element signature="e#12238#12239#0" expanded="false" />
-            <element signature="e#12273#12274#0" expanded="false" />
-            <element signature="e#12306#12307#0" expanded="false" />
-            <element signature="e#13459#13460#0" expanded="false" />
-            <element signature="e#13499#13500#0" expanded="false" />
-            <element signature="e#13572#13573#0" expanded="false" />
-            <element signature="e#13636#13637#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/Rpc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5263">
-          <caret line="347" column="5" selection-start-line="347" selection-start-column="5" selection-end-line="347" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#17406#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#9870#9871#0" expanded="false" />
-            <element signature="e#9909#9910#0" expanded="false" />
-            <element signature="e#10229#10230#0" expanded="false" />
-            <element signature="e#10273#10274#0" expanded="false" />
-            <element signature="e#10306#10307#0" expanded="false" />
-            <element signature="e#10347#10348#0" expanded="false" />
-            <element signature="e#11989#11990#0" expanded="false" />
-            <element signature="e#12038#12039#0" expanded="false" />
-            <element signature="e#12089#12090#0" expanded="false" />
-            <element signature="e#12119#12120#0" expanded="false" />
-            <element signature="e#13277#13278#0" expanded="false" />
-            <element signature="e#13315#13316#0" expanded="false" />
-            <element signature="e#13597#13598#0" expanded="false" />
-            <element signature="e#13637#13638#0" expanded="false" />
-            <element signature="e#13676#13677#0" expanded="false" />
-            <element signature="e#13719#13720#0" expanded="false" />
-            <element signature="e#15054#15055#0" expanded="false" />
-            <element signature="e#15104#15105#0" expanded="false" />
-            <element signature="e#15185#15186#0" expanded="false" />
-            <element signature="e#15259#15260#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/SaslHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="33" column="69" selection-start-line="33" selection-start-column="69" selection-end-line="33" selection-end-column="69" />
-          <folding>
-            <element signature="e#0#4169#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2162#2163#0" expanded="false" />
-            <element signature="e#2194#2195#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/readme/README">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="44" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/ServiceMain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/conf/hive-site.xml.back">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2831">
-          <caret line="16" column="44" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/conf/hive-site.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="92" column="45" selection-start-line="92" selection-start-column="45" selection-end-line="92" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/CommitQuery.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#3816#3817#0" expanded="false" />
-            <element signature="e#3853#3854#0" expanded="false" />
-            <element signature="e#4078#4079#0" expanded="false" />
-            <element signature="e#4108#4109#0" expanded="false" />
-            <element signature="e#4144#4145#0" expanded="false" />
-            <element signature="e#4175#4176#0" expanded="false" />
-            <element signature="e#6479#6480#0" expanded="false" />
-            <element signature="e#6517#6518#0" expanded="false" />
-            <element signature="e#6659#6660#0" expanded="false" />
-            <element signature="e#6722#6723#0" expanded="false" />
-            <element signature="e#6940#6941#0" expanded="false" />
-            <element signature="e#6968#6969#0" expanded="false" />
-            <element signature="e#7107#7108#0" expanded="false" />
-            <element signature="e#7135#7136#0" expanded="false" />
-            <element signature="e#7262#7263#0" expanded="false" />
-            <element signature="e#7298#7299#0" expanded="false" />
-            <element signature="e#7429#7430#0" expanded="false" />
-            <element signature="e#7456#7457#0" expanded="false" />
-            <element signature="e#7578#7579#0" expanded="false" />
-            <element signature="e#7605#7606#0" expanded="false" />
-            <element signature="e#7730#7731#0" expanded="false" />
-            <element signature="e#7765#7766#0" expanded="false" />
-            <element signature="e#7894#7895#0" expanded="false" />
-            <element signature="e#7953#7954#0" expanded="false" />
-            <element signature="e#8161#8162#0" expanded="false" />
-            <element signature="e#8187#8188#0" expanded="false" />
-            <element signature="e#8316#8317#0" expanded="false" />
-            <element signature="e#8342#8343#0" expanded="false" />
-            <element signature="e#8465#8466#0" expanded="false" />
-            <element signature="e#8499#8500#0" expanded="false" />
-            <element signature="e#12852#12853#0" expanded="false" />
-            <element signature="e#12900#12901#0" expanded="false" />
-            <element signature="e#15221#15222#0" expanded="false" />
-            <element signature="e#15273#15274#0" expanded="false" />
-            <element signature="e#19740#19741#0" expanded="false" />
-            <element signature="e#19789#19790#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/exec/FetchTask.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/test/java/org/apache/hive/spark/client/rpc/TestRpcServer.java">
+    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/suit/net/http/protocol/AbstractHttpProtocolClient.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <caret line="9" column="28" selection-start-line="9" selection-start-column="28" selection-end-line="9" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/org/apache/hive/spark/client/TestRpcServer.java">
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/lang/Throwable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+        <state relative-caret-position="307">
+          <caret line="285" column="30" selection-start-line="285" selection-start-column="30" selection-end-line="285" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/lang/Exception.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="580">
+          <caret line="83" column="11" selection-start-line="83" selection-start-column="11" selection-end-line="83" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/ideaProjects/calc/security/src/main/java/com/hiido/suit/err/ErrCodeException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="10" selection-start-line="19" selection-start-column="10" selection-end-line="19" selection-end-column="10" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/com/hiido/hcat/service/TestUUID.java">
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/util/concurrent/ScheduledThreadPoolExecutor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/com/hiido/hcat/service/HttpHiveServerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="20" column="27" selection-start-line="20" selection-start-column="27" selection-end-line="20" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/com/hiido/hcat/service/TestQueue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="19" column="7" selection-start-line="19" selection-start-column="7" selection-end-line="19" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/test/java/com/hiido/hcat/service/QuickTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="86" column="46" selection-start-line="86" selection-start-column="46" selection-end-line="86" selection-end-column="46" />
+        <state relative-caret-position="212">
+          <caret line="530" column="17" selection-start-line="530" selection-start-column="17" selection-end-line="530" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/resources/hcat.thrift">
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/lang/SecurityException.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="59" column="22" selection-start-line="59" selection-start-column="22" selection-end-line="59" selection-end-column="22" />
+        <state relative-caret-position="190">
+          <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/CliService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3-sources.jar!/org/apache/thrift/transport/THttpClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="347" column="17" selection-start-line="347" selection-start-column="17" selection-end-line="347" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/cli/HcatSession.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="931">
-          <caret line="96" column="13" selection-start-line="96" selection-start-column="13" selection-end-line="96" selection-end-column="13" />
+        <state relative-caret-position="703">
+          <caret line="79" column="16" selection-start-line="79" selection-start-column="16" selection-end-line="79" selection-end-column="16" />
           <folding>
             <element signature="imports" expanded="false" />
             <element signature="e#2747#2748#0" expanded="false" />
             <element signature="e#2796#2797#0" expanded="false" />
             <element signature="e#2847#2848#0" expanded="false" />
             <element signature="e#2877#2878#0" expanded="false" />
-            <element signature="e#2919#2920#0" expanded="false" />
-            <element signature="e#2936#2937#0" expanded="false" />
             <element signature="e#3008#3009#0" expanded="false" />
             <element signature="e#3055#3056#0" expanded="false" />
             <element signature="e#3115#3116#0" expanded="false" />
@@ -2213,254 +1640,419 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java">
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/test/java/com/hiido/hcat/databus/TestFetchScheduler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
+        <state relative-caret-position="266">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="false" />
-            <element signature="e#6830#6831#0" expanded="false" />
-            <element signature="e#6870#6871#0" expanded="false" />
-            <element signature="e#6936#6937#0" expanded="false" />
-            <element signature="e#6963#6964#0" expanded="false" />
-            <element signature="e#6997#6998#0" expanded="false" />
-            <element signature="e#7030#7031#0" expanded="false" />
-            <element signature="e#7079#7080#0" expanded="false" />
-            <element signature="e#7123#7124#0" expanded="false" />
-            <element signature="e#7157#7158#0" expanded="false" />
-            <element signature="e#7190#7191#0" expanded="false" />
-            <element signature="e#7239#7240#0" expanded="false" />
-            <element signature="e#7283#7284#0" expanded="false" />
-            <element signature="e#7320#7321#0" expanded="false" />
-            <element signature="e#7356#7357#0" expanded="false" />
-            <element signature="e#7411#7412#0" expanded="false" />
-            <element signature="e#7461#7462#0" expanded="false" />
-            <element signature="e#7497#7498#0" expanded="false" />
-            <element signature="e#7529#7530#0" expanded="false" />
-            <element signature="e#7568#7569#0" expanded="false" />
-            <element signature="e#7605#7606#0" expanded="false" />
-            <element signature="e#7645#7646#0" expanded="false" />
-            <element signature="e#7683#7684#0" expanded="false" />
-            <element signature="e#7743#7744#0" expanded="false" />
-            <element signature="e#7797#7798#0" expanded="false" />
-            <element signature="e#43796#43797#0" expanded="false" />
-            <element signature="e#43847#43848#0" expanded="false" />
-            <element signature="e#43900#43901#0" expanded="false" />
-            <element signature="e#43939#43940#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/pom.xml">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/Serializer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="37" column="27" selection-start-line="37" selection-start-column="27" selection-end-line="37" selection-end-column="27" />
+        <state relative-caret-position="760">
+          <caret line="60" column="11" selection-start-line="60" selection-start-column="11" selection-end-line="60" selection-end-column="11" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/DelimitedJSONSerDe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="38" column="47" selection-start-line="38" selection-start-column="47" selection-end-line="38" selection-end-column="47" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/lazy/LazySerDeParameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="893">
+          <caret line="81" column="25" selection-start-line="81" selection-start-column="25" selection-end-line="81" selection-end-column="25" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#6586#6587#0" expanded="false" />
+            <element signature="e#6614#6615#0" expanded="false" />
+            <element signature="e#6656#6657#0" expanded="false" />
+            <element signature="e#6684#6685#0" expanded="false" />
+            <element signature="e#6719#6720#0" expanded="false" />
+            <element signature="e#6746#6747#0" expanded="false" />
+            <element signature="e#6781#6782#0" expanded="false" />
+            <element signature="e#6810#6811#0" expanded="false" />
+            <element signature="e#6848#6849#0" expanded="false" />
+            <element signature="e#6876#6877#0" expanded="false" />
+            <element signature="e#6920#6921#0" expanded="false" />
+            <element signature="e#6956#6957#0" expanded="false" />
+            <element signature="e#6988#6989#0" expanded="false" />
+            <element signature="e#7012#7013#0" expanded="false" />
+            <element signature="e#7045#7046#0" expanded="false" />
+            <element signature="e#7072#7073#0" expanded="false" />
+            <element signature="e#7111#7112#0" expanded="false" />
+            <element signature="e#7139#7140#0" expanded="false" />
+            <element signature="e#7186#7187#0" expanded="false" />
+            <element signature="e#7225#7226#0" expanded="false" />
+            <element signature="e#7272#7273#0" expanded="false" />
+            <element signature="e#7305#7306#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/util/Properties.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17689">
+          <caret line="968" column="18" selection-start-line="968" selection-start-column="18" selection-end-line="968" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#44301#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#4658#4659#0" expanded="false" />
+            <element signature="e#4684#4685#0" expanded="false" />
+            <element signature="e#4861#4862#0" expanded="false" />
+            <element signature="e#4901#4902#0" expanded="false" />
+            <element signature="e#5597#5598#0" expanded="false" />
+            <element signature="e#5635#5636#0" expanded="false" />
+            <element signature="e#44092#44093#0" expanded="false" />
+            <element signature="e#44139#44140#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/thrift/ThriftFormatter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24">
+          <caret line="40" column="17" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/SerDeUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2793">
+          <caret line="199" column="25" selection-start-line="199" selection-start-column="25" selection-end-line="199" selection-end-column="25" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#7054#7055#0" expanded="false" />
+            <element signature="e#7102#7103#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/objectinspector/ObjectInspector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="44" column="39" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="39" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HcatSecurityManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="14" column="8" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/httpcomponents/httpcore-nio/4.4.4/httpcore-nio-4.4.4-sources.jar!/org/apache/http/nio/protocol/HttpAsyncRequester.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="217" column="79" selection-start-line="217" selection-start-column="79" selection-end-line="217" selection-end-column="79" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/QueryProgress.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
+        <state relative-caret-position="174">
+          <caret line="425" column="17" selection-start-line="425" selection-start-column="17" selection-end-line="425" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/exec/FetchTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="49" column="13" selection-start-line="49" selection-start-column="13" selection-end-line="49" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/util/concurrent/BlockingQueue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="592">
+          <caret line="218" column="12" selection-start-line="218" selection-start-column="12" selection-end-line="218" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/ideaProjects/calc/security/src/main/java/com/hiido/suit/net/http/protocol/ha/HttpHAPoolClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="169" column="20" selection-start-line="169" selection-start-column="20" selection-end-line="169" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/java/util/Queue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="216" column="6" selection-start-line="216" selection-start-column="6" selection-end-line="216" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/HttpProtocol.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1026">
+          <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
           <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#6851#6852#0" expanded="false" />
-            <element signature="e#6888#6889#0" expanded="false" />
-            <element signature="e#7113#7114#0" expanded="false" />
-            <element signature="e#7143#7144#0" expanded="false" />
-            <element signature="e#7179#7180#0" expanded="false" />
-            <element signature="e#7210#7211#0" expanded="false" />
-            <element signature="e#13569#13570#0" expanded="false" />
-            <element signature="e#13609#13610#0" expanded="false" />
-            <element signature="e#14098#14099#0" expanded="false" />
-            <element signature="e#14159#14160#0" expanded="false" />
-            <element signature="e#14217#14218#0" expanded="false" />
-            <element signature="e#14285#14286#0" expanded="false" />
-            <element signature="e#14472#14473#0" expanded="false" />
-            <element signature="e#14499#14500#0" expanded="false" />
-            <element signature="e#14629#14630#0" expanded="false" />
-            <element signature="e#14656#14657#0" expanded="false" />
-            <element signature="e#14781#14782#0" expanded="false" />
-            <element signature="e#14816#14817#0" expanded="false" />
-            <element signature="e#14942#14943#0" expanded="false" />
-            <element signature="e#14969#14970#0" expanded="false" />
-            <element signature="e#15115#15116#0" expanded="false" />
-            <element signature="e#15202#15203#0" expanded="false" />
-            <element signature="e#15327#15328#0" expanded="false" />
-            <element signature="e#15401#15402#0" expanded="false" />
-            <element signature="e#15562#15563#0" expanded="false" />
-            <element signature="e#15585#15586#0" expanded="false" />
-            <element signature="e#15707#15708#0" expanded="false" />
-            <element signature="e#15790#15791#0" expanded="false" />
-            <element signature="e#15907#15908#0" expanded="false" />
-            <element signature="e#15977#15978#0" expanded="false" />
-            <element signature="e#16138#16139#0" expanded="false" />
-            <element signature="e#16166#16167#0" expanded="false" />
-            <element signature="e#16295#16296#0" expanded="false" />
-            <element signature="e#16323#16324#0" expanded="false" />
-            <element signature="e#16450#16451#0" expanded="false" />
-            <element signature="e#16486#16487#0" expanded="false" />
-            <element signature="e#16618#16619#0" expanded="false" />
-            <element signature="e#16646#16647#0" expanded="false" />
-            <element signature="e#16775#16776#0" expanded="false" />
-            <element signature="e#16803#16804#0" expanded="false" />
-            <element signature="e#16930#16931#0" expanded="false" />
-            <element signature="e#16966#16967#0" expanded="false" />
-            <element signature="e#17095#17096#0" expanded="false" />
-            <element signature="e#17120#17121#0" expanded="false" />
-            <element signature="e#17234#17235#0" expanded="false" />
-            <element signature="e#17259#17260#0" expanded="false" />
-            <element signature="e#17380#17381#0" expanded="false" />
-            <element signature="e#17413#17414#0" expanded="false" />
-            <element signature="e#17540#17541#0" expanded="false" />
-            <element signature="e#17603#17604#0" expanded="false" />
-            <element signature="e#17661#17662#0" expanded="false" />
-            <element signature="e#17731#17732#0" expanded="false" />
-            <element signature="e#17920#17921#0" expanded="false" />
-            <element signature="e#17948#17949#0" expanded="false" />
-            <element signature="e#18082#18083#0" expanded="false" />
-            <element signature="e#18110#18111#0" expanded="false" />
-            <element signature="e#18237#18238#0" expanded="false" />
-            <element signature="e#18273#18274#0" expanded="false" />
-            <element signature="e#18406#18407#0" expanded="false" />
-            <element signature="e#18437#18438#0" expanded="false" />
-            <element signature="e#18608#18609#0" expanded="false" />
-            <element signature="e#18699#18700#0" expanded="false" />
-            <element signature="e#18832#18833#0" expanded="false" />
-            <element signature="e#18910#18911#0" expanded="false" />
-            <element signature="e#19086#19087#0" expanded="false" />
-            <element signature="e#19115#19116#0" expanded="false" />
-            <element signature="e#19274#19275#0" expanded="false" />
-            <element signature="e#19363#19364#0" expanded="false" />
-            <element signature="e#19492#19493#0" expanded="false" />
-            <element signature="e#19568#19569#0" expanded="false" />
-            <element signature="e#19740#19741#0" expanded="false" />
-            <element signature="e#19769#19770#0" expanded="false" />
-            <element signature="e#19928#19929#0" expanded="false" />
-            <element signature="e#20017#20018#0" expanded="false" />
-            <element signature="e#20146#20147#0" expanded="false" />
-            <element signature="e#20222#20223#0" expanded="false" />
-            <element signature="e#20397#20398#0" expanded="false" />
-            <element signature="e#20427#20428#0" expanded="false" />
-            <element signature="e#20594#20595#0" expanded="false" />
-            <element signature="e#20684#20685#0" expanded="false" />
-            <element signature="e#20815#20816#0" expanded="false" />
-            <element signature="e#20892#20893#0" expanded="false" />
-            <element signature="e#21072#21073#0" expanded="false" />
-            <element signature="e#21105#21106#0" expanded="false" />
-            <element signature="e#21521#21522#0" expanded="false" />
-            <element signature="e#21601#21602#0" expanded="false" />
-            <element signature="e#21786#21787#0" expanded="false" />
-            <element signature="e#21855#21856#0" expanded="false" />
-            <element signature="e#22200#22201#0" expanded="false" />
-            <element signature="e#22231#22232#0" expanded="false" />
-            <element signature="e#22381#22382#0" expanded="false" />
-            <element signature="e#22412#22413#0" expanded="false" />
-            <element signature="e#22545#22546#0" expanded="false" />
-            <element signature="e#22584#22585#0" expanded="false" />
-            <element signature="e#37020#37021#0" expanded="false" />
-            <element signature="e#37068#37069#0" expanded="false" />
-            <element signature="e#41842#41843#0" expanded="false" />
-            <element signature="e#41896#41897#0" expanded="false" />
-            <element signature="e#52865#52866#0" expanded="false" />
-            <element signature="e#52916#52917#0" expanded="false" />
+            <element signature="e#4479#4480#0" expanded="true" />
+            <element signature="e#4517#4518#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-common/src/main/java/com/hiido/hcat/common/util/ErrCacheOutputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/resources/hcat.thrift">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="665">
+          <caret line="71" column="34" selection-start-line="71" selection-start-column="34" selection-end-line="71" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/resources/Hcat-databus.thrift">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="627">
+          <caret line="69" column="33" selection-start-line="69" selection-start-column="33" selection-end-line="69" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/FetchFormatter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="31" column="17" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/AbstractEncodingAwareSerDe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="45" column="8" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-serde/2.1.0/hive-serde-2.1.0-sources.jar!/org/apache/hadoop/hive/serde2/lazy/LazySimpleSerDe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="68" column="45" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-http/src/main/java/com/hiido/hcat/thrift/protocol/AuthorizationException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="121" column="9" selection-start-line="121" selection-start-column="9" selection-end-line="121" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="18" column="19" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="395">
+          <caret line="29" column="38" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hcat-databus/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="6" column="36" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+        <state relative-caret-position="380">
+          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hive/spark/client/rpc/RpcServer.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3-sources.jar!/org/apache/thrift/server/TServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="235" column="54" selection-start-line="235" selection-start-column="54" selection-end-line="235" selection-end-column="54" />
+        <state relative-caret-position="133">
+          <caret line="24" column="43" selection-start-line="24" selection-start-column="43" selection-end-line="24" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/Rpc.java">
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/AbstractTServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
+        <state relative-caret-position="76">
+          <caret line="6" column="31" selection-start-line="6" selection-start-column="31" selection-end-line="6" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/resources/RpcProtocol.proto">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/netty/netty-all/4.1.6.Final/netty-all-4.1.6.Final-sources.jar!/io/netty/channel/ChannelHandlerContext.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="54" column="33" selection-start-line="54" selection-start-column="33" selection-end-line="54" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/15.0/guava-15.0-sources.jar!/com/google/common/util/concurrent/RateLimiter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7395">
-          <caret line="250" column="0" selection-start-line="250" selection-start-column="0" selection-end-line="250" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SaslHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hbase/hbase-server/1.1.1/hbase-server-1.1.1-sources.jar!/org/apache/hadoop/hbase/quotas/RateLimiter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-494">
-          <caret line="69" column="23" selection-start-line="69" selection-start-column="23" selection-end-line="69" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///opt/jdk1.7.0_79/src.zip!/javax/security/sasl/SaslServer.java">
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/FetchScheduler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="307">
-          <caret line="119" column="27" selection-start-line="119" selection-start-column="27" selection-end-line="119" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/SignHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/network/RpcServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
+          <caret line="180" column="11" selection-start-line="180" selection-start-column="11" selection-end-line="180" selection-end-column="11" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3649#3650#0" expanded="true" />
-            <element signature="e#3699#3700#0" expanded="true" />
-            <element signature="e#3780#3781#0" expanded="true" />
-            <element signature="e#3856#3857#0" expanded="true" />
+            <element signature="e#1616#1617#0" expanded="true" />
+            <element signature="e#1657#1658#0" expanded="true" />
+            <element signature="e#1739#1745#0" expanded="true" />
+            <element signature="e#1814#1828#0" expanded="true" />
+            <element signature="e#2039#2655#0" expanded="true" />
+            <element signature="e#2654#2655#0" expanded="true" />
+            <element signature="e#5271#5272#0" expanded="true" />
+            <element signature="e#5311#5312#0" expanded="true" />
+            <element signature="e#6795#6796#0" expanded="true" />
+            <element signature="e#6837#6838#0" expanded="true" />
+            <element signature="e#6864#6865#0" expanded="true" />
+            <element signature="e#6902#6903#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/Config.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#5884#5885#0" expanded="true" />
+            <element signature="e#5946#5947#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/main/java/com/hiido/hcat/service/HttpHiveServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="248" column="35" selection-start-line="248" selection-start-column="35" selection-end-line="248" selection-end-column="35" />
+          <folding>
+            <element signature="e#6108#6122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/HcatDatabusServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/Driver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="410" column="64" selection-start-line="410" selection-start-column="64" selection-end-line="410" selection-end-column="64" />
+          <folding>
+            <element signature="e#12875#12876#0" expanded="true" />
+            <element signature="e#12920#12921#0" expanded="true" />
+            <element signature="e#14956#15384#0" expanded="true" />
+            <element signature="e#15383#15384#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/Driver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="1924" column="7" selection-start-line="1924" selection-start-column="7" selection-end-line="1924" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/SemanticAnalyzerFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="173" column="26" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/HiveParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="465" column="28" selection-start-line="465" selection-start-column="28" selection-end-line="465" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/hive/hive-exec/2.1.0/hive-exec-2.1.0-sources.jar!/org/apache/hadoop/hive/ql/parse/SemanticAnalyzer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="1407" column="50" selection-start-line="1407" selection-start-column="50" selection-end-line="1407" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-server/src/sp/java/org/apache/hadoop/hive/ql/parse/SemanticAnalyzer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="1406" column="48" selection-start-line="1406" selection-start-column="48" selection-end-line="1406" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/resources/gen/com/hiido/hcat/databus/protocol/RpcProtocol.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1069">
+          <caret line="250" column="38" selection-start-line="250" selection-start-column="38" selection-end-line="250" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-databus/src/main/java/com/hiido/hcat/databus/protocol/RpcProtocol.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1710">
+          <caret line="13" column="5" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hcat-client/src/test/java/com/hiido/hcat/cli/httpclient/TestHttpClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="103" column="9" selection-start-line="103" selection-start-column="9" selection-end-line="103" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>

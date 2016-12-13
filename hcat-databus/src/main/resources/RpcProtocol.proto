@@ -1,54 +1,32 @@
 package rpc;
 option java_package = "com.hiido.hcat.databus.protocol";
 
-message HeartbeatMss {
-    required int64 id = 1;
-}
-
-message SignMss {
+message Header {
     required int64 id = 1;
     required int32 type = 2;
-    optional hostname = 3;
-    optional int32 port = 4;
+    optional map<string,string> attachment = 3;
 }
 
-message TaskMss {
-    required int32 type = 1;
-    optional int32 status = 2;
-    required string jobId = 3;
-    optional string task = 4;
-
+message FetchTask {
+    required string qid = 1;
+    required string serializedTask = 2;
 }
 
-message TaskStstusMss {
-    required int32 type = 1;
-    optional
-}
-
-message PushMss {
-    required string jobId = 1;
-    required string task = 2;
-}
-
-message PushReply {
-    required int32 recode = 1;
-    optional int64 pending = 2;
-}
-
-message TaskDoneMss {
-    required string jobId = 1;
+message TaskDone {
+    required string qid = 1;
     required int32 status = 2;
 }
 
-enum Recode {
-    SUCCESS = 0;
-    FAILES = 1;
+message Signout {
+    required int32 pendings = 1;
 }
 
-message Reply {
-    required int64 id = 1;
-    required Recode recode = 2;
+message HeartBeat {
+    required int64 rate = 1;
+    required int64 pendings = 2;
+    required int64 failure = 3;
 }
+
 
 
 

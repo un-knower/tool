@@ -317,7 +317,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     .setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
 
             //for hcat-databus
-            if(confOverlay != null & confOverlay.containsKey("hcat.query.return.fetch"))
+            if(confOverlay != null && confOverlay.containsKey("hcat.query.return.fetch"))
                 reqFetch = true;
             else
                 reqFetch = false;
@@ -480,9 +480,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 qp.state = JobStatus.COMPLETE.getValue();
             } catch (HiveSQLException e) {
                 if (session.getErr() != null)
-                    qp.setErrmsg(session.getErr().returnAndClear());
-                if (StringUtils.isEmpty(qp.errmsg))
-                    qp.setErrmsg(e.toString());
+                    session.getErr().returnAndClear();
+                //    qp.setErrmsg(session.getErr().returnAndClear());
+
+                //if (StringUtils.isEmpty(qp.errmsg))
+                qp.setErrmsg(e.toString());
                 qp.setState(JobStatus.FAILURE.getValue());
                 LOG.error("[" + qid + "]", e);
             } catch (SecurityException e) {
@@ -714,7 +716,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         }
 
         public void run() {
-            while (closeSignal.get()) {
+            while (!closeSignal.get()) {
                 try {
                     list.clear();
                     HcatQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
@@ -951,6 +953,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             reply.setHandle(handle);
             return reply;
         } catch (Exception e1) {
+            LOG.error("Error in commit job.", e1);
             runningTask.decrementAndGet();
             if(e1 instanceof AuthorizationException)
                 throw (AuthorizationException)e1;
@@ -979,7 +982,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             reply.setQueryProgress(task != null ? task.getProgress() : progress);
             return reply;
         } catch (Throwable e) {
-            throw new RuntimeException(e.toString());
+            throw new AuthorizationException(e.toString());
         }
     }
 
@@ -1013,7 +1016,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     }
 
     public static boolean isQuickCmd(String command, Context ctx, ParseDriver pd)
-            throws AuthorizationException, RuntimeException {
+            throws AuthorizationException{
         String[] tokens = command.split("\\s+");
         HiveCommand hiveCommand = HiveCommand.find(tokens, false);
 
@@ -1105,11 +1108,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 default:
                     isQuick = false;
             }
-        } catch (AuthorizationException e) {
-            throw e;
         } catch (Exception e) {
-            LOG.error("failed in parse sql .", e);
-            throw new RuntimeException("failed in parse sql :" + e.toString());
+            if(e instanceof AuthorizationException)
+                throw (AuthorizationException)e;
+            else
+                throw new AuthorizationException("failed in parse sql :" + e.toString());
         }
         return isQuick;
     }

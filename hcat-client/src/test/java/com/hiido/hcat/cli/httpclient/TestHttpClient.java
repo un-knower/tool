@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-    static String serveltUrl = "http://14.17.109.45:26022/query";
+    static String serveltUrl = "http://14.17.109.45:26021/query";
 
     public void cancelJob() {
 
@@ -59,7 +59,7 @@ public class TestHttpClient {
 
     @Test
     public void queryJobStatus() throws TException, InterruptedException {
-        String qid = "14_17_109_45_26022_20161130174422301_26493";
+        String qid = "14_17_109_45_26022_20161213012033542_25135";
         THttpClient thc = new THttpClient(serveltUrl);
         TProtocol lopFactory = new TBinaryProtocol(thc);
         CliService.Client client = new CliService.Client(lopFactory);
@@ -106,7 +106,7 @@ public class TestHttpClient {
 
     @Test
     public void commit() throws InterruptedException {
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 2; i++) {
             try {
                 THttpClient thc = new THttpClient(serveltUrl);
                 TProtocol lopFactory = new TBinaryProtocol(thc);
