@@ -8,10 +8,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -118,7 +115,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     private final int port;
     private final String serverTag;
-    private final long maxHistoryTask = 1000 * 60 * 60;
+    private final long maxHistoryTask = 500;
     private final AtomicLong qidSeq = new AtomicLong();
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
@@ -143,6 +140,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     private final AtomicInteger runningTask = new AtomicInteger(0);
 
     private static Map<Integer, CompanyInfo> id2Company = new ConcurrentHashMap<Integer, CompanyInfo>();
+    private static Map<String, String> user2Queue = new ConcurrentHashMap<String, String>();
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
     public void setConnPool(ConnectionPool connPool) {
         this.connPool = connPool;
@@ -266,6 +265,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
         disper.start();
         queryDB.start();
+        scheduler.scheduleWithFixedDelay(new QueueUpdater(), 0l, 60 * 60, TimeUnit.SECONDS);
         server.start();
     }
 
@@ -365,6 +365,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 hiveConf.setVar(HiveConf.ConfVars.HIVEQUERYID, qid);
                 if (companyInfo != null && companyInfo.getJobQueue() != null)
                     hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
+                if (user2Queue.get(session.getUserName()) != null)
+                    hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
                 session.open(confOverlay);
                 session.getSessionState().setHiidoUserId(userId == null ? 0 : Integer.parseInt(userId));
                 session.getSessionState().setHiidoCompanyId((companyId == null ? 0 : Integer.parseInt(companyId)));
@@ -400,6 +402,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                             this.engine = engine;
                             hiveConf.addResource("spark-site.xml");
                             if (companyInfo != null && companyInfo.getJobQueue() != null)
+                                hiveConf.set("spark.yarn.queue", companyInfo.getJobQueue());
+                            if (user2Queue.get(session.getUserName()) != null)
                                 hiveConf.set("spark.yarn.queue", companyInfo.getJobQueue());
                             loadedSparkConf = true;
                         }
@@ -443,7 +447,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                                     qp.resSize += s.getLen();
                         }
 
-                        if ((!reqFetch) && needToMove) {
+                        if (needToMove) {
                             FileSystem fs = work.getPathLists().get(0).getFileSystem(session.getHiveConf());
                             Path parent = new Path(new Path(tblDir.toUri().getScheme(), tblDir.toUri().getAuthority(), conf.get("hcat.mr.resultDir")), this.qid);
                             if (!fs.exists(parent))
@@ -463,9 +467,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                                 work.setPartDir(partDir);
                             }
                         //for hcat-databus
-                        } else if(reqFetch) {
+                        }
+                        if(reqFetch) {
                             qp.fetchDirs = new LinkedList<String>();
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
+                            qp.fetchDirs.add(hiveConf.get("hcat.databus.ervice.type.key", ""));
                         }
 
                         TableSchema schema = sqlOpt.getResultSetSchema();
@@ -554,10 +560,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         private long lastCleanTime = System.currentTimeMillis();
 
         public void run() {
-            while (!closeSignal.get()) {
+            while ((!closeSignal.get()) || taskBlockQueue.peek() != null) {
                 Task task = null;
                 try {
-                    task = taskBlockQueue.poll(3, TimeUnit.SECONDS);
+                    task = taskBlockQueue.poll(5, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                 }
                 if (task != null) {
@@ -706,6 +712,46 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         sqlQueue.add(query);
     }
 
+    private final class QueueUpdater implements Runnable {
+
+        @Override
+        public void run() {
+            while(!closeSignal.get()) {
+                java.sql.Connection conn = null;
+                boolean err = false;
+                try {
+                    conn = connPool.acquire();
+                    PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat`");
+                    ResultSet result = stmt.executeQuery();
+                    while (result.next()) {
+                        int cid = result.getInt(1);
+                        String name = result.getString(2);
+                        String queue = result.getString(3);
+                        String hdfs = result.getString(4);
+                        CompanyInfo companyInfo = new CompanyInfo(cid, name, queue, hdfs);
+                        id2Company.put(cid, companyInfo);
+                    }
+                    result.close();
+                    stmt.close();
+                    stmt = conn.prepareStatement("select bususer, job_queue from  bees.`hcat_user_queue`");
+                    result = stmt.executeQuery();
+                    while (result.next()) {
+                        String bususer = result.getString(1);
+                        String queue = result.getString(2);
+                        user2Queue.put(bususer, queue);
+                    }
+                    result.close();
+                    stmt.close();
+                } catch (Exception e) {
+                    err = true;
+                    LOG.error("failed to achieve company/bususer queue info.", e);
+                } finally {
+                    connPool.release(conn, err);
+                }
+            }
+        }
+    }
+
     private final class QueryDB implements Runnable {
         java.sql.Connection conn = null;
         java.sql.PreparedStatement pstmt = null;
@@ -716,7 +762,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         }
 
         public void run() {
-            while (!closeSignal.get()) {
+            while ((!closeSignal.get()) || sqlQueue.peek() != null) {
                 try {
                     list.clear();
                     HcatQuery query = sqlQueue.poll(5, TimeUnit.SECONDS);
@@ -859,32 +905,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         String userId = cq.cipher.get("user_id");
         String bususer = cq.cipher.get("bususer");
 
-        if (id2Company.get(Integer.valueOf(companyId)) == null || System.currentTimeMillis() - id2Company.get(Integer.valueOf(companyId)).getUpdateTime() > 24 * 60 * 60 * 1000) {
-            synchronized (id2Company) {
-                if (id2Company.get(Integer.valueOf(companyId)) == null || System.currentTimeMillis() - id2Company.get(Integer.valueOf(companyId)).getUpdateTime() > 24 * 60 * 60 * 1000) {
-                    java.sql.Connection conn = null;
-                    boolean err = false;
-                    try {
-                        conn = connPool.acquire();
-                        PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat`");
-                        ResultSet result = stmt.executeQuery();
-                        while (result.next()) {
-                            int cid = result.getInt(1);
-                            String name = result.getString(2);
-                            String queue = result.getString(3);
-                            String hdfs = result.getString(4);
-                            CompanyInfo companyInfo = new CompanyInfo(cid, name, queue, hdfs);
-                            id2Company.put(cid, companyInfo);
-                        }
-                    } catch (Exception e) {
-                        err = true;
-                        LOG.error("failed to achieve hive_namenodes info.", e);
-                    } finally {
-                        connPool.release(conn, err);
-                    }
-                }
-            }
-        }
         CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
         CommitQueryReply reply = new CommitQueryReply();
         String queryStr = cq.getQuery();
