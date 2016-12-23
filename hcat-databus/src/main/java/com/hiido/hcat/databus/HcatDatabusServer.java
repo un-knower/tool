@@ -1,5 +1,6 @@
 package com.hiido.hcat.databus;
 
+import com.hiido.hcat.common.util.StringUtils;
 import com.hiido.hcat.common.util.SystemUtils;
 import com.hiido.hcat.databus.io.DatabusFormatter;
 import com.hiido.hcat.databus.network.HttpServer;
@@ -206,7 +207,10 @@ public class HcatDatabusServer implements CliService.Iface {
                     String serializedTask = fetchDirs.get(0);
                     final String serverTypeKey = fetchDirs.get(1);
                     String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
+                    if(StringUtils.isEmpty(serverAddress))
+                        serverAddress = this.address;
 
+                    LOG.info("job {} start to send data to {}", qid, serverAddress);
                     if (serverTypeKey == null)
                         throw new IllegalArgumentException("service type key should not be 'null'.");
 
@@ -253,6 +257,7 @@ public class HcatDatabusServer implements CliService.Iface {
                         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
                         while (fetch.fetch(list)) {
                             producerScheduler.pushData(key, currentUid.get(), list, false);
+                            pending.add(currentUid.get());
                             currentUid.incrementAndGet();
                             list = new LinkedList<Map<String, Object>>();
                         }
@@ -280,7 +285,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 endTime = System.currentTimeMillis();
                 finish = true;
                 runningTask.decrementAndGet();
-                LOG.info("Task {} finished with state {}, transferd row {}", this.progress.getState(), this.transfered.get());
+                LOG.info("Task {} finished with state {}, transferd row {}", this.qid, this.progress.getState(), this.transfered.get());
             }
         }
     }

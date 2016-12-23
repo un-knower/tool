@@ -109,7 +109,7 @@ public class ProducerScheduler implements Closeable {
                     if(!registeredServerKey.contains(mss.key))
                         continue;
 
-                    if(mss.key.serverAddress.equals(databusClient.getAddrList()))
+                    if(!mss.key.serverAddress.equals(databusClient.getAddrList()))
                         databusClient.setAddrList(mss.key.serverAddress);
 
                     HttpProtocol protocol = new HttpProtocol();

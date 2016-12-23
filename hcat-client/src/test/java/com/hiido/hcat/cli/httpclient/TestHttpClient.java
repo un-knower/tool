@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.hiido.hcat.thrift.protocol.*;
 import com.hiido.hcat.thrift.protocol.SignupReply;
@@ -59,7 +60,8 @@ public class TestHttpClient {
 
     @Test
     public void queryJobStatus() throws TException, InterruptedException {
-        String qid = "14_17_109_45_26022_20161213012033542_25135";
+        String qid = "14_17_109_45_26023_20161216182125483_127";
+        //serveltUrl = "http://14.17.109.45:26023/query";
         THttpClient thc = new THttpClient(serveltUrl);
         TProtocol lopFactory = new TBinaryProtocol(thc);
         CliService.Client client = new CliService.Client(lopFactory);
@@ -72,14 +74,21 @@ public class TestHttpClient {
         cipher.put("user_id", "471");
         cipher.put("company_id", "189");
         QueryStatusReply status = client.queryJobStatus(new QueryStatus(cipher, qid));
-        //while (status.retCode == 0 && status.getQueryProgress().state == 1) {
+        while (status.retCode == 0 && status.getQueryProgress().state < 1) {
             for (String job : status.getQueryProgress().jobId) {
                 System.out.println("job id:" + job);
             }
             System.out.println("progress: " + status.getQueryProgress().progress);
+            System.out.println("res:" + status.getQueryProgress().res == null ? "null" : status.getQueryProgress().res);
+            System.out.println("fetch :" + status.getQueryProgress().getFetchDirs() == null ? "null" : status.getQueryProgress().getFetchDirs().get(0));
             Thread.sleep(5000);
             status = client.queryJobStatus(new QueryStatus(cipher, qid));
-        //}
+        }
+
+        System.out.println("status:" + status.getQueryProgress().getState());
+        System.out.println("progress: " + status.getQueryProgress().progress);
+        System.out.println("res:" + status.getQueryProgress().res == null ? "null" : status.getQueryProgress().res);
+
         if (status.retMessage != null)
             System.out.println(status.retMessage);
         System.out.println("Query is completed.");
@@ -106,7 +115,7 @@ public class TestHttpClient {
 
     @Test
     public void commit() throws InterruptedException {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             try {
                 THttpClient thc = new THttpClient(serveltUrl);
                 TProtocol lopFactory = new TBinaryProtocol(thc);
@@ -125,16 +134,41 @@ public class TestHttpClient {
                         "where dt='20161111' and (ver like '7.%' or ver like '8.%') and hour<='09'\n" +
                         "group by ver\n" +
                         ")a";
+
+                sql = //"set hive.execution.engine=spark;\n" +
+                        "set hcat.databus.ervice.type.key=abc;\n" +
+                        "USE yule;\n" +
+                        "select dt,uid from yule.yule_user_gold where dt='20161201' order by uid limit 10";
+
+                sql = "use freshman;\n" +
+                        "set hcat.databus.ervice.type.key=me_activite_uid;\n" +
+                        "select * from freshman_test;";
+
+                sql = "set hive.execution.engine=spark;\n" +
+                        //"set hcat.databus.ervice.type.key=abc;\n" +
+                        "select\n" +
+                        "    uid\n" +
+                        "    ,count(distinct dt) as login_days\n" +
+                        "from \n" +
+                        "    bproduct.bproduct_me_mbsdk_do\n" +
+                        "where\n" +
+                        "    dt >= '20161130'\n" +
+                        "and dt <= '20161214'\n" +
+                        "group by uid";
+
                 HashMap<String, String> cipher = new HashMap<String, String>();
                 cipher.put("loguser", "dw_zouruochen");
                 cipher.put("curuser", "dw_zouruochen");
-                cipher.put("bususer", "shark");
+                cipher.put("bususer", "yule");
                 cipher.put("skey", "6VdbVqlSi2uZwPXW+TIc8MI=");
                 cipher.put("username", "zouruochen");
                 cipher.put("user_id", "471");
                 cipher.put("company_id", "189");
 
-                CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher);
+                Map<String, String> conf =  new HashMap();
+                conf.put("hcat.query.return.fetch", "true");
+
+                CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher).setConf(conf);
                 CommitQueryReply reply = client.commit(cq);
                 if (reply.getHandle().isQuick())
                     //assertEquals(reply.getStatus(), JobStatus.COMPLETE);
@@ -143,19 +177,23 @@ public class TestHttpClient {
                     String qid = reply.getHandle().getQueryId();
                     System.out.println(qid + " started");
                     QueryStatusReply status = client.queryJobStatus(new QueryStatus(cipher, qid));
-                /*
-				while(status.retCode == 0 && status.getQueryProgress().state == 1) {
-					for(String job : status.getQueryProgress().jobId){
-						System.out.println("job id:" + job);
-					}
-					System.out.println("progress: " + status.getQueryProgress().progress);
-					Thread.sleep(5000);
-					status = client.queryJobStatus(new QueryStatus(cipher, qid));
-				}
-				*/
+
+                    while (status.retCode == 0 && status.getQueryProgress().state <= 1) {
+                        for (String job : status.getQueryProgress().jobId) {
+                            System.out.println("job id:" + job);
+                        }
+                        System.out.println("progress: " + status.getQueryProgress().progress);
+                        System.out.println("res:" + status.getQueryProgress().res == null ? "null" : status.getQueryProgress().res);
+                        Thread.sleep(5000);
+                        status = client.queryJobStatus(new QueryStatus(cipher, qid));
+                    }
+                    System.out.println("fetch :" + status.getQueryProgress().getFetchDirs() == null ? "null" : status.getQueryProgress().getFetchDirs().get(0));
+
                     if (status.retMessage != null)
                         System.out.println(status.retMessage);
                     System.out.println("Query is completed.");
+
+
 				/*
 				QueryStatusReply status = queryJobStatus(client, reply.getHandle().queryId);
 				while (status.queryProgress.state != JobStatus.COMPLETE.getValue() && status.queryProgress.state != JobStatus.FAILURE.getValue()

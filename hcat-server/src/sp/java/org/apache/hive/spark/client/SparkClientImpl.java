@@ -111,9 +111,12 @@ class SparkClientImpl implements SparkClient {
             this.driverRpc = future.get(value != null ? Integer.parseInt(value) : 60000, TimeUnit.MILLISECONDS);
         } catch (Throwable e) {
             if (e.getCause() instanceof TimeoutException) {
+                rpcServer.cancelClient(clientId, "server wait for client time out.");
+                /*
                 LOG.error("Timed out waiting for client to connect.\nPossible reasons include network " +
                         "issues, errors in remote driver or the cluster has no available resources, etc." +
                         "\nPlease check YARN or Spark driver's logs for further information.", e);
+                        */
             } else {
                 LOG.error("Error while waiting for client to connect.", e);
             }
