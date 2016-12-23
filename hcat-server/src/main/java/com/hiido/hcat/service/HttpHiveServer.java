@@ -97,10 +97,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     public static final SSLConnectionSocketFactory sslsf;
 
     static {
-        try(InputStream ksIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_CLIENT_PATH);
-            InputStream tsIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_TRUST_PATH);) {
-            KeyStore keyStore  = KeyStore.getInstance("JKS");
-            KeyStore trustStore  = KeyStore.getInstance("JKS");
+        try (InputStream ksIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_CLIENT_PATH);
+             InputStream tsIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_TRUST_PATH);) {
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            KeyStore trustStore = KeyStore.getInstance("JKS");
             keyStore.load(ksIn, KEY_STORE_PASSWORD.toCharArray());
             trustStore.load(tsIn, KEY_STORE_TRUST_PASSWORD.toCharArray());
             SSLContextBuilder builder = new SSLContextBuilder();
@@ -317,7 +317,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     .setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
 
             //for hcat-databus
-            if(confOverlay != null && confOverlay.containsKey("hcat.query.return.fetch"))
+            if (confOverlay != null && confOverlay.containsKey("hcat.query.return.fetch"))
                 reqFetch = true;
             else
                 reqFetch = false;
@@ -366,7 +366,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 if (companyInfo != null && companyInfo.getJobQueue() != null)
                     hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
                 if (user2Queue.get(session.getUserName()) != null)
-                    hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
+                    hiveConf.set("mapred.job.queue.name", user2Queue.get(session.getUserName()));
                 session.open(confOverlay);
                 session.getSessionState().setHiidoUserId(userId == null ? 0 : Integer.parseInt(userId));
                 session.getSessionState().setHiidoCompanyId((companyId == null ? 0 : Integer.parseInt(companyId)));
@@ -404,7 +404,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                             if (companyInfo != null && companyInfo.getJobQueue() != null)
                                 hiveConf.set("spark.yarn.queue", companyInfo.getJobQueue());
                             if (user2Queue.get(session.getUserName()) != null)
-                                hiveConf.set("spark.yarn.queue", companyInfo.getJobQueue());
+                                hiveConf.set("spark.yarn.queue", user2Queue.get(session.getUserName()));
                             loadedSparkConf = true;
                         }
                     }
@@ -466,12 +466,14 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                                 }
                                 work.setPartDir(partDir);
                             }
-                        //for hcat-databus
                         }
-                        if(reqFetch) {
+
+                        //for hcat-databus
+                        if (reqFetch) {
                             qp.fetchDirs = new LinkedList<String>();
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
-                            qp.fetchDirs.add(hiveConf.get("hcat.databus.ervice.type.key", ""));
+                            qp.fetchDirs.add(hiveConf.get("hcat.databus.service.type.key", ""));
+                            qp.fetchDirs.add(hiveConf.get("hcat.databus.service.address", ""));
                         }
 
                         TableSchema schema = sqlOpt.getResultSetSchema();
@@ -602,9 +604,9 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             String key = "hiidosys_closeserverkey";
             char[] array = new char[key.length()];
             reader.read(array, 0, key.length());
-            if(!key.equals(String.valueOf(array)))
+            if (!key.equals(String.valueOf(array)))
                 return;
-            if(!close.get())
+            if (!close.get())
                 close.set(true);
             else
                 return;
@@ -716,38 +718,36 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
         @Override
         public void run() {
-            while(!closeSignal.get()) {
-                java.sql.Connection conn = null;
-                boolean err = false;
-                try {
-                    conn = connPool.acquire();
-                    PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat`");
-                    ResultSet result = stmt.executeQuery();
-                    while (result.next()) {
-                        int cid = result.getInt(1);
-                        String name = result.getString(2);
-                        String queue = result.getString(3);
-                        String hdfs = result.getString(4);
-                        CompanyInfo companyInfo = new CompanyInfo(cid, name, queue, hdfs);
-                        id2Company.put(cid, companyInfo);
-                    }
-                    result.close();
-                    stmt.close();
-                    stmt = conn.prepareStatement("select bususer, job_queue from  bees.`hcat_user_queue`");
-                    result = stmt.executeQuery();
-                    while (result.next()) {
-                        String bususer = result.getString(1);
-                        String queue = result.getString(2);
-                        user2Queue.put(bususer, queue);
-                    }
-                    result.close();
-                    stmt.close();
-                } catch (Exception e) {
-                    err = true;
-                    LOG.error("failed to achieve company/bususer queue info.", e);
-                } finally {
-                    connPool.release(conn, err);
+            java.sql.Connection conn = null;
+            boolean err = false;
+            try {
+                conn = connPool.acquire();
+                PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat`");
+                ResultSet result = stmt.executeQuery();
+                while (result.next()) {
+                    int cid = result.getInt(1);
+                    String name = result.getString(2);
+                    String queue = result.getString(3);
+                    String hdfs = result.getString(4);
+                    CompanyInfo companyInfo = new CompanyInfo(cid, name, queue, hdfs);
+                    id2Company.put(cid, companyInfo);
                 }
+                result.close();
+                stmt.close();
+                stmt = conn.prepareStatement("select bususer, job_queue from  bees.`hcat_user_queue`");
+                result = stmt.executeQuery();
+                while (result.next()) {
+                    String bususer = result.getString(1);
+                    String queue = result.getString(2);
+                    user2Queue.put(bususer, queue);
+                }
+                result.close();
+                stmt.close();
+            } catch (Exception e) {
+                err = true;
+                LOG.error("failed to achieve company/bususer queue info.", e);
+            } finally {
+                connPool.release(conn, err);
             }
         }
     }
@@ -835,7 +835,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         try (CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(HttpHiveServer.sslsf).build()) {
             THttpClient thc = new THttpClient(HiveConfConstants.getHcatHvaserver(conf), httpclient);
             TProtocol lopFactory = new TBinaryProtocol(thc);
-            HvaService.Client hvaClient =new HvaService.Client(lopFactory);
+            HvaService.Client hvaClient = new HvaService.Client(lopFactory);
 
             Set<Obj> authSet = new HashSet<Obj>();
             authSet.add(new Obj(companyName, "company", (byte) 15));
@@ -898,7 +898,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     @Override
     public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, RuntimeException {
-        if(close.get())
+        if (close.get())
             throw new RuntimeException("Server is closing.");
         // 1. 权限验证
         String companyId = cq.cipher.get("company_id");
@@ -975,10 +975,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         } catch (Exception e1) {
             LOG.error("Error in commit job.", e1);
             runningTask.decrementAndGet();
-            if(e1 instanceof AuthorizationException)
-                throw (AuthorizationException)e1;
+            if (e1 instanceof AuthorizationException)
+                throw (AuthorizationException) e1;
             else if (e1 instanceof RuntimeException)
-                throw new AuthorizationException(((RuntimeException)e1).getMsg());
+                throw new AuthorizationException(((RuntimeException) e1).getMsg());
             else {
                 throw new AuthorizationException().setMsg(e1.toString());
             }
@@ -1036,7 +1036,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     }
 
     public static boolean isQuickCmd(String command, Context ctx, ParseDriver pd)
-            throws AuthorizationException{
+            throws AuthorizationException {
         String[] tokens = command.split("\\s+");
         HiveCommand hiveCommand = HiveCommand.find(tokens, false);
 
@@ -1129,8 +1129,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     isQuick = false;
             }
         } catch (Exception e) {
-            if(e instanceof AuthorizationException)
-                throw (AuthorizationException)e;
+            if (e instanceof AuthorizationException)
+                throw (AuthorizationException) e;
             else
                 throw new AuthorizationException("failed in parse sql :" + e.toString());
         }
@@ -1141,9 +1141,9 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
         @Override
         public void run() {
-            while(close.get()) {
+            while (close.get()) {
                 SystemUtils.sleep(5000);
-                if(runningTask.get() <= 0  && sqlQueue.peek() == null && taskBlockQueue.peek() == null)
+                if (runningTask.get() <= 0 && sqlQueue.peek() == null && taskBlockQueue.peek() == null)
                     break;
                 else {
                     LOG.info(String.format("waiting for %d tasks to be done.",
