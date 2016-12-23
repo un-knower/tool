@@ -8,10 +8,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.StructField;
 import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by zrc on 16-12-12.
@@ -19,8 +16,16 @@ import java.util.Properties;
  */
 public class DatabusFormatter implements FetchFormatter<Object> {
 
+    public static String FIELDS = "hcat.query.fields";
+
+    private List<String> fieldNames;
+
     @Override
     public void initialize(Configuration configuration, Properties properties) throws Exception {
+        String fields = configuration.get(FIELDS);
+        if(fields == null)
+            throw new IllegalArgumentException("Lack schema of fetch task.");
+        fieldNames = Arrays.<String>asList(fields.split(";"));
     }
 
     @Override
@@ -33,11 +38,11 @@ public class DatabusFormatter implements FetchFormatter<Object> {
             Object field = structOI.getStructFieldData(row, fieldRef);
             //null 值不再按照hive 默认的处理方式
             if(field == null)
-                data.put(fieldRef.getFieldName(), null);
+                data.put(fieldNames.get(i)/*fieldRef.getFieldName()*/, null);
             else {
                 ObjectInspector fieldInspector = fieldRef.getFieldObjectInspector();
                 String value = SerDeUtils.getJSONString(field, fieldInspector);
-                data.put(fieldRef.getFieldName(), value);
+                data.put(fieldNames.get(i)/*fieldRef.getFieldName()*/, value);
             }
         }
         return data;
