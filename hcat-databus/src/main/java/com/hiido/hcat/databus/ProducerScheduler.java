@@ -122,7 +122,9 @@ public class ProducerScheduler implements Closeable {
 
                     HttpProtocol.Reply reply = null;
                     try {
+                        long start = System.currentTimeMillis();
                         reply = databusClient.post(protocol, HttpProtocol.Reply.class);
+                        long end = System.currentTimeMillis();
                         if (!reply.isSuccess()) {
                             OnceFailureListener listener = onceFailureListeners.get(mss.key);
                             if(listener != null)
@@ -130,7 +132,7 @@ public class ProducerScheduler implements Closeable {
                         } else {
                             SuccessListener listener = successListeners.get(mss.key);
                             if (listener != null)
-                                listener.handle(mss.uid, mss.lines.size(), 0l);
+                                listener.handle(mss.uid, mss.lines.size(), end - start);
                         }
                     } catch (Exception e) {
                         OnceFailureListener listener = onceFailureListeners.get(mss.key);
@@ -138,7 +140,9 @@ public class ProducerScheduler implements Closeable {
                             listener.handle(mss.uid, e);
                     }
                 }
-            } finally {
+            }catch (Exception e){
+                LOG.warn("producer err :", e);
+            }finally {
                 countDownLatch.countDown();
                 LOG.warn("One produce Processor is finished.");
             }

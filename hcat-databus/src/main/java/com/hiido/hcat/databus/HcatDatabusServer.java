@@ -51,6 +51,7 @@ public class HcatDatabusServer implements CliService.Iface {
 
     private List<String> hcatServer;
     private int maxRows = 100;
+    private final String defaultServiceAddress;
 
     private final HttpServer httpServer;
     private final Map<String, Task> qid2Task = new ConcurrentHashMap<String, Task>();
@@ -70,6 +71,7 @@ public class HcatDatabusServer implements CliService.Iface {
         httpServer.addServlet("query", "/query", new QueryServlet(new CliService.Processor<HcatDatabusServer>(this),
                 new TBinaryProtocol.Factory(true, true)));
         httpServer.addServlet("reject", "/reject", new RejectServlet());
+        this.defaultServiceAddress = serverAddress;
         producerScheduler = new ProducerScheduler(serverAddress, queueCapacity, parallelism);
     }
 
@@ -158,7 +160,6 @@ public class HcatDatabusServer implements CliService.Iface {
         volatile boolean finish;
         volatile AtomicBoolean error = new AtomicBoolean(false);
         final StringBuilder errMss = new StringBuilder();
-
         AtomicLong transfered = new AtomicLong(0l);
 
         public Task(String qid, String address, Map conf) {
@@ -177,10 +178,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 CliService.Client client = new CliService.Client(lopFactory);
                 QueryStatusReply status = client.queryJobStatus(new QueryStatus(conf, qid));
                 while (status.retCode == 0 && status.getQueryProgress().state <= 1) {
-                    QueryProgress progress = status.getQueryProgress();
-                    this.progress.setProgress(progress.getProgress());
-                    if (!this.progress.getJobId().containsAll(progress.getJobId()))
-                        this.progress.setJobId(progress.getJobId());
+                    this.progress = status.getQueryProgress();
                     SystemUtils.sleep(5000);
                     status = client.queryJobStatus(new QueryStatus(conf, qid));
                 }
@@ -208,7 +206,7 @@ public class HcatDatabusServer implements CliService.Iface {
                     final String serverTypeKey = fetchDirs.get(1);
                     String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
                     if(StringUtils.isEmpty(serverAddress))
-                        serverAddress = this.address;
+                        serverAddress = HcatDatabusServer.this.defaultServiceAddress;
 
                     LOG.info("job {} start to send data to {}", qid, serverAddress);
                     if (serverTypeKey == null)
@@ -244,9 +242,14 @@ public class HcatDatabusServer implements CliService.Iface {
                         }
                     };
                     final ProducerScheduler.SuccessListener successListener = new ProducerScheduler.SuccessListener() {
+                        //rate
+                        AtomicInteger count = new AtomicInteger(0);
+
                         @Override
                         protected void handle(long uid, long rows, long rate) {
                             transfered.addAndGet(rows);
+                            if(count.incrementAndGet() % 20 == 0)
+                                LOG.info("producer send 100 rows spend {}", rate);
                             pending.remove(uid);
                         }
                     };
@@ -255,7 +258,7 @@ public class HcatDatabusServer implements CliService.Iface {
                     try {
                         key = producerScheduler.register(serverTypeKey, serverAddress, successListener, failureListener);
                         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
-                        while (fetch.fetch(list)) {
+                        while ((!error.get()) && fetch.fetch(list)) {
                             producerScheduler.pushData(key, currentUid.get(), list, false);
                             pending.add(currentUid.get());
                             currentUid.incrementAndGet();
@@ -282,6 +285,8 @@ public class HcatDatabusServer implements CliService.Iface {
                 pending.clear();
                 this.progress.setState(error.get() ? 3 : 2);
                 this.progress.setEndTime(System.currentTimeMillis());
+                if(errMss.length() > 0)
+                    this.progress.setErrmsg(errMss.toString());
                 endTime = System.currentTimeMillis();
                 finish = true;
                 runningTask.decrementAndGet();
