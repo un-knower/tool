@@ -21,11 +21,11 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 
+import com.hiido.hcat.common.util.SystemUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.*;
 
@@ -44,21 +44,23 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
-import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.Utils;
 import org.apache.hadoop.security.SecurityUtil;
+import org.apache.hadoop.yarn.api.records.ApplicationReport;
+import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hive.spark.client.rpc.Rpc;
 import org.apache.hive.spark.client.rpc.RpcConfiguration;
 import org.apache.hive.spark.client.rpc.RpcServer;
 import org.apache.spark.SparkContext;
 import org.apache.spark.SparkException;
+import org.apache.spark.deploy.HiidoSparkSubmit;
 import org.apache.spark.deploy.SparkSubmit;
+import org.apache.spark.deploy.yarn.HiidoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +68,7 @@ class SparkClientImpl implements SparkClient {
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = LoggerFactory.getLogger(SparkClientImpl.class);
-    private static final Lock lock = new ReentrantLock();
+    //private static final Lock lock = new ReentrantLock();
 
     private static final long DEFAULT_SHUTDOWN_TIMEOUT = 10000; // In milliseconds
     private static final long MAX_ERR_LOG_LINES_FOR_RPC = 1000;
@@ -81,8 +83,7 @@ class SparkClientImpl implements SparkClient {
 
     private final Map<String, String> conf;
     private final HiveConf hiveConf;
-    private final AtomicInteger childIdGenerator;
-    private final FutureTask<Exception> driverThread;
+    private final HiidoClient hiidoClient;
     private final Map<String, JobHandleImpl<?>> jobs;
     private final Rpc driverRpc;
     private final ClientProtocol protocol;
@@ -91,43 +92,23 @@ class SparkClientImpl implements SparkClient {
     SparkClientImpl(RpcServer rpcServer, Map<String, String> conf, HiveConf hiveConf) throws IOException, SparkException {
         this.conf = conf;
         this.hiveConf = hiveConf;
-        this.childIdGenerator = new AtomicInteger();
         this.jobs = Maps.newConcurrentMap();
 
         String clientId = UUID.randomUUID().toString();
         String secret = rpcServer.createSecret();
         this.protocol = new ClientProtocol();
         io.netty.util.concurrent.Future<Rpc> future = rpcServer.registerClient(clientId, secret, protocol);
-        lock.lock();
-        try{
-            this.driverThread = startDriver(rpcServer, clientId, secret);
-        } finally {
-            lock.unlock();
-        }
+        this.hiidoClient = startDriver(rpcServer, clientId, secret);
 
+        String value = conf.get(HiveConf.ConfVars.SPARK_RPC_CLIENT_HANDSHAKE_TIMEOUT.varname);
+        // The RPC server will take care of timeouts here.
         try {
-            String value = conf.get(HiveConf.ConfVars.SPARK_RPC_CLIENT_HANDSHAKE_TIMEOUT.varname);
-            // The RPC server will take care of timeouts here.
             this.driverRpc = future.get(value != null ? Integer.parseInt(value) : 60000, TimeUnit.MILLISECONDS);
-        } catch (Throwable e) {
-            if (e instanceof TimeoutException) {
-                rpcServer.cancelClient(clientId, "server wait for client time out.");
-                /*
-                LOG.error("Timed out waiting for client to connect.\nPossible reasons include network " +
-                        "issues, errors in remote driver or the cluster has no available resources, etc." +
-                        "\nPlease check YARN or Spark driver's logs for further information.", e);
-                        */
-            } else {
-                LOG.error("Error while waiting for client to connect.", e);
-            }
-            driverThread.cancel(true);
-            try {
-                driverThread.get();
-            } catch (Exception ie) {
-                // Give up.
-                LOG.warn("Interrupted before driver thread was finished.");
-            }
-            throw Throwables.propagate(e);
+        } catch (Exception e) {
+            if(hiidoClient != null)
+                hiidoClient.stop();
+            throw new IOException("Error when client wait remote driver connect.", e);
+        } finally {
         }
 
         driverRpc.addListener(new Rpc.Listener() {
@@ -164,16 +145,19 @@ class SparkClientImpl implements SparkClient {
                 driverRpc.close();
             }
         }
-
-        long endTime = System.currentTimeMillis() + DEFAULT_SHUTDOWN_TIMEOUT;
-        try {
-            driverThread.get(DEFAULT_SHUTDOWN_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (Exception ie) {
-            LOG.debug("Interrupted before driver thread was finished.");
-        }
-        if (endTime - System.currentTimeMillis() <= 0) {
-            LOG.warn("Timed out shutting down remote driver, interrupting...");
-            driverThread.cancel(true);
+        if (hiidoClient.appId() != null) {
+            try {
+                ApplicationReport report = hiidoClient.getApplicationReport(hiidoClient.appId());
+                YarnApplicationState state = report.getYarnApplicationState();
+                if (state == YarnApplicationState.ACCEPTED || state == YarnApplicationState.NEW ||
+                        state == YarnApplicationState.RUNNING || state == YarnApplicationState.SUBMITTED)
+                    SystemUtils.sleep(DEFAULT_SHUTDOWN_TIMEOUT);
+                LOG.info(String.format("Application report for %s(state: %s)", hiidoClient.appId(), report.getYarnApplicationState().name()));
+            } catch (Exception e) {
+                LOG.warn("close appid failed.", e);
+            } finally {
+                hiidoClient.stop();
+            }
         }
     }
 
@@ -206,352 +190,195 @@ class SparkClientImpl implements SparkClient {
         protocol.cancel(jobId);
     }
 
-    private FutureTask<Exception> startDriver(final RpcServer rpcServer, final String clientId, final String secret)
+    private HiidoClient startDriver(final RpcServer rpcServer, final String clientId, final String secret)
             throws IOException {
-        Callable runnable = null;
         final String serverAddress = rpcServer.getAddress();
         final String serverPort = String.valueOf(rpcServer.getPort());
 
-        if (conf.containsKey(SparkClientFactory.CONF_KEY_IN_PROCESS)) {
-            //FIXME
-            /*
-            // Mostly for testing things quickly. Do not do this in production.
-            LOG.warn("!!!! Running remote driver in-process. !!!!");
-            runnable = new Callable() {
-                @Override
-                public Object call() {
-                    List<String> args = Lists.newArrayList();
-                    args.add("--remote-host");
-                    args.add(serverAddress);
-                    args.add("--remote-port");
-                    args.add(serverPort);
-                    args.add("--client-id");
-                    args.add(clientId);
-                    args.add("--secret");
-                    args.add(secret);
-
-                    for (Map.Entry<String, String> e : conf.entrySet()) {
-                        args.add("--conf");
-                        args.add(String.format("%s=%s", e.getKey(), conf.get(e.getKey())));
-                    }
-                    try {
-                        RemoteDriver.main(args.toArray(new String[args.size()]));
-                    } catch (Exception e) {
-                        LOG.error("Error running driver.", e);
-                    }
-                    return null;
-                }
-            };
-            */
-
-        } else {
-            // If a Spark installation is provided, use the spark-submit script. Otherwise, call the
-            // SparkSubmit class directly, which has some caveats (like having to provide a proper
-            // version of Guava on the classpath depending on the deploy mode).
-            String sparkHome = conf.get(SPARK_HOME_KEY);
+        // If a Spark installation is provided, use the spark-submit script. Otherwise, call the
+        // SparkSubmit class directly, which has some caveats (like having to provide a proper
+        // version of Guava on the classpath depending on the deploy mode).
+        String sparkHome = conf.get(SPARK_HOME_KEY);
+        if (sparkHome == null) {
+            sparkHome = System.getenv(SPARK_HOME_ENV);
+        }
+        if (sparkHome == null) {
+            sparkHome = System.getProperty(SPARK_HOME_KEY);
+        }
+        String sparkLogDir = conf.get("hive.spark.log.dir");
+        if (sparkLogDir == null) {
             if (sparkHome == null) {
-                sparkHome = System.getenv(SPARK_HOME_ENV);
+                sparkLogDir = "./target/";
+            } else {
+                sparkLogDir = sparkHome + "/logs/";
             }
-            if (sparkHome == null) {
-                sparkHome = System.getProperty(SPARK_HOME_KEY);
+        }
+
+        String osxTestOpts = "";
+        if (Strings.nullToEmpty(System.getProperty("os.name")).toLowerCase().contains("mac")) {
+            osxTestOpts = Strings.nullToEmpty(System.getenv(OSX_TEST_OPTS));
+        }
+
+        String driverJavaOpts = Joiner.on(" ").skipNulls().join(
+                "-Dhive.spark.log.dir=" + sparkLogDir, osxTestOpts, conf.get(DRIVER_OPTS_KEY));
+        String executorJavaOpts = Joiner.on(" ").skipNulls().join(
+                "-Dhive.spark.log.dir=" + sparkLogDir, osxTestOpts, conf.get(EXECUTOR_OPTS_KEY));
+
+        // Create a file with all the job properties to be read by spark-submit. Change the
+        // file's permissions so that only the owner can read it. This avoid having the
+        // connection secret show up in the child process's command line.
+        final File properties = File.createTempFile("spark-submit.", ".properties");
+        if (!properties.setReadable(false) || !properties.setReadable(true, true)) {
+            throw new IOException("Cannot change permissions of job properties file.");
+        }
+        //FIXME
+        //properties.deleteOnExit();
+
+        Properties allProps = new Properties();
+        // first load the defaults from spark-defaults.conf if available
+        try {
+            URL sparkDefaultsUrl = Thread.currentThread().getContextClassLoader().getResource("spark-defaults.conf");
+            if (sparkDefaultsUrl != null) {
+                LOG.info("Loading spark defaults: " + sparkDefaultsUrl);
+                allProps.load(new ByteArrayInputStream(Resources.toByteArray(sparkDefaultsUrl)));
             }
-            String sparkLogDir = conf.get("hive.spark.log.dir");
-            if (sparkLogDir == null) {
-                if (sparkHome == null) {
-                    sparkLogDir = "./target/";
+        } catch (Exception e) {
+            String msg = "Exception trying to load spark-defaults.conf: " + e;
+            throw new IOException(msg, e);
+        }
+        // then load the SparkClientImpl config
+        for (Map.Entry<String, String> e : conf.entrySet()) {
+            allProps.put(e.getKey(), conf.get(e.getKey()));
+        }
+
+        //FIXME
+        //allProps.put(SparkClientFactory.CONF_CLIENT_ID, clientId);
+        //allProps.put(SparkClientFactory.CONF_KEY_SECRET, secret);
+        allProps.put(DRIVER_OPTS_KEY, driverJavaOpts);
+        allProps.put(EXECUTOR_OPTS_KEY, executorJavaOpts);
+
+        String isTesting = conf.get("spark.testing");
+        if (isTesting != null && isTesting.equalsIgnoreCase("true")) {
+            String hiveHadoopTestClasspath = Strings.nullToEmpty(System.getenv("HIVE_HADOOP_TEST_CLASSPATH"));
+            if (!hiveHadoopTestClasspath.isEmpty()) {
+                String extraDriverClasspath = Strings.nullToEmpty((String) allProps.get(DRIVER_EXTRA_CLASSPATH));
+                if (extraDriverClasspath.isEmpty()) {
+                    allProps.put(DRIVER_EXTRA_CLASSPATH, hiveHadoopTestClasspath);
                 } else {
-                    sparkLogDir = sparkHome + "/logs/";
+                    extraDriverClasspath = extraDriverClasspath.endsWith(File.pathSeparator) ? extraDriverClasspath : extraDriverClasspath + File.pathSeparator;
+                    allProps.put(DRIVER_EXTRA_CLASSPATH, extraDriverClasspath + hiveHadoopTestClasspath);
+                }
+
+                String extraExecutorClasspath = Strings.nullToEmpty((String) allProps.get(EXECUTOR_EXTRA_CLASSPATH));
+                if (extraExecutorClasspath.isEmpty()) {
+                    allProps.put(EXECUTOR_EXTRA_CLASSPATH, hiveHadoopTestClasspath);
+                } else {
+                    extraExecutorClasspath = extraExecutorClasspath.endsWith(File.pathSeparator) ? extraExecutorClasspath : extraExecutorClasspath + File.pathSeparator;
+                    allProps.put(EXECUTOR_EXTRA_CLASSPATH, extraExecutorClasspath + hiveHadoopTestClasspath);
                 }
             }
+        }
 
-            String osxTestOpts = "";
-            if (Strings.nullToEmpty(System.getProperty("os.name")).toLowerCase().contains("mac")) {
-                osxTestOpts = Strings.nullToEmpty(System.getenv(OSX_TEST_OPTS));
+        Writer writer = new OutputStreamWriter(new FileOutputStream(properties), Charsets.UTF_8);
+        try {
+            allProps.store(writer, "Spark Context configuration");
+        } finally {
+            writer.close();
+        }
+
+        // Define how to pass options to the child process. If launching in client (or local)
+        // mode, the driver options need to be passed directly on the command line. Otherwise,
+        // SparkSubmit will take care of that for us.
+        String master = conf.get("spark.master");
+        Preconditions.checkArgument(master != null, "spark.master is not defined.");
+
+        final List<String> argv = Lists.newArrayList();
+
+        if (hiveConf.getVar(HiveConf.ConfVars.HIVE_SERVER2_AUTHENTICATION).equalsIgnoreCase("kerberos")) {
+            argv.add("kinit");
+            String principal = SecurityUtil.getServerPrincipal(hiveConf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL),
+                    "0.0.0.0");
+            String keyTabFile = hiveConf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_KEYTAB);
+            argv.add(principal);
+            argv.add("-k");
+            argv.add("-t");
+            argv.add(keyTabFile + ";");
+        }
+        if (master.equals("yarn-cluster")) {
+            String executorCores = conf.get("spark.executor.cores");
+            if (executorCores != null) {
+                argv.add("--executor-cores");
+                argv.add(executorCores);
             }
 
-            String driverJavaOpts = Joiner.on(" ").skipNulls().join(
-                    "-Dhive.spark.log.dir=" + sparkLogDir, osxTestOpts, conf.get(DRIVER_OPTS_KEY));
-            String executorJavaOpts = Joiner.on(" ").skipNulls().join(
-                    "-Dhive.spark.log.dir=" + sparkLogDir, osxTestOpts, conf.get(EXECUTOR_OPTS_KEY));
-
-            // Create a file with all the job properties to be read by spark-submit. Change the
-            // file's permissions so that only the owner can read it. This avoid having the
-            // connection secret show up in the child process's command line.
-            final File properties = File.createTempFile("spark-submit.", ".properties");
-            if (!properties.setReadable(false) || !properties.setReadable(true, true)) {
-                throw new IOException("Cannot change permissions of job properties file.");
+            String executorMemory = conf.get("spark.executor.memory");
+            if (executorMemory != null) {
+                argv.add("--executor-memory");
+                argv.add(executorMemory);
             }
-            //FIXME
-            //properties.deleteOnExit();
 
-            Properties allProps = new Properties();
-            // first load the defaults from spark-defaults.conf if available
+            String numOfExecutors = conf.get("spark.executor.instances");
+            if (numOfExecutors != null) {
+                argv.add("--num-executors");
+                argv.add(numOfExecutors);
+            }
+        }
+
+        if (hiveConf.getBoolVar(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS)) {
             try {
-                URL sparkDefaultsUrl = Thread.currentThread().getContextClassLoader().getResource("spark-defaults.conf");
-                if (sparkDefaultsUrl != null) {
-                    LOG.info("Loading spark defaults: " + sparkDefaultsUrl);
-                    allProps.load(new ByteArrayInputStream(Resources.toByteArray(sparkDefaultsUrl)));
+                String currentUser = Utils.getUGI().getShortUserName();
+                // do not do impersonation in CLI mode
+                if (!currentUser.equals(System.getProperty("user.name"))) {
+                    LOG.info("Attempting impersonation of " + currentUser);
+                    argv.add("--proxy-user");
+                    argv.add(currentUser);
                 }
             } catch (Exception e) {
-                String msg = "Exception trying to load spark-defaults.conf: " + e;
-                throw new IOException(msg, e);
+                String msg = "Cannot obtain username: " + e;
+                throw new IllegalStateException(msg, e);
             }
-            // then load the SparkClientImpl config
-            for (Map.Entry<String, String> e : conf.entrySet()) {
-                allProps.put(e.getKey(), conf.get(e.getKey()));
-            }
+        }
 
-            //FIXME
-            //allProps.put(SparkClientFactory.CONF_CLIENT_ID, clientId);
-            //allProps.put(SparkClientFactory.CONF_KEY_SECRET, secret);
-            allProps.put(DRIVER_OPTS_KEY, driverJavaOpts);
-            allProps.put(EXECUTOR_OPTS_KEY, executorJavaOpts);
+        argv.add("--properties-file");
+        argv.add(properties.getAbsolutePath());
+        argv.add("--class");
+        argv.add(RemoteDriver.class.getName());
 
-            String isTesting = conf.get("spark.testing");
-            if (isTesting != null && isTesting.equalsIgnoreCase("true")) {
-                String hiveHadoopTestClasspath = Strings.nullToEmpty(System.getenv("HIVE_HADOOP_TEST_CLASSPATH"));
-                if (!hiveHadoopTestClasspath.isEmpty()) {
-                    String extraDriverClasspath = Strings.nullToEmpty((String)allProps.get(DRIVER_EXTRA_CLASSPATH));
-                    if (extraDriverClasspath.isEmpty()) {
-                        allProps.put(DRIVER_EXTRA_CLASSPATH, hiveHadoopTestClasspath);
-                    } else {
-                        extraDriverClasspath = extraDriverClasspath.endsWith(File.pathSeparator) ? extraDriverClasspath : extraDriverClasspath + File.pathSeparator;
-                        allProps.put(DRIVER_EXTRA_CLASSPATH, extraDriverClasspath + hiveHadoopTestClasspath);
-                    }
-
-                    String extraExecutorClasspath = Strings.nullToEmpty((String)allProps.get(EXECUTOR_EXTRA_CLASSPATH));
-                    if (extraExecutorClasspath.isEmpty()) {
-                        allProps.put(EXECUTOR_EXTRA_CLASSPATH, hiveHadoopTestClasspath);
-                    } else {
-                        extraExecutorClasspath = extraExecutorClasspath.endsWith(File.pathSeparator) ? extraExecutorClasspath : extraExecutorClasspath + File.pathSeparator;
-                        allProps.put(EXECUTOR_EXTRA_CLASSPATH, extraExecutorClasspath + hiveHadoopTestClasspath);
-                    }
-                }
-            }
-
-            Writer writer = new OutputStreamWriter(new FileOutputStream(properties), Charsets.UTF_8);
-            try {
-                allProps.store(writer, "Spark Context configuration");
-            } finally {
-                writer.close();
-            }
-
-            // Define how to pass options to the child process. If launching in client (or local)
-            // mode, the driver options need to be passed directly on the command line. Otherwise,
-            // SparkSubmit will take care of that for us.
-            String master = conf.get("spark.master");
-            Preconditions.checkArgument(master != null, "spark.master is not defined.");
-
-            final List<String> argv = Lists.newArrayList();
-
-            if (hiveConf.getVar(HiveConf.ConfVars.HIVE_SERVER2_AUTHENTICATION).equalsIgnoreCase("kerberos")) {
-                argv.add("kinit");
-                String principal = SecurityUtil.getServerPrincipal(hiveConf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL),
-                        "0.0.0.0");
-                String keyTabFile = hiveConf.getVar(ConfVars.HIVE_SERVER2_KERBEROS_KEYTAB);
-                argv.add(principal);
-                argv.add("-k");
-                argv.add("-t");
-                argv.add(keyTabFile + ";");
-            }
-            /*
-            if (sparkHome != null) {
-                argv.add(new File(sparkHome, "bin/spark-submit").getAbsolutePath());
-            } else {
-                LOG.info("No spark.home provided, calling SparkSubmit directly.");
-                argv.add(new File(System.getProperty("java.home"), "bin/java").getAbsolutePath());
-
-                if (master.startsWith("local") || master.startsWith("mesos") || master.endsWith("-client") || master.startsWith("spark")) {
-                    String mem = conf.get("spark.driver.memory");
-                    if (mem != null) {
-                        argv.add("-Xms" + mem);
-                        argv.add("-Xmx" + mem);
-                    }
-
-                    String cp = conf.get("spark.driver.extraClassPath");
-                    if (cp != null) {
-                        argv.add("-classpath");
-                        argv.add(cp);
-                    }
-
-                    String libPath = conf.get("spark.driver.extraLibPath");
-                    if (libPath != null) {
-                        argv.add("-Djava.library.path=" + libPath);
-                    }
-
-                    String extra = conf.get(DRIVER_OPTS_KEY);
-                    if (extra != null) {
-                        for (String opt : extra.split("[ ]")) {
-                            if (!opt.trim().isEmpty()) {
-                                argv.add(opt.trim());
-                            }
-                        }
-                    }
-                }
-
-                argv.add("org.apache.spark.deploy.SparkSubmit");
-            }
-            */
-            if (master.equals("yarn-cluster")) {
-                String executorCores = conf.get("spark.executor.cores");
-                if (executorCores != null) {
-                    argv.add("--executor-cores");
-                    argv.add(executorCores);
-                }
-
-                String executorMemory = conf.get("spark.executor.memory");
-                if (executorMemory != null) {
-                    argv.add("--executor-memory");
-                    argv.add(executorMemory);
-                }
-
-                String numOfExecutors = conf.get("spark.executor.instances");
-                if (numOfExecutors != null) {
-                    argv.add("--num-executors");
-                    argv.add(numOfExecutors);
-                }
-            }
-
-            if (hiveConf.getBoolVar(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS)) {
-                try {
-                    String currentUser = Utils.getUGI().getShortUserName();
-                    // do not do impersonation in CLI mode
-                    if (!currentUser.equals(System.getProperty("user.name"))) {
-                        LOG.info("Attempting impersonation of " + currentUser);
-                        argv.add("--proxy-user");
-                        argv.add(currentUser);
-                    }
-                } catch (Exception e) {
-                    String msg = "Cannot obtain username: " + e;
-                    throw new IllegalStateException(msg, e);
-                }
-            }
-
-            argv.add("--properties-file");
-            argv.add(properties.getAbsolutePath());
-            argv.add("--class");
-            argv.add(RemoteDriver.class.getName());
-
-            //FIXME
-            String jar = "spark-internal";
-            if (SparkContext.jarOfClass(this.getClass()).isDefined()) {
-                jar = SparkContext.jarOfClass(this.getClass()).get();
-            }
-            argv.add(hiveConf.get("hcat.spark.run.jar", jar));
+        //FIXME
+        String jar = "spark-internal";
+        if (SparkContext.jarOfClass(this.getClass()).isDefined()) {
+            jar = SparkContext.jarOfClass(this.getClass()).get();
+        }
+        argv.add(hiveConf.get("hcat.spark.run.jar", jar));
             /*
             argv.add(jar);
             */
 
-            argv.add("--remote-host");
-            argv.add(serverAddress);
-            argv.add("--remote-port");
-            argv.add(serverPort);
+        argv.add("--remote-host");
+        argv.add(serverAddress);
+        argv.add("--remote-port");
+        argv.add(serverPort);
 
-            //FIXME
-            argv.add("--client-id");
-            argv.add(clientId);
-            argv.add("--secret");
-            argv.add(secret);
+        //FIXME
+        argv.add("--client-id");
+        argv.add(clientId);
+        argv.add("--secret");
+        argv.add(secret);
 
-            //hive.spark.* keys are passed down to the RemoteDriver via --conf,
-            //as --properties-file contains the spark.* keys that are meant for SparkConf object.
-            for (String hiveSparkConfKey : RpcConfiguration.HIVE_SPARK_RSC_CONFIGS) {
-                String value = RpcConfiguration.getValue(hiveConf, hiveSparkConfKey);
-                argv.add("--conf");
-                argv.add(String.format("%s=%s", hiveSparkConfKey, value));
-            }
-
-            String cmd = Joiner.on(" ").join(argv);
-            //FIXME
-            runnable = new Callable<Exception>() {
-                @Override
-                public Exception call() throws Exception {
-                    try {
-                        LOG.info("run spark args : " + Arrays.toString(argv.toArray(new String[argv.size()])));
-                        //LOG.info("Running client driver with argv: {}", cmd);
-                        SparkSubmit.main(argv.toArray(new String[argv.size()]));
-                        //SparkSubmit.mainWithStream(argv.toArray(new String[argv.size()]), SessionState.LogHelper.getErrStream());
-                    } catch(Exception e) {
-                        if(e instanceof InterruptedException) {
-                            LOG.warn("Waiting thread interrupted, killing child process.");
-                            Thread.interrupted();
-                        } else
-                            LOG.error("Driver thread ERROR: ", e);
-                        if(e instanceof SparkException) {
-                            Iterator<JobHandleImpl<?>> iterator = jobs.values().iterator();
-                            while(iterator.hasNext()) {
-                                JobHandleImpl<?> handle = iterator.next();
-                                if(handle.getState().ordinal() <= JobHandle.State.STARTED.ordinal())
-                                    handle.changeState(JobHandle.State.FAILED);
-                            }
-                        }
-                        return e;
-                    } finally {
-                        properties.delete();
-                    }
-                    return null;
-                }
-            };
-            /*
-            LOG.info("Running client driver with argv: {}", cmd);
-            ProcessBuilder pb = new ProcessBuilder("sh", "-c", cmd);
-
-            // Prevent hive configurations from being visible in Spark.
-            pb.environment().remove("HIVE_HOME");
-            pb.environment().remove("HIVE_CONF_DIR");
-
-            if (isTesting != null) {
-                pb.environment().put("SPARK_TESTING", isTesting);
-            }
-
-            final Process child = pb.start();
-            int childId = childIdGenerator.incrementAndGet();
-            final List<String> childErrorLog = new ArrayList<String>();
-            redirect("stdout-redir-" + childId, new Redirector(child.getInputStream()));
-            redirect("stderr-redir-" + childId, new Redirector(child.getErrorStream(), childErrorLog));
-
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        int exitCode = child.waitFor();
-                        if (exitCode != 0) {
-                            StringBuilder errStr = new StringBuilder();
-                            for (String s : childErrorLog) {
-                                errStr.append(s);
-                                errStr.append('\n');
-                            }
-
-                            rpcServer.cancelClient(clientId,
-                                    "Child process exited before connecting back with error log " + errStr.toString());
-                            LOG.warn("Child process exited with code {}", exitCode);
-                        }
-                    } catch (InterruptedException ie) {
-                        LOG.warn("Waiting thread interrupted, killing child process.");
-                        Thread.interrupted();
-                        child.destroy();
-                    } catch (Exception e) {
-                        LOG.warn("Exception while waiting for child process.", e);
-                    }
-                }
-            };
-            */
+        //hive.spark.* keys are passed down to the RemoteDriver via --conf,
+        //as --properties-file contains the spark.* keys that are meant for SparkConf object.
+        for (String hiveSparkConfKey : RpcConfiguration.HIVE_SPARK_RSC_CONFIGS) {
+            String value = RpcConfiguration.getValue(hiveConf, hiveSparkConfKey);
+            argv.add("--conf");
+            argv.add(String.format("%s=%s", hiveSparkConfKey, value));
         }
-        if(runnable == null)
-            throw new RuntimeException("runnable is not been initialized.");
-        FutureTask<Exception> futureTask = new FutureTask<Exception>(runnable);
-        Thread thread = new Thread(futureTask);
-        thread.setDaemon(true);
-        thread.setName(Thread.currentThread().getName() + "_spark");
-        thread.start();
-        return futureTask;
-        /*
-        Thread thread = new Thread(runnable);
-        thread.setDaemon(true);
-        thread.setName("Driver");
-        thread.start();
-        return thread;
-        */
+
+        String cmd = Joiner.on(" ").join(argv);
+        //SparkSubmit.main(argv.toArray(new String[argv.size()]));
+
+        HiidoClient client = HiidoSparkSubmit.submitToCluster(argv.toArray(new String[argv.size()]));
+        client.run();
+        return client;
     }
 
     private void redirect(String name, Redirector redirector) {

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.hiido.suit.Business;
+import com.hiido.suit.net.http.protocol.HttpApacheClient;
+import com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Task;
 import org.apache.hadoop.hive.ql.hooks.Entity.Type;
@@ -15,7 +17,6 @@ import org.apache.hadoop.hive.ql.hooks.WriteEntity;
 import org.apache.hadoop.hive.ql.metadata.AuthorizationException;
 import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.HiveOperation;
-import org.apache.hadoop.hive.ql.session.SessionState;
 
 import com.hiido.hcat.common.PublicConstant;
 import com.hiido.hcat.hive.HiveConfConstants;
@@ -154,11 +155,11 @@ public class HiveValidationHook extends AbstractSemanticAnalyzerHook {
             return;
         SecurityAuth sa = createSecurityAuth(context.getUserName());
         sa.setAuth_info(authInfo);
-        com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient client = new com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient();
+        HttpHAPoolClient client = new HttpHAPoolClient();
         try {
             client.setAddrList(conf.get(PublicConstant.HCAT_AUTHENTICATION_SERVERS));
             client.setClientNum(-1);
-            com.hiido.suit.net.http.protocol.HttpApacheClient apacheClient = new com.hiido.suit.net.http.protocol.HttpApacheClient();
+            HttpApacheClient apacheClient = new HttpApacheClient();
             client.setHttpProtocolClient(apacheClient);
 
             SecurityAuth.Reply reply = client.post(sa, SecurityAuth.Reply.class);

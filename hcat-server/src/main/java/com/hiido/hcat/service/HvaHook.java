@@ -4,7 +4,10 @@ import com.hiido.hcat.common.PublicConstant;
 import com.hiido.hcat.hive.HiveConfConstants;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.Business;
+import com.hiido.suit.net.http.protocol.HttpApacheClient;
 import com.hiido.suit.net.http.protocol.SecurityAuth;
+//import com.hiido.suit.net.http.protocol.bak.HttpApacheClient;
+import com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient;
 import com.hiido.suit.service.security.SecurityObject;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Task;
@@ -18,12 +21,9 @@ import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
-import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
-import org.apache.thrift.transport.TSSLTransportFactory;
-import org.apache.thrift.transport.TSocket;
 
 import java.io.Serializable;
 import java.util.*;
@@ -237,11 +237,11 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
 
         SecurityAuth sa = createSecurityAuth(context.getUserName());
         sa.setAuth_info(authInfo);
-        com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient client = new com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient();
+        HttpHAPoolClient client = new HttpHAPoolClient();
         try {
             client.setAddrList(conf.get(PublicConstant.HCAT_AUTHENTICATION_SERVERS));
             client.setClientNum(-1);
-            com.hiido.suit.net.http.protocol.HttpApacheClient apacheClient = new com.hiido.suit.net.http.protocol.HttpApacheClient();
+            HttpApacheClient apacheClient = new HttpApacheClient();
             client.setHttpProtocolClient(apacheClient);
 
             SecurityAuth.Reply reply = client.post(sa, SecurityAuth.Reply.class);

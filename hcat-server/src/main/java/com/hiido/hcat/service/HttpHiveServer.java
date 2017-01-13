@@ -906,6 +906,23 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         String bususer = cq.cipher.get("bususer");
 
         CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
+        if(companyInfo == null) {
+            try(Connection conn = connPool.acquire();) {
+                PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat` where company_id = ?");
+                stmt.setInt(1, Integer.valueOf(companyId));
+                ResultSet result = stmt.executeQuery();
+                while (result.next()) {
+                    int cid = result.getInt(1);
+                    String name = result.getString(2);
+                    String queue = result.getString(3);
+                    String hdfs = result.getString(4);
+                    companyInfo = new CompanyInfo(cid, name, queue, hdfs);
+                    id2Company.put(cid, companyInfo);
+                }
+            } catch (Exception e) {
+                LOG.error("failed to get company from mysql.", e);
+            }
+        }
         CommitQueryReply reply = new CommitQueryReply();
         String queryStr = cq.getQuery();
         String line;

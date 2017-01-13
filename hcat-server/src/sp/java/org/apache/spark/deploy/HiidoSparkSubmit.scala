@@ -59,7 +59,7 @@ private[deploy] object SparkSubmitAction extends Enumeration {
   * This program handles setting up the classpath with relevant Spark dependencies and provides
   * a layer over the different cluster managers and deploy modes that Spark supports.
   */
-object SparkSubmit {
+object HiidoSparkSubmit {
 
   // Cluster managers
   private val YARN = 1
@@ -121,6 +121,29 @@ object SparkSubmit {
       case SparkSubmitAction.KILL => kill(appArgs)
       case SparkSubmitAction.REQUEST_STATUS => requestStatus(appArgs)
     }
+  }
+
+  def submitToCluster(args: Array[String]) : org.apache.spark.deploy.yarn.HiidoClient = {
+    val appArgs = new SparkSubmitArguments(args)
+    val (childArgs, childClasspath, sysProps, childMainClass) = prepareSubmitEnvironment(appArgs)
+    val loader =
+      if (sysProps.getOrElse("spark.driver.userClassPathFirst", "false").toBoolean) {
+        new ChildFirstURLClassLoader(new Array[URL](0),
+          Thread.currentThread.getContextClassLoader)
+      } else {
+        new MutableURLClassLoader(new Array[URL](0),
+          Thread.currentThread.getContextClassLoader)
+      }
+    Thread.currentThread.setContextClassLoader(loader)
+
+    for (jar <- childClasspath) {
+      addJarToClasspath(jar, loader)
+    }
+
+    for ((key, value) <- sysProps) {
+      System.setProperty(key, value)
+    }
+    org.apache.spark.deploy.yarn.HiidoClient.createHiidoClient(childArgs.toArray)
   }
 
   //FIXME
@@ -701,7 +724,7 @@ object SparkSubmit {
           printStream.println("You need to build Spark with -Phive and -Phive-thriftserver.")
           // scalastyle:on println
         }
-        //System.exit(CLASS_NOT_FOUND_EXIT_STATUS) 2017-01-01 17:23:00
+      //System.exit(CLASS_NOT_FOUND_EXIT_STATUS) 2017-01-01 17:23:00
       case e: NoClassDefFoundError =>
         e.printStackTrace(printStream)
         if (e.getMessage.contains("org/apache/hadoop/hive")) {
@@ -742,7 +765,7 @@ object SparkSubmit {
           case SparkUserAppException(exitCode) =>
             //FIXME
             exitFn(exitCode)
-            //System.exit(exitCode)
+          //System.exit(exitCode)
 
           case t: Throwable =>
             throw t
