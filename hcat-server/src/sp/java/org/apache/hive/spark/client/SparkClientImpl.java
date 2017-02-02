@@ -376,9 +376,14 @@ class SparkClientImpl implements SparkClient {
         String cmd = Joiner.on(" ").join(argv);
         //SparkSubmit.main(argv.toArray(new String[argv.size()]));
 
-        HiidoClient client = HiidoSparkSubmit.submitToCluster(argv.toArray(new String[argv.size()]));
-        client.run();
-        return client;
+        try {
+            HiidoClient client = HiidoSparkSubmit.submitToCluster(argv.toArray(new String[argv.size()]));
+            client.run();
+            return client;
+        } finally {
+            if(properties != null && properties.exists())
+                properties.delete();
+        }
     }
 
     private void redirect(String name, Redirector redirector) {

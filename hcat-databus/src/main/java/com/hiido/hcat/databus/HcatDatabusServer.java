@@ -7,6 +7,8 @@ import com.hiido.hcat.databus.network.HttpServer;
 import com.hiido.hcat.thrift.protocol.*;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.Recode;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.CompilationOpContext;
@@ -21,7 +23,6 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServlet;
 import org.apache.thrift.transport.THttpClient;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -46,6 +48,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HcatDatabusServer implements CliService.Iface {
     private static final Logger LOG = LoggerFactory.getLogger(HcatDatabusServer.class);
 
+    private static final String INSERT_SQL = "insert into bees.databus_tasks (qid,commit_month, exec_start, exec_end, rows, rate, state) values(?,?,?,?,?,?,?)";
 
     private final ProducerScheduler producerScheduler;
 
@@ -63,6 +66,8 @@ public class HcatDatabusServer implements CliService.Iface {
     private final long historyTaskLife = 60 * 60;
     private final long maxHistoryTask = 100;
 
+    private final BasicDataSource dataSource;
+
     public HcatDatabusServer(String host, int port, int maxThreads, int minThreads, int maxIdleTimeMs
             , String serverAddress, int queueCapacity, int parallelism) throws IOException {
         HttpServer.Builder builder = new HttpServer.Builder();
@@ -73,10 +78,20 @@ public class HcatDatabusServer implements CliService.Iface {
         httpServer.addServlet("reject", "/reject", new RejectServlet());
         this.defaultServiceAddress = serverAddress;
         producerScheduler = new ProducerScheduler(serverAddress, queueCapacity, parallelism);
+        dataSource = new BasicDataSource();
     }
 
     public void start() throws Exception {
+        dataSource.setDriverClassName(driverName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setMaxIdle(maxIdle);
+        dataSource.setMinIdle(minIdle);
+        dataSource.setMaxActive(maxTotal);
+        dataSource.setMaxWait(maxWaitMillis);
         producerScheduler.start();
+
         Thread disper = new Thread(new Disper(), "task-dipser");
         disper.start();
         httpServer.start();
@@ -85,6 +100,7 @@ public class HcatDatabusServer implements CliService.Iface {
     public void close() throws Exception {
         closeSignal.set(true);
         httpServer.stop();
+        dataSource.close();
         producerScheduler.close();
     }
 
@@ -153,11 +169,18 @@ public class HcatDatabusServer implements CliService.Iface {
         private String address;
         private Map<String, String> conf;
         private QueryProgress progress = new QueryProgress();
-        private Set<Long> pending = new ConcurrentHashSet<Long>();
+        private LinkedBlockingQueue<Long> pending = new LinkedBlockingQueue<Long>(4);
         private AtomicLong currentUid = new AtomicLong(0l);
 
         long endTime;
         volatile boolean finish;
+
+        //rate
+        AtomicLong count = new AtomicLong(0);
+        AtomicLong spended = new AtomicLong(0);
+        long maxRate = 0l;
+        long currentRate = 0l;
+
         volatile AtomicBoolean error = new AtomicBoolean(false);
         final StringBuilder errMss = new StringBuilder();
         AtomicLong transfered = new AtomicLong(0l);
@@ -205,7 +228,7 @@ public class HcatDatabusServer implements CliService.Iface {
                     String serializedTask = fetchDirs.get(0);
                     final String serverTypeKey = fetchDirs.get(1);
                     String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
-                    if(StringUtils.isEmpty(serverAddress))
+                    if (StringUtils.isEmpty(serverAddress))
                         serverAddress = HcatDatabusServer.this.defaultServiceAddress;
 
                     LOG.info("job {} start to send data to {}", qid, serverAddress);
@@ -239,18 +262,20 @@ public class HcatDatabusServer implements CliService.Iface {
                                     LOG.error("error when transfer data.", e);
                                 }
                             }
+                            pending.remove(uid);
                         }
                     };
                     final ProducerScheduler.SuccessListener successListener = new ProducerScheduler.SuccessListener() {
-                        //rate
-                        AtomicInteger count = new AtomicInteger(0);
 
                         @Override
                         protected void handle(long uid, long rows, long rate) {
                             transfered.addAndGet(rows);
-                            if(count.incrementAndGet() % 20 == 0)
-                                LOG.info("producer send 100 rows spend {}", rate);
+                            count.incrementAndGet();
+                            spended.addAndGet(rate);
                             pending.remove(uid);
+                            currentRate = rate;
+                            if (rate > maxRate)
+                                maxRate = rate;
                         }
                     };
 
@@ -259,18 +284,24 @@ public class HcatDatabusServer implements CliService.Iface {
                         key = producerScheduler.register(serverTypeKey, serverAddress, successListener, failureListener);
                         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
                         while ((!error.get()) && fetch.fetch(list)) {
-                            producerScheduler.pushData(key, currentUid.get(), list, false);
-                            pending.add(currentUid.get());
+                            //阻塞
+                            try {
+                                pending.put(currentUid.get());
+                                producerScheduler.pushData(key, currentUid.get(), list, false);
+                            } catch (InterruptedException e) {
+                                LOG.warn("Interrupted when putting uid into task.pendingQueue.");
+                            }
                             currentUid.incrementAndGet();
                             list = new LinkedList<Map<String, Object>>();
                         }
+
                         while (pending.size() > 0 && !error.get()) {
                             SystemUtils.sleep(5000);
                         }
-                    }catch(ProducerScheduler.UnRegisteredException e) {
+                    } catch (ProducerScheduler.UnRegisteredException e) {
                         LOG.warn("task {} had been unregisted or never register before transfer.", qid);
                     } finally {
-                        if(key != null)
+                        if (key != null)
                             producerScheduler.unregister(key);
                     }
                 } else {
@@ -284,13 +315,28 @@ public class HcatDatabusServer implements CliService.Iface {
             } finally {
                 pending.clear();
                 this.progress.setState(error.get() ? 3 : 2);
-                this.progress.setEndTime(System.currentTimeMillis());
-                if(errMss.length() > 0)
+                this.progress.setEndTime(System.currentTimeMillis() / 1000);
+                if (errMss.length() > 0)
                     this.progress.setErrmsg(errMss.toString());
                 endTime = System.currentTimeMillis();
+                try (Connection conn = dataSource.getConnection();) {
+                    Calendar cd = Calendar.getInstance();
+                    PreparedStatement statement = conn.prepareStatement(INSERT_SQL);
+                    statement.setString(1, qid);
+                    statement.setInt(2, cd.get(Calendar.MONTH) + 1);
+                    statement.setTimestamp(3, new Timestamp(progress.startTime * 1000));
+                    statement.setTimestamp(4, new Timestamp(progress.endTime * 1000));
+                    statement.setLong(5, transfered.get());
+                    statement.setLong(6, spended.get() / count.get());
+                    statement.setInt(7, this.progress.getState());
+                    boolean success = statement.execute();
+                    statement.close();
+                } catch (SQLException e) {
+                    LOG.warn("faled to insert log into mysql.", e);
+                }
+                LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), spended.get() / count.get());
                 finish = true;
                 runningTask.decrementAndGet();
-                LOG.info("Task {} finished with state {}, transferd row {}", this.qid, this.progress.getState(), this.transfered.get());
             }
         }
     }
@@ -357,8 +403,8 @@ public class HcatDatabusServer implements CliService.Iface {
     @Override
     public CommitQueryReply commit(CommitQuery cq) throws AuthorizationException, RuntimeException, TException {
         Map<String, String> conf = cq.getConf();
-        if(conf == null) {
-            conf = new HashMap<String ,String>();
+        if (conf == null) {
+            conf = new HashMap<String, String>();
             cq.setConf(conf);
         }
         conf.put("hcat.query.return.fetch", "true");
@@ -388,12 +434,24 @@ public class HcatDatabusServer implements CliService.Iface {
 
     @Override
     public QueryStatusReply queryJobStatus(QueryStatus qs) throws NotFoundException, TException {
+        QueryStatusReply reply = new QueryStatusReply();
         Task task = qid2Task.get(qs.queryId);
         if (task == null) {
-            LOG.warn("server not found qid {} ", qs.queryId);
-            throw new NotFoundException(String.format("Not found qid %s.", qs.queryId));
+            for (int i = 0; i < hcatServer.size(); i++) {
+                try {
+                    THttpClient thc = new THttpClient(hcatServer.get(i));
+                    TProtocol lopFactory = new TBinaryProtocol(thc);
+                    CliService.Client client = new CliService.Client(lopFactory);
+                    return client.queryJobStatus(qs);
+                } catch (TException e) {
+                    if (i == hcatServer.size() - 1)
+                        throw e;
+                }
+            }
         }
-        QueryStatusReply reply = new QueryStatusReply();
+
+        if(!task.error.get())
+            task.progress.setErrmsg(String.format("sended %d, currentRate %d ms, maxRate %d ms, total time %d s.", task.transfered.get(), task.currentRate, task.maxRate, task.spended.get()/1000));
         reply.setQueryProgress(task.progress);
         return reply;
     }
@@ -406,7 +464,7 @@ public class HcatDatabusServer implements CliService.Iface {
         if (task == null)
             throw new NotFoundException("Databus Not found qid " + cq.queryId);
 
-        if(task.finish)
+        if (task.finish)
             return new CancelQueryReply().setReCode(Recode.FAILURE.getValue()).setRetMessage("Job had finished.");
         else {
             task.error.set(true);
@@ -422,4 +480,80 @@ public class HcatDatabusServer implements CliService.Iface {
     public LoadFileReply laodData(LoadFile lf) throws AuthorizationException, RuntimeException, TException {
         throw new AuthorizationException("Unsupport loadData.");
     }
+
+    private String driverName;
+    private String url;
+    private String username;
+    private String password;
+
+    private int maxIdle = GenericObjectPool.DEFAULT_MAX_IDLE;
+    private int minIdle = GenericObjectPool.DEFAULT_MIN_IDLE;
+    private int maxTotal = GenericObjectPool.DEFAULT_MAX_ACTIVE;
+    private long maxWaitMillis = GenericObjectPool.DEFAULT_MAX_WAIT;
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getMaxIdle() {
+        return maxIdle;
+    }
+
+    public void setMaxIdle(int max) {
+        maxIdle = max;
+    }
+
+    public int getMinIdle() {
+        return minIdle;
+    }
+
+    public void setMinIdle(int min) {
+        minIdle = min;
+    }
+
+    public long getMaxWaitMillis() {
+        return maxWaitMillis;
+    }
+
+    public void setMaxWaitMillis(long maxWaitMillis) {
+        this.maxWaitMillis = maxWaitMillis;
+    }
+
+    public int getMaxTotal() {
+        return maxTotal;
+    }
+
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
+    }
+
 }

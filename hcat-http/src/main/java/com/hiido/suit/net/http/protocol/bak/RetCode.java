@@ -1,7 +1,7 @@
 /**
  * Oct 15, 2012
  */
-package com.hiido.suit.net.http.protocol;
+package com.hiido.suit.net.http.protocol.bak;
 
 import com.hiido.hcat.common.err.ErrCode;
 import com.hiido.hcat.common.err.ErrCodeException;

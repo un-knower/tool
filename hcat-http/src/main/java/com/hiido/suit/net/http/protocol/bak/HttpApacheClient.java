@@ -1,7 +1,7 @@
 /**
  * Oct 16, 2012
  */
-package com.hiido.suit.net.http.protocol;
+package com.hiido.suit.net.http.protocol.bak;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,7 +9,6 @@ import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hiido.hva.thrift.protocol.RuntimeException;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;

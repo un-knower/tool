@@ -1,7 +1,7 @@
 /**
  * Oct 16, 2012
  */
-package com.hiido.suit.net.http.protocol;
+package com.hiido.suit.net.http.protocol.bak;
 
 public abstract class AbstractHttpProtocolClient implements HttpProtocolClient {
 

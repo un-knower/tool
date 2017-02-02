@@ -1,8 +1,5 @@
 package com.hiido.hcat.databus;
 
-import com.hiido.hcat.databus.network.HttpProtocol;
-import com.hiido.suit.err.ErrCode;
-import com.hiido.suit.err.ErrCodeException;
 import com.hiido.suit.net.http.protocol.HttpApacheClient;
 import com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient;
 import org.junit.Test;

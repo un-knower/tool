@@ -1,8 +1,7 @@
-package com.hiido.suit.net.http.protocol;
+package com.hiido.suit.net.http.protocol.bak;
 
 import com.hiido.hcat.common.err.ErrCodeException;
 import com.hiido.hcat.common.util.StringUtils;
-import com.hiido.hva.thrift.protocol.RuntimeException;
 
 public abstract class HttpRawProtocol implements HttpProtocol {
     private static final long serialVersionUID = 1L;

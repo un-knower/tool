@@ -665,7 +665,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             boolean hasRecord = false;
             while (set.next()) {
                 hasRecord = true;
-                progress.setEndTime(set.getTimestamp(1) == null ? 0l : set.getTimestamp(1).getTime());
+                progress.setEndTime(set.getTimestamp(1) == null ? 0l : set.getTimestamp(1).getTime() / 1000);
                 progress.setState(set.getInt(2));
                 progress.setRes(set.getString(3));
                 progress.setJobId(HcatQuery.convertJobIds(set.getString(4)));
