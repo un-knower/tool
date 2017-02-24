@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-    static String serveltUrl = "http://14.17.109.45:26021/query";
+    static String serveltUrl = "http://14.17.109.45:26025/query";
 
     public void cancelJob() {
 
@@ -60,7 +60,7 @@ public class TestHttpClient {
 
     @Test
     public void queryJobStatus() throws TException, InterruptedException {
-        String qid = "14_17_109_45_26023_20161216182125483_127";
+        String qid = "0_0_0_0_26025_20170208164722306_0";
         //serveltUrl = "http://14.17.109.45:26023/query";
         THttpClient thc = new THttpClient(serveltUrl);
         TProtocol lopFactory = new TBinaryProtocol(thc);
@@ -135,15 +135,6 @@ public class TestHttpClient {
                         "group by ver\n" +
                         ")a";
 
-                sql = //"set hive.execution.engine=spark;\n" +
-                        "set hcat.databus.ervice.type.key=abc;\n" +
-                        "USE yule;\n" +
-                        "select dt,uid from yule.yule_user_gold where dt='20161201' order by uid limit 10";
-
-                sql = "use freshman;\n" +
-                        "set hcat.databus.ervice.type.key=me_activite_uid;\n" +
-                        "select * from freshman_test;";
-
                 sql = "set hive.execution.engine=spark;\n" +
                         //"set hcat.databus.ervice.type.key=abc;\n" +
                         "select\n" +
@@ -156,17 +147,81 @@ public class TestHttpClient {
                         "and dt <= '20161214'\n" +
                         "group by uid";
 
-                HashMap<String, String> cipher = new HashMap<String, String>();
-                cipher.put("loguser", "dw_zouruochen");
-                cipher.put("curuser", "dw_zouruochen");
-                cipher.put("bususer", "yule");
-                cipher.put("skey", "6VdbVqlSi2uZwPXW+TIc8MI=");
-                cipher.put("username", "zouruochen");
-                cipher.put("user_id", "471");
-                cipher.put("company_id", "189");
 
+                sql = "USE hiidosdk;\n" +
+                        //"set hive.optimize.correlation=true;\n" +
+                        //"set hive.auto.convert.join=false;\n" +
+                        "set hive.execution.engine=spark;\n" +
+                        //"set hive.optimize.sampling.orderby=true;\n" +
+                        "create temporary function ipmon as 'com.hiido.hive.udf.IPMON';\n" +
+                        "WITH sub_table AS (\n" +
+                        "\tSELECT sys,IF((hdid!='' AND hdid IS NOT NULL AND algo=1) OR algo=2,hdid,CONCAT(imei,\"|\",mac) ) AS tid,country,province FROM (\n" +
+                        "\t\tSELECT appkey,sys,hdid,imei,mac,net,ipmon(ip)[0] AS country,ipmon(ip)[1] AS province FROM default.yy_mbsdkdo_original WHERE dt >= '20161001' AND dt <= '20161002'\n" +
+                        "\t)a LEFT JOIN (\n" +
+                        "\t\tSELECT product_key,algo FROM hiidosdk.m_product\n" +
+                        "\t)b ON a.appkey=b.product_key\n" +
+                        "  \tWHERE b.product_key IS NOT NULL\n" +
+                        ")\n" +
+                        "\n" +
+                        "select\n" +
+                        "  '20161001' AS dt,sys,country,province,COUNT(DISTINCT tid) AS  client_count\n" +
+                        "from\n" +
+                        "  sub_table\n" +
+                        "group by\n" +
+                        "  sys,country,province;";
+
+
+                sql =   "set hive.execution.engine=spark;\n" +
+                        "select livetype,biz,anchorid,a.sid,\n" +
+                        "from_unixtime(start_time,'yyyy-MM-dd HH:mm:ss') as start_time,\n" +
+                        "from_unixtime(end_time,'yyyy-MM-dd HH:mm:ss') as end_time,\n" +
+                        "live_duration,uid,suid,logtype,type,\n" +
+                        "from_unixtime(st,'yyyy-MM-dd HH:mm:ss') as user_in,\n" +
+                        "from_unixtime(ed,'yyyy-MM-dd HH:mm:ss') as user_out,\n" +
+                        "case when st<start_time and ed>end_time then end_time-start_time\n" +
+                        "when st<start_time and ed<=end_time then ed-start_time\n" +
+                        "when st>=start_time and ed>end_time then end_time-st\n" +
+                        "when st>=start_time and ed<=end_time then ed-st\n" +
+                        "else 0 end as view_duration,source,ver,btype\n" +
+                        "from\n" +
+                        "(select type as livetype,if(biz='未知','other',biz) as biz,uid as anchorid,channel as sid,cast(unix_timestamp(start_time) as INT) as start_time,cast(unix_timestamp(end_time) as INT) as end_time,duration as live_duration from yule.yule_lkq_live_all_detail_day where dt='2017-01-16') a\n" +
+                        "left outer join\n" +
+                        "(select suid,uid,logtype,type,sid,b_time as st,e_time as ed,source,ver,btype from yule.yule_zyz_dr_original_day where dt='2017-01-16') b\n" +
+                        "on a.sid=b.sid\n" +
+                        "where ((st>=start_time and st<=end_time) or (ed>=start_time and ed<=end_time) or (st<start_time and ed>end_time));";
+
+                sql =   //"set hive.execution.engine=spark;\n" +
+                        //"set hive.merge.mapredfiles=true;\n" +
+                        //"insert overwrite table freshman.freshman_mbyy_dm_hot_click_sum_hour partition(dt = '20170208',hour = '23')\n" +
+                        "select\n" +
+                        "     op_type\n" +
+                        "    ,ver\n" +
+                        "    ,count(distinct case when act_type = 1 then imac end) as show_uid_num\n" +
+                        "    ,sum(case when act_type = 1 then click_cnt else 0 end) as show_cnt\n" +
+                        "    ,count(distinct case when act_type = 2 then imac end) as click_uid_num\n" +
+                        "    ,sum(case when act_type = 2 then click_cnt else 0 end) as click_cnt\n" +
+                        "from\n" +
+                        "(\n" +
+                        "    select\n" +
+                        "         split(concat('all_type#',op_type),'#') as op_types \n" +
+                        "        ,split(concat('all_type#',ver),'#') as vers\n" +
+                        "        ,act_type\n" +
+                        "        ,imac\n" +
+                        "        ,click_cnt\n" +
+                        "    from\n" +
+                        "        yule.yule_mbyy_ods_user_hot_act_hour_1h\n" +
+                        "    where\n" +
+                        "        dt = '20170207'\n" +
+                        "    and hour <= '23'\n" +
+                        ") a\n" +
+                        "lateral view explode(op_types) mtb1 as op_type\n" +
+                        "lateral view explode(vers) mtb2 as ver\n" +
+                        "group by op_type,ver\n" +
+                        ";";
+
+                Map<String, String> cipher = cipher();
                 Map<String, String> conf =  new HashMap();
-                conf.put("hcat.query.return.fetch", "true");
+                //conf.put("hcat.query.return.fetch", "true");
 
                 CommitQuery cq = new CommitQuery().setQuery(sql).setCipher(cipher).setConf(conf);
                 CommitQueryReply reply = client.commit(cq);
@@ -187,39 +242,11 @@ public class TestHttpClient {
                         Thread.sleep(5000);
                         status = client.queryJobStatus(new QueryStatus(cipher, qid));
                     }
-                    System.out.println("fetch :" + status.getQueryProgress().getFetchDirs() == null ? "null" : status.getQueryProgress().getFetchDirs().get(0));
+                    //System.out.println("fetch :" + status.getQueryProgress().getFetchDirs() == null ? "null" : status.getQueryProgress().getFetchDirs().get(0));
 
                     if (status.retMessage != null)
                         System.out.println(status.retMessage);
                     System.out.println("Query is completed.");
-
-
-				/*
-				QueryStatusReply status = queryJobStatus(client, reply.getHandle().queryId);
-				while (status.queryProgress.state != JobStatus.COMPLETE.getValue() && status.queryProgress.state != JobStatus.FAILURE.getValue()
-						&& status.queryProgress.state != JobStatus.CANCEL.getValue()) {
-					//System.out.println(String.format("job %s", status.status.name()));
-					Thread.sleep(5000);
-					status = queryJobStatus(client, reply.handle.queryId);
-				}
-				if (status.queryProgress.state != JobStatus.COMPLETE.getValue()) {
-					System.out.println("failed !");
-					System.out.println(reply.handle.stderr);
-					return;
-				}
-				*/
-				/*
-				for (String s : status.queryProgress.res) {
-					System.out.println(s);
-					FetchTask fetch = SerializationUtilities.deserializeObject(s, FetchTask.class);
-					Configuration c = new Configuration(false);
-					fetch.initialize(new HiveConf(c, this.getClass()), null, null, new CompilationOpContext());
-					List<String> list = new LinkedList<String>();
-					fetch.fetch(list);
-					for (String r : list)
-						System.out.println(r);
-				}
-				*/
                 }
             } catch (com.hiido.hcat.thrift.protocol.RuntimeException | AuthorizationException e) {
                 if (e instanceof com.hiido.hcat.thrift.protocol.RuntimeException)
@@ -243,10 +270,36 @@ public class TestHttpClient {
     }
 
     @Test
+    public void cancel() {
+        try {
+            String jobId = "0_0_0_0_26025_20170222173510728_1";
+            THttpClient thc = new THttpClient(serveltUrl);
+            TProtocol lopFactory = new TBinaryProtocol(thc);
+            CliService.Client client = new CliService.Client(lopFactory);
+            CancelQuery request = new CancelQuery(cipher(), jobId);
+            CancelQueryReply reply = client.cancelJob(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void format() {
         String hiveSparkConfKey = "asdf";
         String value = null;
         System.out.println(String.format("%s=%s", hiveSparkConfKey, value));
+    }
+
+    private Map<String, String> cipher() {
+        HashMap<String, String> cipher = new HashMap<String, String>();
+        cipher.put("loguser", "dw_zouruochen");
+        cipher.put("curuser", "dw_zouruochen");
+        cipher.put("bususer", "yule");
+        cipher.put("skey", "6VdbVqlSi2uZwPXW+TIc8MI=");
+        cipher.put("username", "zouruochen");
+        cipher.put("user_id", "471");
+        cipher.put("company_id", "189");
+        return cipher;
     }
 
 

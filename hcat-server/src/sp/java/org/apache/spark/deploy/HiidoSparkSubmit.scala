@@ -39,7 +39,7 @@ import org.apache.ivy.plugins.resolver.{ChainResolver, FileSystemResolver, IBibl
 import org.apache.spark.api.r.RUtils
 import org.apache.spark.deploy.rest._
 import org.apache.spark.util.{ChildFirstURLClassLoader, MutableURLClassLoader, Utils}
-import org.apache.spark.{SPARK_VERSION, SparkException, SparkUserAppException}
+import org.apache.spark.{Logging, SPARK_VERSION, SparkException, SparkUserAppException}
 
 import scala.collection.mutable.{ArrayBuffer, HashMap, Map}
 
@@ -59,7 +59,7 @@ private[deploy] object SparkSubmitAction extends Enumeration {
   * This program handles setting up the classpath with relevant Spark dependencies and provides
   * a layer over the different cluster managers and deploy modes that Spark supports.
   */
-object HiidoSparkSubmit {
+object HiidoSparkSubmit extends Logging {
 
   // Cluster managers
   private val YARN = 1
@@ -89,14 +89,15 @@ object HiidoSparkSubmit {
   // scalastyle:off println
   // Exposed for testing
   private[spark] var exitFn: Int => Unit = (exitCode: Int) => () //FIXME
-  private[spark] var printStream: PrintStream = System.err
-  private[spark] def printWarning(str: String): Unit = printStream.println("Warning: " + str)
+  //private[spark] var printStream: PrintStream = System.err  //FIXME extends Logging
+  private[spark] def printWarning(str: String): Unit = log.warn(str)
   private[spark] def printErrorAndExit(str: String): Unit = {
-    printStream.println("Error: " + str)
-    printStream.println("Run with --help for usage help or --verbose for debug output")
+    log.error(str)
+    //printStream.println("Run with --help for usage help or --verbose for debug output")
     exitFn(1)
   }
   private[spark] def printVersionAndExit(): Unit = {
+    /*
     printStream.println("""Welcome to
       ____              __
      / __/__  ___ _____/ /__
@@ -105,6 +106,7 @@ object HiidoSparkSubmit {
       /_/
                         """.format(SPARK_VERSION))
     printStream.println("Type --help for more information.")
+    */
     exitFn(0)
   }
   // scalastyle:on println
@@ -113,7 +115,8 @@ object HiidoSparkSubmit {
     val appArgs = new SparkSubmitArguments(args)
     if (appArgs.verbose) {
       // scalastyle:off println
-      printStream.println(appArgs)
+      //printStream.println(appArgs)
+      log.debug(appArgs.toString())
       // scalastyle:on println
     }
     appArgs.action match {
@@ -146,11 +149,13 @@ object HiidoSparkSubmit {
     org.apache.spark.deploy.yarn.HiidoClient.createHiidoClient(childArgs.toArray)
   }
 
+  /*
   //FIXME
   def mainWithStream(args: Array[String], errStream: PrintStream): Unit = {
     printStream = errStream
     main(args)
   }
+  */
 
   /**
     * Kill an existing submission using the REST protocol. Standalone and Mesos cluster mode only.
@@ -198,7 +203,8 @@ object HiidoSparkSubmit {
             // detect exceptions with empty stack traces here, and treat them differently.
             if (e.getStackTrace().length == 0) {
               // scalastyle:off println
-              printStream.println(s"ERROR: ${e.getClass().getName()}: ${e.getMessage()}")
+              //printStream.println(s"ERROR: ${e.getClass().getName()}: ${e.getMessage()}")
+              log.error(s"${e.getClass().getName()}: ${e.getMessage()}")
               // scalastyle:on println
               exitFn(1)
             } else {
@@ -218,7 +224,8 @@ object HiidoSparkSubmit {
     if (args.isStandaloneCluster && args.useRest) {
       try {
         // scalastyle:off println
-        printStream.println("Running Spark using the REST application submission protocol.")
+        //printStream.println("Running Spark using the REST application submission protocol.")
+        log.error("Running Spark using the REST application submission protocol.")
         // scalastyle:on println
         doRunMain()
       } catch {
@@ -324,7 +331,7 @@ object HiidoSparkSubmit {
     // install any R packages that may have been passed through --jars or --packages.
     // Spark Packages may contain R source code inside the jar.
     if (args.isR && !StringUtils.isBlank(args.jars)) {
-      RPackageUtils.checkAndBuildRPackage(args.jars, printStream, args.verbose)
+      RPackageUtils.checkAndBuildRPackage(args.jars, /*printStream*/ null, args.verbose)
     }
 
     // Require all python files to be local, so we can add them to the PYTHONPATH
@@ -685,11 +692,11 @@ object HiidoSparkSubmit {
                        verbose: Boolean): Unit = {
     // scalastyle:off println
     if (verbose) {
-      printStream.println(s"Main class:\n$childMainClass")
-      printStream.println(s"Arguments:\n${childArgs.mkString("\n")}")
-      printStream.println(s"System properties:\n${sysProps.mkString("\n")}")
-      printStream.println(s"Classpath elements:\n${childClasspath.mkString("\n")}")
-      printStream.println("\n")
+      log.debug(s"Main class:\n$childMainClass")
+      log.debug(s"Arguments:\n${childArgs.mkString("\n")}")
+      log.debug(s"System properties:\n${sysProps.mkString("\n")}")
+      log.debug(s"Classpath elements:\n${childClasspath.mkString("\n")}")
+      log.debug("\n")
     }
     // scalastyle:on println
 
@@ -717,20 +724,22 @@ object HiidoSparkSubmit {
       mainClass = Utils.classForName(childMainClass)
     } catch {
       case e: ClassNotFoundException =>
-        e.printStackTrace(printStream)
+        log.error("load childMainClass failed", e)
+        //e.printStackTrace(printStream)
         if (childMainClass.contains("thriftserver")) {
           // scalastyle:off println
-          printStream.println(s"Failed to load main class $childMainClass.")
-          printStream.println("You need to build Spark with -Phive and -Phive-thriftserver.")
+          log.error(s"Failed to load main class $childMainClass.")
+          log.error("You need to build Spark with -Phive and -Phive-thriftserver.")
           // scalastyle:on println
         }
       //System.exit(CLASS_NOT_FOUND_EXIT_STATUS) 2017-01-01 17:23:00
       case e: NoClassDefFoundError =>
-        e.printStackTrace(printStream)
+        log.error("NoClassDefFoundError ", e)
+        //e.printStackTrace(printStream)
         if (e.getMessage.contains("org/apache/hadoop/hive")) {
           // scalastyle:off println
-          printStream.println(s"Failed to load hive class.")
-          printStream.println("You need to build Spark with -Phive and -Phive-thriftserver.")
+          log.error(s"Failed to load hive class.")
+          log.error("You need to build Spark with -Phive and -Phive-thriftserver.")
           // scalastyle:on println
         }
         //FIXME

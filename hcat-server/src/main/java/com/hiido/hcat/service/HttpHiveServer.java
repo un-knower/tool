@@ -362,6 +362,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         public void run() {
             try {
                 HiveConf hiveConf = session.getHiveConf();
+                hiveConf.set("hcat.qid", qid);
                 hiveConf.setVar(HiveConf.ConfVars.HIVEQUERYID, qid);
                 if (companyInfo != null && companyInfo.getJobQueue() != null)
                     hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
@@ -904,6 +905,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         String companyId = cq.cipher.get("company_id");
         String userId = cq.cipher.get("user_id");
         String bususer = cq.cipher.get("bususer");
+        String curruser = cq.cipher.get("curuser");
+        String logSysUser = cq.cipher.get("loguser");
 
         CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
         if(companyInfo == null) {
@@ -974,7 +977,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             commitQueryRecord(qid, queryStr, bususer, quick);
             HiveConf hiveConf = new HiveConf();
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
-            HcatSession session = new HcatSession(bususer, hiveConf);
+            HcatSession session = new HcatSession(bususer, curruser, logSysUser, null, hiveConf, null);
 
             session.setOperationManager(operationManager);
             Task task = new Task(qid, companyInfo, session, cmds, quick, bitSet, cq.getConf());

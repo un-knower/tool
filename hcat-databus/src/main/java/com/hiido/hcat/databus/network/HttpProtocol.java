@@ -115,9 +115,21 @@ public class HttpProtocol extends HttpRawProtocol {
         public static final String DELETE_RECORD_Y = "Y";
         public static final String DELETE_RECORD_N = "N";
 
+        public static final String RESET_DATE_AND_PUT_Y = "Y";
+        public static final String RESET_DATE_AND_PUT_N = "N";
+
+        public String getReset_date_and_put() {
+            return reset_date_and_put;
+        }
+
+        public void setReset_date_and_put(String reset_date_and_put) {
+            this.reset_date_and_put = reset_date_and_put;
+        }
+
         private String store_timeout;// 数据存入存储中，保留时间
         private String rewrite_meta_columns = REWRITE_META_COLUMNS_N;// true 重置字段元数据
         private String delete_record = DELETE_RECORD_N; // 删除数据
+        private String reset_date_and_put = RESET_DATE_AND_PUT_N; // 重置数据然后再写入
 
         public MetaExt() {
 
@@ -127,6 +139,13 @@ public class HttpProtocol extends HttpRawProtocol {
             this.store_timeout = store_timeout;
             this.rewrite_meta_columns = rewrite_meta_columns;
             this.delete_record = delete_record;
+        }
+
+        public MetaExt(String store_timeout, String rewrite_meta_columns, String delete_record, String reset_date) {
+            this.store_timeout = store_timeout;
+            this.rewrite_meta_columns = rewrite_meta_columns;
+            this.delete_record = delete_record;
+            this.reset_date_and_put = reset_date;
         }
 
 

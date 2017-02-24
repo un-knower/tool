@@ -78,6 +78,9 @@ class HiidoClient(
   private var principal: String = null
   private var keytab: String = null
 
+  //FIXME
+  var confArchive : File = null
+
   private val launcherBackend = new LauncherBackend() {
     override def onStopRequest(): Unit = {
       if (isClusterMode && appId != null) {
@@ -550,7 +553,7 @@ class HiidoClient(
       }
     }
 
-    val confArchive = File.createTempFile(LOCALIZED_CONF_DIR, ".zip",
+    confArchive = File.createTempFile(LOCALIZED_CONF_DIR, ".zip",
       new File(Utils.getLocalDir(sparkConf)))
     val confStream = new ZipOutputStream(new FileOutputStream(confArchive))
 

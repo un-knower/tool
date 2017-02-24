@@ -190,6 +190,9 @@ public class SessionState {
     private String companyName;
     private String companyHdfs;
 
+    private String currUser;	//currUser
+    private String logSysUser;	//logSysUser
+
     class Progress{
         String taskId;
         volatile float progress = 0.0f;
@@ -1753,6 +1756,22 @@ public class SessionState {
 
     public void setCompanyHdfs(String hdfs) {
         this.companyHdfs = hdfs;
+    }
+
+    public String getCurrUser() {
+        return currUser;
+    }
+
+    public void setCurrUser(String currUser) {
+        this.currUser = currUser;
+    }
+
+    public String getLogSysUser() {
+        return logSysUser;
+    }
+
+    public void setLogSysUser(String logSysUser) {
+        this.logSysUser = logSysUser;
     }
 
     public ResourceDownloader getResourceDownloader() {

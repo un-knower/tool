@@ -90,6 +90,8 @@ public class HcatDatabusServer implements CliService.Iface {
         dataSource.setMinIdle(minIdle);
         dataSource.setMaxActive(maxTotal);
         dataSource.setMaxWait(maxWaitMillis);
+        dataSource.setTestOnBorrow(true);
+        dataSource.setDefaultAutoCommit(true);
         producerScheduler.start();
 
         Thread disper = new Thread(new Disper(), "task-dipser");
@@ -243,8 +245,8 @@ public class HcatDatabusServer implements CliService.Iface {
                         i++;
                     } while (i < schema.size());
                     HiveConf conf = new HiveConf(new Configuration(true), FetchScheduler.class);
-                    conf.set(DatabusFormatter.FIELDS, builder.toString());
                     conf.set(SerDeUtils.LIST_SINK_OUTPUT_FORMATTER, "com.hiido.hcat.databus.io.DatabusFormatter");
+                    conf.set(DatabusFormatter.FIELDS, builder.toString());
 
                     FetchTask fetch = SerializationUtilities.deserializeObject(serializedTask, FetchTask.class);
                     fetch.initialize(new QueryState(conf), null, null, new CompilationOpContext());
@@ -283,16 +285,30 @@ public class HcatDatabusServer implements CliService.Iface {
                     try {
                         key = producerScheduler.register(serverTypeKey, serverAddress, successListener, failureListener);
                         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
-                        while ((!error.get()) && fetch.fetch(list)) {
-                            //阻塞
+
+                        //for special job
+                        if(key.serviceKey.equals("yylive_nearby_black")) {
+                            while ((!error.get()) && fetch.fetch(list))
+                                ;
                             try {
                                 pending.put(currentUid.get());
-                                producerScheduler.pushData(key, currentUid.get(), list, false);
+                                producerScheduler.pushData(key, currentUid.get(), list, false, true);
                             } catch (InterruptedException e) {
                                 LOG.warn("Interrupted when putting uid into task.pendingQueue.");
                             }
                             currentUid.incrementAndGet();
-                            list = new LinkedList<Map<String, Object>>();
+                        } else {
+                            while ((!error.get()) && fetch.fetch(list)) {
+                                //阻塞
+                                try {
+                                    pending.put(currentUid.get());
+                                    producerScheduler.pushData(key, currentUid.get(), list, false, false);
+                                } catch (InterruptedException e) {
+                                    LOG.warn("Interrupted when putting uid into task.pendingQueue.");
+                                }
+                                currentUid.incrementAndGet();
+                                list = new LinkedList<Map<String, Object>>();
+                            }
                         }
 
                         while (pending.size() > 0 && !error.get()) {
@@ -314,6 +330,8 @@ public class HcatDatabusServer implements CliService.Iface {
                 LOG.error("Err when waiting job complete.", e);
             } finally {
                 pending.clear();
+                finish = true;
+                runningTask.decrementAndGet();
                 this.progress.setState(error.get() ? 3 : 2);
                 this.progress.setEndTime(System.currentTimeMillis() / 1000);
                 if (errMss.length() > 0)
@@ -335,8 +353,6 @@ public class HcatDatabusServer implements CliService.Iface {
                     LOG.warn("faled to insert log into mysql.", e);
                 }
                 LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), spended.get() / count.get());
-                finish = true;
-                runningTask.decrementAndGet();
             }
         }
     }
@@ -422,7 +438,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 break;
             } catch (RuntimeException e) {
                 retry++;
-                if (retry <= hcatServer.size())
+                if (retry < hcatServer.size())
                     continue;
                 throw new AuthorizationException(e.getMessage());
             } catch (Exception e) {

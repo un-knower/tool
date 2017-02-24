@@ -54,14 +54,22 @@ public class HcatSession implements HiveSession {
 	private volatile boolean cancel = false;
 	private Hive sessionHive;
 
-	private String username;
+	private String username;	//bususer
+	private String currUser;	//currUser
+	private String logSysUser;	//logSysUser
 	private String password;
 	private String ipAddress;
 	
 	private ErrCacheOutputStream err = null;
 
 	public HcatSession(String username, String password, HiveConf serverhiveConf, String ipAddress) {
+		this(username, null , null ,password, serverhiveConf, ipAddress);
+	}
+
+	public HcatSession(String username, String currUser, String logSysUser, String password, HiveConf serverhiveConf, String ipAddress) {
 		this.username = username;
+		this.currUser = currUser;
+		this.logSysUser = logSysUser;
 		this.password = password;
 		this.creationTime = System.currentTimeMillis();
 		this.hiveConf = new HiveConf(serverhiveConf);
@@ -182,6 +190,8 @@ public class HcatSession implements HiveSession {
 	public void open(Map<String, String> sessionConfMap) throws Exception {
 		sessionState = new SessionState(hiveConf, username);
 		sessionState.setUserIpAddress(ipAddress);
+		sessionState.setCurrUser(currUser);
+		sessionState.setLogSysUser(logSysUser);
 		// sessionState.setIsHiveServerQuery(true);
 		err = new ErrCacheOutputStream();
 		SessionState.start(sessionState);

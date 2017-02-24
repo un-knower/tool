@@ -40,7 +40,7 @@ public class ProducerScheduler implements Closeable {
         String serverAddress = "";
 
         public Key(String serviceKey, String serverAddress) {
-            if(StringUtils.isEmpty(serviceKey) || StringUtils.isEmpty(serverAddress))
+            if (StringUtils.isEmpty(serviceKey) || StringUtils.isEmpty(serverAddress))
                 throw new IllegalArgumentException("Task servicekey and serverAddress should not be empty string.");
             this.serviceKey = serviceKey;
             this.serverAddress = serverAddress;
@@ -48,8 +48,8 @@ public class ProducerScheduler implements Closeable {
 
         @Override
         public boolean equals(Object o) {
-            if(o instanceof Key) {
-                Key key = (Key)o;
+            if (o instanceof Key) {
+                Key key = (Key) o;
                 return (serviceKey.equals(key.serviceKey) && serverAddress.equals(key.serverAddress));
             } else
                 return false;
@@ -57,13 +57,14 @@ public class ProducerScheduler implements Closeable {
 
         @Override
         public int hashCode() {
-            return serviceKey.hashCode() *31 + serverAddress.hashCode();
+            return serviceKey.hashCode() * 31 + serverAddress.hashCode();
         }
     }
 
 
     private class Message {
         Key key;
+        boolean reset_date_and_put;
         long uid;
         List<Map<String, Object>> lines;
 
@@ -71,6 +72,13 @@ public class ProducerScheduler implements Closeable {
             this.key = key;
             this.uid = uid;
             this.lines = lines;
+        }
+
+        public Message(Key key, long uid, List<Map<String, Object>> lines, boolean reset_date_and_put) {
+            this.key = key;
+            this.uid = uid;
+            this.lines = lines;
+            this.reset_date_and_put = reset_date_and_put;
         }
     }
 
@@ -106,10 +114,10 @@ public class ProducerScheduler implements Closeable {
                         continue;
                     }
 
-                    if(!registeredServerKey.contains(mss.key))
+                    if (!registeredServerKey.contains(mss.key))
                         continue;
 
-                    if(!mss.key.serverAddress.equals(databusClient.getAddrList()))
+                    if (!mss.key.serverAddress.equals(databusClient.getAddrList()))
                         databusClient.setAddrList(mss.key.serverAddress);
 
                     HttpProtocol protocol = new HttpProtocol();
@@ -117,7 +125,9 @@ public class ProducerScheduler implements Closeable {
                     protocol.setAppId("yyLiveIndexRecom_zhoupeiyuan");
                     protocol.setAppKey("oi2340sdfklkjdljlksjdasfjklkj");
                     protocol.setServiceTypeKey(mss.key.serviceKey);
-                    protocol.setMetaExt(new HttpProtocol.MetaExt(null, HttpProtocol.MetaExt.REWRITE_META_COLUMNS_N, HttpProtocol.MetaExt.DELETE_RECORD_N /*delete_record ? HttpProtocol.MetaExt.DELETE_RECORD_Y : HttpProtocol.MetaExt.DELETE_RECORD_N */));
+                    protocol.setMetaExt(new HttpProtocol.MetaExt(null, HttpProtocol.MetaExt.REWRITE_META_COLUMNS_N,
+                            HttpProtocol.MetaExt.DELETE_RECORD_N,
+                            mss.reset_date_and_put ? HttpProtocol.MetaExt.RESET_DATE_AND_PUT_Y : HttpProtocol.MetaExt.RESET_DATE_AND_PUT_N));
                     protocol.setValues(mss.lines);
 
                     HttpProtocol.Reply reply = null;
@@ -127,7 +137,7 @@ public class ProducerScheduler implements Closeable {
                         long end = System.currentTimeMillis();
                         if (!reply.isSuccess()) {
                             OnceFailureListener listener = onceFailureListeners.get(mss.key);
-                            if(listener != null)
+                            if (listener != null)
                                 listener.handle(mss.uid, new ErrCodeException(ErrCode.IOErr, reply.getMsg() == null ? "http error code " + reply.getErrcode() : reply.getMsg()));
                         } else {
                             SuccessListener listener = successListeners.get(mss.key);
@@ -136,13 +146,13 @@ public class ProducerScheduler implements Closeable {
                         }
                     } catch (Exception e) {
                         OnceFailureListener listener = onceFailureListeners.get(mss.key);
-                        if(listener != null)
+                        if (listener != null)
                             listener.handle(mss.uid, e);
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 LOG.warn("producer err :", e);
-            }finally {
+            } finally {
                 countDownLatch.countDown();
                 LOG.warn("One produce Processor is finished.");
             }
@@ -151,12 +161,12 @@ public class ProducerScheduler implements Closeable {
 
     public Key register(String service_type_key, String serverAddress, SuccessListener successListener, OnceFailureListener onceFailureListener) throws RepeatedKeyException {
         Key key = new Key(service_type_key, serverAddress);
-        if(registeredServerKey.contains(key))
+        if (registeredServerKey.contains(key))
             throw new RepeatedKeyException();
         registeredServerKey.add(key);
-        if(successListener != null)
+        if (successListener != null)
             successListeners.put(key, successListener);
-        if(onceFailureListener != null)
+        if (onceFailureListener != null)
             onceFailureListeners.put(key, onceFailureListener);
         return key;
     }
@@ -167,15 +177,15 @@ public class ProducerScheduler implements Closeable {
         onceFailureListeners.remove(key);
     }
 
-    public void pushData(Key key, long uid, List<Map<String, Object>> lines, boolean delete_record) throws InterruptedException, UnRegisteredException {
-        if(registeredServerKey.contains(key)) {
-            queue.put(new Message(key, uid, lines));
+    public void pushData(Key key, long uid, List<Map<String, Object>> lines, boolean delete_record, boolean reset_date_and_put) throws InterruptedException, UnRegisteredException {
+        if (registeredServerKey.contains(key)) {
+            queue.put(new Message(key, uid, lines, reset_date_and_put));
         } else
             throw new UnRegisteredException();
     }
 
     public void start() {
-        for(int i = 0; i < producers.length; i++) {
+        for (int i = 0; i < producers.length; i++) {
             Producer p = new Producer();
             producers[i] = p;
             p.setDaemon(true);
