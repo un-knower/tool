@@ -51,6 +51,8 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.shims.Utils;
+import org.apache.hadoop.mapreduce.lib.input.CombineFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.security.SecurityUtil;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -393,8 +395,6 @@ class SparkClientImpl implements SparkClient {
         }
         argv.add("--conf");
         argv.add(String.format("%s=%s", "hcat.qid", hiveConf.get("hcat.qid", "")));
-
-
 
         String cmd = Joiner.on(" ").join(argv);
         //SparkSubmit.main(argv.toArray(new String[argv.size()]));

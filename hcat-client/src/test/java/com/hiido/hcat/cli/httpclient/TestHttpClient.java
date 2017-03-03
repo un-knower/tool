@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class TestHttpClient {
 
-    static String serveltUrl = "http://14.17.109.45:26025/query";
+    static String serveltUrl = "http://14.17.109.45:26023/query";
 
     public void cancelJob() {
 
@@ -170,7 +170,6 @@ public class TestHttpClient {
                         "group by\n" +
                         "  sys,country,province;";
 
-
                 sql =   "set hive.execution.engine=spark;\n" +
                         "select livetype,biz,anchorid,a.sid,\n" +
                         "from_unixtime(start_time,'yyyy-MM-dd HH:mm:ss') as start_time,\n" +
@@ -218,6 +217,15 @@ public class TestHttpClient {
                         "lateral view explode(vers) mtb2 as ver\n" +
                         "group by op_type,ver\n" +
                         ";";
+                sql = "set hive.execution.engine=spark;\n" +
+                        "set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;\n" +
+                        "select count(*)  from default.yy_webogauth2_original where dt='20170228' and authmethod='/webservice/convertLoginAuthForYyLogin.do' and retstatus=200";
+
+                sql = "set hive.execution.engine=spark;use zhdaren;select t.* from zhdaren_log_anchor_recv_gift t,zhdaren.zhdaren_dznewtexsvr_nrt_job_history tm\n" +
+                        "where part_day>=20170301 and tm.param_time=20170302 and tm.hour=14\n" +
+                        "and t.frame>=tm.curr_frame and t.frame<tm.max_frame;";
+
+                //sql = "set hive.execution.engine=spark;SELECT * FROM zhdaren.zhdaren_dznewtexsvr_nrt_job_history;";
 
                 Map<String, String> cipher = cipher();
                 Map<String, String> conf =  new HashMap();

@@ -19,6 +19,7 @@
 package org.apache.hadoop.hive.ql.exec.spark.status;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -61,6 +62,7 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
 
         SessionState.get().putIfAbsent(jobId);
         SessionState.get().putRunningTask(jobId);
+        Random random = new Random();
         while (true) {
             try {
                 JobHandle.State state = sparkJobStatus.getRemoteJobState();
@@ -110,9 +112,10 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
                         }
                         break;
                     case SUCCEEDED:
-                        Map<String, SparkStageProgress> progressMap = sparkJobStatus.getSparkStageProgress();
-                        printStatus(progressMap, lastProgressMap);
-                        lastProgressMap = progressMap;
+                        //FIXME donot collect progress info.
+                        //Map<String, SparkStageProgress> progressMap = sparkJobStatus.getSparkStageProgress();
+                        //printStatus(progressMap, lastProgressMap);
+                        //lastProgressMap = progressMap;
                         double duration = (System.currentTimeMillis() - startTime) / 1000.0;
                         console.printInfo("Status: Finished successfully in "
                                 + String.format("%.2f seconds", duration));
@@ -128,7 +131,7 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
                 }
 
                 if (!done) {
-                    Thread.sleep(checkInterval);
+                    Thread.sleep(/*checkInterval*/ (2 + (random.nextInt(3))) * 1000);
                 }
             } catch (Exception e) {
                 String msg = " with exception '" + Utilities.getNameMessage(e) + "'";
