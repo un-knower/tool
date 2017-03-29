@@ -385,8 +385,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                 boolean loadedSparkConf = false;
                 for (String q : query) {
                     // 前端不支持输出多个select查询结果
-                    if (qp.isFetchTask)
-                        break;
+                    //if (qp.isFetchTask)
+                    //    break;
 
                     synchronized (qp) {
                         if (qp.state == JobStatus.CANCEL.getValue())
@@ -576,8 +576,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     t.start();
                     LOG.info("start to run:" + qid);
                 }
-                if (System.currentTimeMillis() - cleanTaskInterval > lastCleanTime)
-                    cleanTaskHistory(true);
+                if (qid2Task.size() > maxHistoryTask || System.currentTimeMillis() - cleanTaskInterval > lastCleanTime) {
+                    cleanTaskHistory();
+                    lastCleanTime = System.currentTimeMillis();
+                }
             }
         }
     }
@@ -624,21 +626,20 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
     }
 
-    private int cleanTaskHistory(boolean force) {
+    private int cleanTaskHistory() {
         int count = 0;
         long now = System.currentTimeMillis();
-        if (qid2Task.size() > maxHistoryTask) {
-            Set<String> tkeys = new HashSet<String>(qid2Task.keySet());
-            for (String k : tkeys) {
-                Task t = qid2Task.get(k);
-                if (t == null) {
-                    continue;
-                }
-                boolean clean = t.isFinished() && (force || t.qp.endTime * 1000 - now >= historyTaskLife);
-                if (clean) {
-                    qid2Task.remove(k);
-                    count++;
-                }
+        boolean force = qid2Task.size() > maxHistoryTask;
+        Set<String> tkeys = new HashSet<String>(qid2Task.keySet());
+        for (String k : tkeys) {
+            Task t = qid2Task.get(k);
+            if (t == null) {
+                continue;
+            }
+            boolean clean = t.isFinished() && (force || t.qp.endTime * 1000 - now >= historyTaskLife);
+            if (clean) {
+                qid2Task.remove(k);
+                count++;
             }
         }
         return count;
@@ -910,7 +911,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
         CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
         if(companyInfo == null) {
-            try(Connection conn = connPool.acquire();) {
+            LOG.warn(String.format("server has no %s info, achieve from jdbc.", companyId));
+            try(Connection conn = connPool.acquire()) {
                 PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat` where company_id = ?");
                 stmt.setInt(1, Integer.valueOf(companyId));
                 ResultSet result = stmt.executeQuery();
