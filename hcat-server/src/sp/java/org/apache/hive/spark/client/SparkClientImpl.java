@@ -110,6 +110,7 @@ class SparkClientImpl implements SparkClient {
         } catch (Exception e) {
             if(hiidoClient != null)
                 hiidoClient.stop();
+            rpcServer.cancelClient(clientId, "Error when client wait remote driver connect.");
             throw new IOException("Error when client wait remote driver connect.", e);
         } finally {
         }

@@ -441,12 +441,7 @@ public class CombineHiveInputFormat<K extends WritableComparable, V extends Writ
             result.add(csplit);
         }
 
-        if(result.size() == 0) {
-            LOG.info("Create empty hosts array for zero length files.");
-            result.add(new FileSplit(paths[0], 0, 0, new String[0]));
-        }
         LOG.info("number of splits " + result.size());
-
         return result.toArray(new CombineHiveInputSplit[result.size()]);
     }
 
@@ -545,6 +540,14 @@ public class CombineHiveInputFormat<K extends WritableComparable, V extends Writ
         // clear work from ThreadLocal after splits generated in case of thread is reused in pool.
         Utilities.clearWorkMapForConf(job);
 
+        //FIXME for hive on spark
+        if(result.size() == 0) {
+            LOG.info("Create empty hosts array for zero length files.");
+            InputSplit[] splits = super.getSplits(job, numSplits);
+            for (InputSplit split : splits) {
+                result.add(split);
+            }
+        }
         LOG.info("Number of all splits " + result.size());
         perfLogger.PerfLogEnd(CLASS_NAME, PerfLogger.GET_SPLITS);
         return result.toArray(new InputSplit[result.size()]);

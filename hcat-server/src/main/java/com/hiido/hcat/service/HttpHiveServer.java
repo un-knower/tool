@@ -471,6 +471,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
 
                         //for hcat-databus
                         if (reqFetch) {
+                            LOG.info("return a serialized fetchtask to client.");
                             qp.fetchDirs = new LinkedList<String>();
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
                             qp.fetchDirs.add(hiveConf.get("hcat.databus.service.type.key", ""));
@@ -986,11 +987,15 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             task.companyId = companyId;
             task.userId = userId;
             qid2Task.put(qid, task);
+
+            taskBlockQueue.add(task);
+            /*
             if (quick) {
                 task.run();
             } else {
                 taskBlockQueue.add(task);
             }
+            */
             Handle handle = new Handle().setQuick(quick).setQueryId(qid).setTotalN(cmds.size()).setRunning(false).setStderr(task.getProgress().errmsg);
             reply.setHandle(handle);
             return reply;

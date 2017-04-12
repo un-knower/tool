@@ -1,6 +1,7 @@
 package com.hiido.hcat.service;
 
 import com.hiido.hcat.common.PublicConstant;
+import com.hiido.hcat.common.util.StringUtils;
 import com.hiido.hcat.hive.HiveConfConstants;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.Business;
@@ -9,6 +10,12 @@ import com.hiido.suit.net.http.protocol.SecurityAuth;
 //import com.hiido.suit.net.http.protocol.bak.HttpApacheClient;
 import com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient;
 import com.hiido.suit.service.security.SecurityObject;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Task;
 import org.apache.hadoop.hive.ql.hooks.Entity;
@@ -25,6 +32,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -204,8 +212,52 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                     authInfo.add(entry);
                 }
             }
+            validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
+            sendHqltrace(hiidoUser.uid, authInfo);
         }
-        validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
+    }
+
+    private void sendHqltrace(int uid, List<SecurityAuth.AuthEntry> authInfo) {
+        HttpClient client = new HttpClient();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setSoTimeout(10 * 1000);
+        params.setConnectionTimeout(10 * 1000);
+        HttpConnectionManager manager = new SimpleHttpConnectionManager();
+        manager.setParams(params);
+        client.setHttpConnectionManager(manager);
+        PostMethod method = new PostMethod("https://cloud.hiido.com/api/hqltrace");
+
+        StringBuilder tblBuilder = new StringBuilder();
+        StringBuilder colBuilder = new StringBuilder();
+
+        for(SecurityAuth.AuthEntry obj : authInfo) {
+            if(obj.getBusi_type().equals(Business.BusType.HIVE.toString())){
+                String table = obj.getObject_info().getObject_name().substring(obj.getObject_info().getObject_name().indexOf(".") + 1);
+                tblBuilder.append(table).append(";");
+                List<String> columns = obj.getObject_info().getExtra();
+                for(int i = 0; i < columns.size(); i++) {
+                    if(StringUtils.isEmpty(columns.get(i)))
+                        continue;
+                    colBuilder.append(columns.get(i));
+                    if(i != columns.size() - 1)
+                        colBuilder.append(",");
+                }
+                colBuilder.append(";");
+            }
+        }
+        List<NameValuePair> nvps = new ArrayList <NameValuePair>();
+        nvps.add(new NameValuePair("uid", String.valueOf(uid)));
+        nvps.add(new NameValuePair("dbtbname", tblBuilder.toString()));
+        nvps.add(new NameValuePair("fields", colBuilder.toString()));
+        nvps.add(new NameValuePair("qid", conf.get("hcat.qid")));
+        method.setRequestBody(nvps.toArray(new NameValuePair[4]));
+        try {
+            client.executeMethod(method);
+            LOG.info(String.format("%s, %s", tblBuilder.toString(), colBuilder.toString()));
+        } catch (Exception e) {
+            LOG.warn("failed to request hqltrace server.", e);
+        }
+        method.releaseConnection();
     }
 
     private void validate(HiveSemanticAnalyzerHookContext context, Set<Obj> authSet, HiidoUser hiidoUser, List<SecurityAuth.AuthEntry> authInfo, boolean hasInvalidOpt4Old) {
