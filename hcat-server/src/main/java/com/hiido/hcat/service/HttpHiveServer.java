@@ -476,6 +476,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
                             qp.fetchDirs.add(hiveConf.get("hcat.databus.service.type.key", ""));
                             qp.fetchDirs.add(hiveConf.get("hcat.databus.service.address", ""));
+                            qp.fetchDirs.add(hiveConf.get("hcat.databus.data.storetime.column", ""));
                         }
 
                         TableSchema schema = sqlOpt.getResultSetSchema();
