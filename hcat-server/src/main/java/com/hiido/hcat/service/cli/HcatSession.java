@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import com.hiido.hcat.common.util.ErrCacheOutputStream;
 
 public class HcatSession implements HiveSession {
-
 	private static final Logger LOG = LoggerFactory.getLogger(HcatSession.class);
 
 	private OperationManager operationManager;

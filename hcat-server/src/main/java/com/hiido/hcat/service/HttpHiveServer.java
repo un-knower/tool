@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.hiido.hcat.CompanyInfo;
+import com.hiido.hcat.HcatConstantConf;
 import com.hiido.hcat.common.util.IOUtils;
 import com.hiido.hcat.hive.HiveConfConstants;
 import com.hiido.hcat.thrift.protocol.*;
@@ -342,7 +343,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     p = (session.getSessionState().getCurProgress() + c2) / (query.size());
                 else
                     p = (session.getSessionState().getCurProgress() + c2) * 0.9 / (query.size() - bitSet.cardinality()) + (c1 * 0.1 / bitSet.cardinality());
-                qp.setProgress(p == Double.NaN ? 0.0 : (p > 1.0 ? 0.99 : p));
+                qp.setProgress((p == Float.NaN || p == Double.NaN) ? 0.0 : (p > 1.0 ? 0.99 : p));
                 qp.setJobId(session.getSessionState().getJobs());
             }
 
@@ -352,10 +353,13 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         }
 
         public void cancel() throws HiveSQLException {
+            if(qp.state > JobStatus.RUNNING.getValue())
+                return;
             synchronized (qp) {
                 qp.state = JobStatus.CANCEL.getValue();
             }
-            session.cancel();
+            if(session != null)
+                session.cancel();
         }
 
         @Override
@@ -907,7 +911,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         // 1. 权限验证
         String companyId = cq.cipher.get("company_id");
         String userId = cq.cipher.get("user_id");
-        String bususer = cq.cipher.get("bususer");
+        String bususer = cq.cipher.get("bususer") == null ? HcatConstantConf.NULL_BUSUSER : cq.cipher.get("bususer");
         String curruser = cq.cipher.get("curuser");
         String logSysUser = cq.cipher.get("loguser");
 
@@ -980,6 +984,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     qidSeq.getAndIncrement());
             commitQueryRecord(qid, queryStr, bususer, quick);
             HiveConf hiveConf = new HiveConf();
+
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
             HcatSession session = new HcatSession(bususer, curruser, logSysUser, null, hiveConf, null);
 
@@ -990,13 +995,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
             qid2Task.put(qid, task);
 
             taskBlockQueue.add(task);
-            /*
-            if (quick) {
-                task.run();
-            } else {
-                taskBlockQueue.add(task);
-            }
-            */
+
             Handle handle = new Handle().setQuick(quick).setQueryId(qid).setTotalN(cmds.size()).setRunning(false).setStderr(task.getProgress().errmsg);
             reply.setHandle(handle);
             return reply;

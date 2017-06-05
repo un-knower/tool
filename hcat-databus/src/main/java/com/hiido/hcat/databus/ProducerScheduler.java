@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -66,6 +64,7 @@ public class ProducerScheduler implements Closeable {
         Key key;
         boolean reset_date_and_put;
         long uid;
+        String store_time;
         List<Map<String, Object>> lines;
 
         public Message(Key key, long uid, List<Map<String, Object>> lines) {
@@ -79,6 +78,13 @@ public class ProducerScheduler implements Closeable {
             this.uid = uid;
             this.lines = lines;
             this.reset_date_and_put = reset_date_and_put;
+        }
+
+        public Message(Key key, long uid, List<Map<String, Object>> lines, String store_time) {
+            this.key = key;
+            this.uid = uid;
+            this.lines = lines;
+            this.store_time = store_time;
         }
     }
 
@@ -125,7 +131,7 @@ public class ProducerScheduler implements Closeable {
                     protocol.setAppId("yyLiveIndexRecom_zhoupeiyuan");
                     protocol.setAppKey("oi2340sdfklkjdljlksjdasfjklkj");
                     protocol.setServiceTypeKey(mss.key.serviceKey);
-                    protocol.setMetaExt(new HttpProtocol.MetaExt(null, HttpProtocol.MetaExt.REWRITE_META_COLUMNS_N,
+                    protocol.setMetaExt(new HttpProtocol.MetaExt(mss.store_time, HttpProtocol.MetaExt.REWRITE_META_COLUMNS_N,
                             HttpProtocol.MetaExt.DELETE_RECORD_N,
                             mss.reset_date_and_put ? HttpProtocol.MetaExt.RESET_DATE_AND_PUT_Y : HttpProtocol.MetaExt.RESET_DATE_AND_PUT_N));
                     protocol.setValues(mss.lines);
@@ -180,6 +186,26 @@ public class ProducerScheduler implements Closeable {
     public void pushData(Key key, long uid, List<Map<String, Object>> lines, boolean delete_record, boolean reset_date_and_put) throws InterruptedException, UnRegisteredException {
         if (registeredServerKey.contains(key)) {
             queue.put(new Message(key, uid, lines, reset_date_and_put));
+        } else
+            throw new UnRegisteredException();
+    }
+
+    //push data with expire_time
+    public void pushData(Key key, long uid, List<Map<String, Object>> lines, String storeTimeCol) throws InterruptedException, UnRegisteredException {
+        if (registeredServerKey.contains(key)) {
+            //按照存储时间分拣
+            Map<String, List<Map<String, Object>>> storeTime2Rows = new HashMap<>();
+            for(Map<String, Object> row : lines) {
+                String storeTime = row.get(storeTimeCol).toString();
+                List<Map<String, Object>> list = storeTime2Rows.get(storeTime);
+                if(list == null) {
+                    list = new LinkedList<>();
+                    storeTime2Rows.put(storeTime, list);
+                }
+                list.add(row);
+            }
+            for(Map.Entry<String, List<Map<String, Object>>> rows : storeTime2Rows.entrySet())
+                queue.put(new Message(key, uid, rows.getValue(), rows.getKey()));
         } else
             throw new UnRegisteredException();
     }
