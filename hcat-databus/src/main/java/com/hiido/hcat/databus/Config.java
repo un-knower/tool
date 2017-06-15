@@ -7,6 +7,12 @@ import java.util.Map;
  * Created by zrc on 16-11-30.
  */
 public class Config {
+    public static final String HCAT_DATABUS_SERVICE_TYPE_KEY = "hcat.databus.service.type.key";
+    public static final String HCAT_DATABUS_SERVICE_ADDRESS = "hcat.databus.service.address";
+    public static final String HCAT_DATABUS_DATA_STORETIME_COLUMN = "hcat.databus.data.storetime.column";
+    public static final String HCAT_DATABUS_RESET_DATA = "hcat.databus.reset.data";
+    public static final String HCAT_DATABUS_PUSHALL_ONCE_REQUEST = "hcat.databus.pushall.once.request";
+
 
     private Map<String, String> confData = new HashMap<String, String>();
 

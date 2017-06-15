@@ -22,9 +22,11 @@ import com.hiido.hcat.thrift.protocol.AuthorizationException;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.common.util.ConnectionPool;
+import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
-import org.apache.hadoop.hive.ql.metadata.HiveException;
+import org.apache.hadoop.hive.ql.metadata.*;
+import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -88,7 +90,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
-public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
+public class HttpHiveServer implements CliService.Iface, SignupService.Iface, MetastoreService.Iface {
     private static final Logger LOG = Logger.getLogger(HttpHiveServer.class);
     static String KEY_STORE_CLIENT_PATH = "hvaclient.keystore";
     static String KEY_STORE_TRUST_PATH = "tclient.keystore";
@@ -131,10 +133,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     private Map<String, Task> qid2Task = new ConcurrentHashMap<String, Task>();
     private BlockingQueue<Task> taskBlockQueue = new LinkedBlockingQueue<Task>();
     private final BlockingQueue<HcatQuery> sqlQueue = new LinkedBlockingQueue<HcatQuery>();
-    private final HttpAsyncRequester requester;
-    private final BasicNIOConnPool pool;
-    private final HttpHost httpHost;
-    private final HttpParams params;
 
     private final AtomicBoolean close = new AtomicBoolean(false);
     private final AtomicBoolean closeSignal = new AtomicBoolean(false);
@@ -202,45 +200,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         this.port = port;
         serverTag = createServerTag("0.0.0.0", port, tag);
         operationManager = new OperationManager();
-        params = new SyncBasicHttpParams();
-        params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
-        params.setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
-        params.setParameter(CoreConnectionPNames.SO_KEEPALIVE, false);
-        httpHost = new HttpHost(billHost, 8080, "http");
-        HttpProcessor httpproc = HttpProcessorBuilder.create()
-                // Use standard client-side protocol interceptors
-                .add(new RequestContent())
-                .add(new RequestTargetHost())
-                .add(new RequestConnControl())
-                .add(new RequestUserAgent("http/1.1"))
-                .add(new RequestExpectContinue(true)).build();
-        // Create client-side HTTP protocol handler
-        HttpAsyncRequestExecutor protocolHandler = new HttpAsyncRequestExecutor();
-        // Create client-side I/O event dispatch
-        final IOEventDispatch ioEventDispatch = new DefaultHttpClientIODispatch(protocolHandler,
-                ConnectionConfig.DEFAULT);
-        // Create client-side I/O reactor
-        final ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
-        // Create HTTP connection pool
-        pool = new BasicNIOConnPool(ioReactor, params);
-        // Limit total number of connections to just two
-        pool.setDefaultMaxPerRoute(10);
-        pool.setMaxTotal(20);
-        // Run the I/O reactor in a separate thread
-        Thread t = new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    ioReactor.execute(ioEventDispatch);
-                } catch (Exception e) {
-                    LOG.error("I/O error: " + e.getMessage());
-                }
-                LOG.info("shutdown ioReactor thread.");
-            }
-
-        });
-        t.start();
-        requester = new HttpAsyncRequester(httpproc);
     }
 
     private final AtomicLong commitTotal = new AtomicLong();
@@ -252,11 +211,15 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         HttpServer.Builder builder = new HttpServer.Builder();
         server = builder.setName("hiido").setHost("0.0.0.0").setPort(this.port).setMaxThreads(maxThreads).setMinThreads(minThreads).setMaxIdleTimeMs(maxIdleTimeMs)
                 .setConf(new HiveConf(conf, this.getClass())).setUseSSL(false).build();
+
         server.addServlet("query", "/query", new QueryServlet(new CliService.Processor<HttpHiveServer>(this),
                 new TBinaryProtocol.Factory(true, true)));
         server.addServlet("signup", "/signup", new SignUpServlet(new SignupService.Processor<HttpHiveServer>(this),
                 new TBinaryProtocol.Factory(true, true)));
+        server.addServlet("metastore", "/metastore", new MetastoreServlet(new MetastoreService.Processor<HttpHiveServer>(this),
+                new TBinaryProtocol.Factory(true, true)));
         server.addServlet("reject", "/reject", new RejectServlet());
+
         Thread disper = new Thread(new Disper(), "task-dipser");
         Thread queryDB = new Thread(new QueryDB(), "queryDb");
 
@@ -478,9 +441,15 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                             LOG.info("return a serialized fetchtask to client.");
                             qp.fetchDirs = new LinkedList<String>();
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
-                            qp.fetchDirs.add(hiveConf.get("hcat.databus.service.type.key", ""));
-                            qp.fetchDirs.add(hiveConf.get("hcat.databus.service.address", ""));
-                            qp.fetchDirs.add(hiveConf.get("hcat.databus.data.storetime.column", ""));
+
+                            Map<String, String> map = SessionState.get().getOverriddenConfigurations();
+                            for(String key : map.keySet())
+                                if(key.startsWith("hcat.databus"))
+                                    qp.fetchDirs.add(String.format("%s=%s", key, map.get(key)));
+                        } else if(work.getLimit() > 0) {
+                            qp.isFetchTask = false;
+                            qp.fetchDirs = new LinkedList<>();
+                            qp.fetchDirs.add(String.valueOf(work.getLimit()));
                         }
 
                         TableSchema schema = sqlOpt.getResultSetSchema();
@@ -525,35 +494,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
                     session.close();
                     session = null;
                     LOG.info(String.format("finish %s with state %d", qid, this.qp.state));
-
-                    for (int i = 0; i < qp.jobId.size(); i++) {
-                        URIBuilder builder = new URIBuilder();
-                        builder.setPath("/api/postFinishJob.do").addParameter("company_id", companyId == null ? "1" : companyId)
-                                .addParameter("user_id", userId == null ? "1" : userId)
-                                .addParameter("jobid", qp.jobId.get(i).replace("job", "application"))
-                                .addParameter("type", engine)
-                                .addParameter("qid", this.qid);
-                        BasicHttpRequest request = new BasicHttpRequest("GET", builder.toString());
-                        HttpCoreContext coreContext = HttpCoreContext.create();
-                        requester.execute(
-                                new BasicAsyncRequestProducer(httpHost, request),
-                                new BasicAsyncResponseConsumer(),
-                                pool,
-                                coreContext,
-                                new FutureCallback<HttpResponse>() {
-
-                                    public void completed(final HttpResponse response) {
-                                        LOG.debug(response.toString());
-                                    }
-
-                                    public void failed(final Exception ex) {
-                                        LOG.error("failed to connect to bill host.", ex);
-                                    }
-
-                                    public void cancelled() {
-                                    }
-                                });
-                    }
                 } catch (HiveSQLException e) {
                     LOG.error("close session wrong.", e);
                 } finally {
@@ -601,6 +541,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
         private static final long serialVersionUID = -1894457636155490510L;
 
         public QueryServlet(TProcessor processor, TProtocolFactory protocolFactory) {
+            super(processor, protocolFactory);
+        }
+    }
+
+    public class MetastoreServlet extends AbstractTServlet {
+        public MetastoreServlet(TProcessor processor, TProtocolFactory protocolFactory) {
             super(processor, protocolFactory);
         }
     }
@@ -1052,6 +998,49 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface {
     public LoadFileReply laodData(LoadFile lf) throws AuthorizationException, RuntimeException, TException {
         LOG.info("receive load data");
         throw new RuntimeException("not support load data.");
+    }
+
+    @Override
+    public List<FieldInfo> getColumns(String dbname, String table) throws AuthorizationException, RuntimeException, NotFoundException, TException {
+        HiveConf hiveConf = new HiveConf();
+        try {
+            Hive hive = Hive.get(hiveConf);
+            Table hiveTable = hive.getTable(dbname, table);
+            List<FieldInfo> list = new LinkedList<>();
+            if(hiveTable.isPartitioned())
+                for(FieldSchema field : hiveTable.getPartCols())
+                list.add(new FieldInfo(field.getName(), field.getType(), true));
+
+            for(FieldSchema field : hiveTable.getCols())
+                list.add(new FieldInfo(field.getName(), field.getType(), false));
+
+            return list;
+        }catch(InvalidTableException e) {
+            throw new NotFoundException("Table not found.");
+        } catch (HiveException e) {
+            LOG.error("failed to achieve table info.", e);
+            throw new AuthorizationException(e.toString());
+        }
+    }
+
+    @Override
+    public String getPartitionPath(String dbname, String table, Map<String, String> partitions) throws AuthorizationException, RuntimeException, NotFoundException, TException {
+        HiveConf hiveConf = new HiveConf();
+        try{
+            Hive hive = Hive.get(hiveConf);
+            Table hiveTable = hive.getTable(dbname, table);
+            if(!hiveTable.isPartitioned())
+                throw new AuthorizationException("Table is not partitioned.");
+
+            Partition partition = hive.getPartition(hiveTable, partitions, false);
+            Path path = partition.getDataLocation();
+            return path.toUri().toString();
+        } catch(InvalidTableException e) {
+            throw new NotFoundException("Table not found.");
+        } catch (HiveException e) {
+            LOG.error("failed to achieve table info.", e);
+            throw new AuthorizationException(e.toString());
+        }
     }
 
     public void setTokenVerifyStone(TokenVerifyStone verifyStone) {
