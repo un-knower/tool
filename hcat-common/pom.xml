@@ -41,6 +41,16 @@
     	<scope>system</scope>
     	<systemPath>${project.basedir}/localJars/hadoop-lzo.jar</systemPath>
     </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.4.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.101tec</groupId>
+          <artifactId>zkclient</artifactId>
+      </dependency>
 
   </dependencies>
   
