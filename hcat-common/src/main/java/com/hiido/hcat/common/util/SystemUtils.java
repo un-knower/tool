@@ -1,15 +1,11 @@
 package com.hiido.hcat.common.util;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -21,7 +17,12 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.log4j.Logger;
+
+import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 public final class SystemUtils {
     private static final Executor DEF_EXEC = new DefaultExecutor();
@@ -44,6 +45,29 @@ public final class SystemUtils {
     private static boolean haswhomi;
 
     private static final String host;
+
+    public static String KEY_STORE_CLIENT_PATH = "hvaclient.keystore";
+    public static String KEY_STORE_TRUST_PATH = "tclient.keystore";
+    public static String KEY_STORE_PASSWORD = "hiidosyshva";
+    public static String KEY_STORE_TRUST_PASSWORD = "hiidosyshva";
+    public static final SSLConnectionSocketFactory sslsf;
+
+    static {
+        try (InputStream ksIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_CLIENT_PATH);
+             InputStream tsIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_TRUST_PATH);) {
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            keyStore.load(ksIn, KEY_STORE_PASSWORD.toCharArray());
+            trustStore.load(tsIn, KEY_STORE_TRUST_PASSWORD.toCharArray());
+            SSLContextBuilder builder = new SSLContextBuilder();
+            builder.loadKeyMaterial(keyStore, KEY_STORE_TRUST_PASSWORD.toCharArray());
+            builder.loadTrustMaterial(trustStore, new TrustSelfSignedStrategy());
+            sslsf = new SSLConnectionSocketFactory(
+                    builder.build(), ALLOW_ALL_HOSTNAME_VERIFIER);
+        } catch (Exception e) {
+            throw new java.lang.RuntimeException("failed to init HttpHiveServer: " + e.toString());
+        }
+    }
 
     static {
         String hostname = null;
