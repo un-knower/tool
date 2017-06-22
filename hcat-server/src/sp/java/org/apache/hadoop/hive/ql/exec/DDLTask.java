@@ -49,8 +49,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.hiido.hcat.common.util.SystemUtils;
 import com.hiido.hcat.hive.HiveConfConstants;
-import com.hiido.hcat.service.HttpHiveServer;
 import com.hiido.hva.thrift.protocol.HvaService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -3892,7 +3892,7 @@ public class DDLTask extends Task<DDLWork> implements Serializable {
             //FIXME
             //db.createDatabase(database, crtDb.getIfNotExists());
             db.createDatabase(database, false);
-            httpclient = HttpClients.custom().setSSLSocketFactory(HttpHiveServer.sslsf).build();
+            httpclient = HttpClients.custom().setSSLSocketFactory(SystemUtils.sslsf).build();
             THttpClient thc = new THttpClient(HiveConfConstants.getHcatHvaserver(conf), httpclient);
             TProtocol lopFactory = new TBinaryProtocol(thc);
             HvaService.Client hvaClient =new HvaService.Client(lopFactory);

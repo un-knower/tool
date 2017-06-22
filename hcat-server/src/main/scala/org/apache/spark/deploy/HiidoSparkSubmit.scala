@@ -39,7 +39,7 @@ import org.apache.ivy.plugins.resolver.{ChainResolver, FileSystemResolver, IBibl
 import org.apache.spark.api.r.RUtils
 import org.apache.spark.deploy.rest._
 import org.apache.spark.util.{ChildFirstURLClassLoader, MutableURLClassLoader, Utils}
-import org.apache.spark.{Logging, SPARK_VERSION, SparkException, SparkUserAppException}
+import org.apache.spark._
 
 import scala.collection.mutable.{ArrayBuffer, HashMap, Map}
 
@@ -89,7 +89,7 @@ object HiidoSparkSubmit extends Logging {
   // scalastyle:off println
   // Exposed for testing
   private[spark] var exitFn: Int => Unit = (exitCode: Int) => () //FIXME
-  //private[spark] var printStream: PrintStream = System.err  //FIXME extends Logging
+  private[spark] var printStream: PrintStream = System.err  //FIXME extends Logging
   private[spark] def printWarning(str: String): Unit = log.warn(str)
   private[spark] def printErrorAndExit(str: String): Unit = {
     log.error(str)
@@ -126,7 +126,7 @@ object HiidoSparkSubmit extends Logging {
     }
   }
 
-  def submitToCluster(args: Array[String]) : org.apache.spark.deploy.yarn.HiidoClient = {
+  def submitToCluster(args: Array[String]) : yarn.HiidoClient = {
     val appArgs = new SparkSubmitArguments(args)
     val (childArgs, childClasspath, sysProps, childMainClass) = prepareSubmitEnvironment(appArgs)
     val loader =
@@ -146,7 +146,7 @@ object HiidoSparkSubmit extends Logging {
     for ((key, value) <- sysProps) {
       System.setProperty(key, value)
     }
-    org.apache.spark.deploy.yarn.HiidoClient.createHiidoClient(childArgs.toArray)
+    deploy.yarn.HiidoClient.createHiidoClient(childArgs.toArray)
   }
 
   /*
@@ -859,7 +859,7 @@ object HiidoSparkSubmit extends Logging {
 private[spark] object SparkSubmitUtils {
 
   // Exposed for testing
-  var printStream = SparkSubmit.printStream
+  var printStream = HiidoSparkSubmit.printStream
 
   /**
     * Represents a Maven Coordinate
