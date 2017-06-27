@@ -2091,7 +2091,14 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
                                 if (destTableDb == null) {
                                     destTableDb = names[0];
                                 }
-                                location = wh.getDatabasePath(db.getDatabase(destTableDb));
+
+                                //FIXME use hive.exec.scratchdir when create a temporary table(create temporary table, CTE)
+                                //location = wh.getDatabasePath(db.getDatabase(destTableDb));
+                                if(qb.getTableDesc()!=null && qb.getTableDesc().isTemporary() && !StringUtils.isEmpty(conf.get("hcat.exec.tmpdbdir")))
+                                    location = new Path(this.conf.get("hcat.exec.tmpdbdir"));
+                                else
+                                    location = wh.getDatabasePath(db.getDatabase(destTableDb));
+
                             } catch (MetaException e) {
                                 throw new SemanticException(e);
                             }
@@ -2364,7 +2371,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
         // if HIVE_STATS_COLLECT_SCANCOLS is enabled, check.
         if ((!this.skipAuthorization() && !qb.isInsideView() && HiveConf.getBoolVar(conf,
                 HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED))
-                || HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_STATS_COLLECT_SCANCOLS)) {
+                && HiveConf.getBoolVar(conf, HiveConf.ConfVars.HIVE_STATS_COLLECT_SCANCOLS)) {
             qb.rewriteViewToSubq(alias, tab_name, qbexpr, tab);
         } else {
             qb.rewriteViewToSubq(alias, tab_name, qbexpr, null);
