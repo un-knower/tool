@@ -12,6 +12,7 @@ import java.util.*;
  */
 public class HcatQuery {
     private static final Logger LOG = Logger.getLogger(HcatQuery.class);
+    static final String INIT_SQL = "update bees.hcat_query set state=3,exec_end= where state=1 and ";
 
     public static enum DbOperation {
         INSERT("insert into bees.hcat_query(qid,commit_month,`user`,committer,state,quick) values(?,?,?,?,?,?)"),

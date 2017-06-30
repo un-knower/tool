@@ -27,7 +27,6 @@ import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
 import org.apache.hadoop.hive.ql.metadata.*;
 import org.apache.hadoop.hive.ql.session.SessionState;
-import org.apache.http.HttpHost;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -47,30 +46,9 @@ import org.apache.hive.service.cli.TableSchema;
 import org.apache.hive.service.cli.operation.Operation;
 import org.apache.hive.service.cli.operation.OperationManager;
 import org.apache.hive.service.cli.operation.SQLOperation;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.config.ConnectionConfig;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.nio.DefaultHttpClientIODispatch;
-import org.apache.http.impl.nio.pool.BasicNIOConnPool;
-import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.nio.protocol.BasicAsyncRequestProducer;
-import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
-import org.apache.http.nio.protocol.HttpAsyncRequestExecutor;
-import org.apache.http.nio.protocol.HttpAsyncRequester;
-import org.apache.http.nio.reactor.ConnectingIOReactor;
-import org.apache.http.nio.reactor.IOEventDispatch;
 import org.apache.http.nio.reactor.IOReactorException;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.*;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
@@ -88,33 +66,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.apache.http.conn.ssl.SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-
 public class HttpHiveServer implements CliService.Iface, SignupService.Iface, MetastoreService.Iface {
     private static final Logger LOG = Logger.getLogger(HttpHiveServer.class);
-    static String KEY_STORE_CLIENT_PATH = "hvaclient.keystore";
-    static String KEY_STORE_TRUST_PATH = "tclient.keystore";
-    static String KEY_STORE_PASSWORD = "hiidosyshva";
-    static String KEY_STORE_TRUST_PASSWORD = "hiidosyshva";
-
-    public static final SSLConnectionSocketFactory sslsf;
-
-    static {
-        try (InputStream ksIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_CLIENT_PATH);
-             InputStream tsIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(KEY_STORE_TRUST_PATH);) {
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            KeyStore trustStore = KeyStore.getInstance("JKS");
-            keyStore.load(ksIn, KEY_STORE_PASSWORD.toCharArray());
-            trustStore.load(tsIn, KEY_STORE_TRUST_PASSWORD.toCharArray());
-            SSLContextBuilder builder = new SSLContextBuilder();
-            builder.loadKeyMaterial(keyStore, KEY_STORE_TRUST_PASSWORD.toCharArray());
-            builder.loadTrustMaterial(trustStore, new TrustSelfSignedStrategy());
-            sslsf = new SSLConnectionSocketFactory(
-                    builder.build(), ALLOW_ALL_HOSTNAME_VERIFIER);
-        } catch (Exception e) {
-            throw new java.lang.RuntimeException("failed to init HttpHiveServer: " + e.toString());
-        }
-    }
 
     private final int port;
     private final String serverTag;
@@ -354,15 +307,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                     // 前端不支持输出多个select查询结果
                     //if (qp.isFetchTask)
                     //    break;
-
                     synchronized (qp) {
                         if (qp.state == JobStatus.CANCEL.getValue())
                             break;
                     }
-                    OperationHandle handle = session.executeStatement(q, confOverlay);
-                    running++;
-                    if (handle == null)
-                        continue;
 
                     if (!loadedSparkConf) {
                         String engine = hiveConf.getVar(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE);
@@ -376,6 +324,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                             loadedSparkConf = true;
                         }
                     }
+
+                    OperationHandle handle = session.executeStatement(q, null);
+                    running++;
+                    if (handle == null)
+                        continue;
+
                     Operation operation = operationManager.getOperation(handle);
                     if (operation instanceof SQLOperation) {
                         SQLOperation sqlOpt = (SQLOperation) operation;
@@ -786,7 +740,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         Connection conn = null;
         boolean err = false;
         String namenode = null;
-        try (CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(HttpHiveServer.sslsf).build()) {
+        try (CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(SystemUtils.sslsf).build()) {
             THttpClient thc = new THttpClient(HiveConfConstants.getHcatHvaserver(conf), httpclient);
             TProtocol lopFactory = new TBinaryProtocol(thc);
             HvaService.Client hvaClient = new HvaService.Client(lopFactory);

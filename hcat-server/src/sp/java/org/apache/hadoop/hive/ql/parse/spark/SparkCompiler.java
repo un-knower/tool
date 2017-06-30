@@ -443,7 +443,7 @@ public class SparkCompiler extends TaskCompiler {
         }
 
         //FIXME
-        //new CombineEquivalentWorkResolver().resolve(physicalCtx);
+        new CombineEquivalentWorkResolver().resolve(physicalCtx);
 
         PERF_LOGGER.PerfLogEnd(CLASS_NAME, PerfLogger.SPARK_OPTIMIZE_TASK_TREE);
         return;

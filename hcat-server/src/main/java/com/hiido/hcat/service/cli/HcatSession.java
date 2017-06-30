@@ -420,6 +420,7 @@ public class HcatSession implements HiveSession {
 				LOG.warn("failed to kill applicationId :" + job);
 			}
 		}
+		sessionState.closeSparkSession();
 	}
 
 	@Override

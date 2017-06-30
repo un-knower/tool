@@ -272,25 +272,48 @@
           <scope>test</scope>
       </dependency>
 
+      <dependency>
+          <groupId>org.elasticsearch</groupId>
+          <artifactId>elasticsearch-hadoop-hive</artifactId>
+          <version>5.4.2</version>
+      </dependency>
+<!--
+      <dependency>
+          <groupId>com.101tec</groupId>
+          <artifactId>zkclient</artifactId>
+      </dependency>
+-->
   </dependencies>
     
     <build>
     	<plugins>
 
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>add-source</goal>
                         </goals>
+                        <configuration>
+                            <sources>
+                                <source>${basedir}/src/sp/java</source>
+                            </sources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-    	
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.1</version>
+            </plugin>
+
     	    <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
