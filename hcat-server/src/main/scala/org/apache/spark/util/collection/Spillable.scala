@@ -74,7 +74,7 @@ private[spark] trait Spillable[C] extends Logging {
     * @return true if `collection` was spilled to disk; false otherwise
     */
   protected def maybeSpill(collection: C, currentMemory: Long): Boolean = {
-    var shouldSpill = currentMemory >= 1024l * 1024l * 1024l * 3l;
+    var shouldSpill = currentMemory >= 1024l * 1024l * 1024l * 4l;
     /*
     var shouldSpill = false
     if (elementsRead % 32 == 0 && currentMemory >= myMemoryThreshold) {
