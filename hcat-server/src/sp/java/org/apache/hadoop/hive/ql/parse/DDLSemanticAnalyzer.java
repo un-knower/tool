@@ -812,9 +812,11 @@ public class DDLSemanticAnalyzer extends BaseSemanticAnalyzer {
         //FIXME use hdfs of company
         String companyName = SessionState.get().getCompanyName();
         String companyHdfs = SessionState.get().getCompanyHdfs();
+        /*
         if(companyName != null && !dbName.startsWith(companyName)) {
             throw new SemanticException(String.format("failed to create database: Name of database must start with '%s'.", companyName));
         }
+        */
         if(companyHdfs != null) {
             String warehouse = HiveConfConstants.getHcatWarehosueDirName(this.conf);
             StringBuilder builder = new StringBuilder();
