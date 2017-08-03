@@ -128,6 +128,11 @@ public class RemoteSparkJobMonitor extends SparkJobMonitor {
                         done = true;
                         rc = 3;
                         break;
+                    case CANCELLED:
+                        running = false;
+                        done = true;
+                        rc = 3;
+                        break;
                 }
 
                 if (!done) {

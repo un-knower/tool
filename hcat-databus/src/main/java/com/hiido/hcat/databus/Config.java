@@ -13,7 +13,6 @@ public class Config {
     public static final String HCAT_DATABUS_RESET_DATA = "hcat.databus.reset.data";
     public static final String HCAT_DATABUS_PUSHALL_ONCE_REQUEST = "hcat.databus.pushall.once.request";
 
-
     private Map<String, String> confData = new HashMap<String, String>();
 
     public static enum Vars {

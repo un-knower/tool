@@ -158,6 +158,10 @@ class SparkClientImpl implements SparkClient {
                 hiidoClient.stop();
             }
         }
+        //user kill job before hiidoclient submit spark job, it need to stop sparkJobMonitor.
+        for(JobHandleImpl handle : jobs.values())
+            handle.changeState(JobHandle.State.CANCELLED);
+        hiidoClient.stop();
     }
 
     @Override

@@ -27,6 +27,7 @@ public class ProducerScheduler implements Closeable {
     private volatile boolean close = false;
     private final String serverAddress;
     private final LinkedBlockingQueue<Message> queue;
+    private final Map<Key, LinkedBlockingQueue<Message>> key2Queue;
     private final Set<Key> registeredServerKey = new ConcurrentHashSet<Key>();
     private final Map<Key, OnceFailureListener> onceFailureListeners = new ConcurrentHashMap<Key, OnceFailureListener>();
     private final Map<Key, SuccessListener> successListeners = new ConcurrentHashMap<Key, SuccessListener>();
@@ -36,19 +37,21 @@ public class ProducerScheduler implements Closeable {
     public static class Key {
         String serviceKey = "";
         String serverAddress = "";
+        String hcatQid = "";
 
-        public Key(String serviceKey, String serverAddress) {
-            if (StringUtils.isEmpty(serviceKey) || StringUtils.isEmpty(serverAddress))
+        public Key(String serviceKey, String serverAddress, String hcatQid) {
+            if (StringUtils.isEmpty(serviceKey) || StringUtils.isEmpty(serverAddress) || StringUtils.isEmpty(hcatQid))
                 throw new IllegalArgumentException("Task servicekey and serverAddress should not be empty string.");
             this.serviceKey = serviceKey;
             this.serverAddress = serverAddress;
+            this.hcatQid = hcatQid;
         }
 
         @Override
         public boolean equals(Object o) {
             if (o instanceof Key) {
                 Key key = (Key) o;
-                return (serviceKey.equals(key.serviceKey) && serverAddress.equals(key.serverAddress));
+                return (serviceKey.equals(key.serviceKey) && serverAddress.equals(key.serverAddress) && hcatQid.equals(key.hcatQid));
             } else
                 return false;
         }
@@ -92,6 +95,7 @@ public class ProducerScheduler implements Closeable {
         this.countDownLatch = new CountDownLatch(parallelism);
         this.serverAddress = serverAddress;
         this.queue = new LinkedBlockingQueue<Message>(queueCapacity);
+        this.key2Queue = new ConcurrentHashMap<>();
         producers = new Producer[parallelism];
     }
 
@@ -165,8 +169,8 @@ public class ProducerScheduler implements Closeable {
         }
     }
 
-    public Key register(String service_type_key, String serverAddress, SuccessListener successListener, OnceFailureListener onceFailureListener) throws RepeatedKeyException {
-        Key key = new Key(service_type_key, serverAddress);
+    public Key register(String hcatQid, String service_type_key, String serverAddress, SuccessListener successListener, OnceFailureListener onceFailureListener) throws RepeatedKeyException {
+        Key key = new Key(service_type_key, serverAddress, hcatQid);
         if (registeredServerKey.contains(key))
             throw new RepeatedKeyException();
         registeredServerKey.add(key);
@@ -186,6 +190,7 @@ public class ProducerScheduler implements Closeable {
     public void pushData(Key key, long uid, List<Map<String, Object>> lines, boolean delete_record, boolean reset_date_and_put) throws InterruptedException, UnRegisteredException {
         if (registeredServerKey.contains(key)) {
             queue.put(new Message(key, uid, lines, reset_date_and_put));
+            //key2Queue.put(key, new Message(key, uid, lines, ));
         } else
             throw new UnRegisteredException();
     }

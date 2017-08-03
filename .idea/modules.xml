@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../hcat-demo/hcat-demo.iml" filepath="$PROJECT_DIR$/../hcat-demo/hcat-demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-client/hcat.client.iml" filepath="$PROJECT_DIR$/hcat-client/hcat.client.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-common/hcat.common.iml" filepath="$PROJECT_DIR$/hcat-common/hcat.common.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-databus/hcat.databus.iml" filepath="$PROJECT_DIR$/hcat-databus/hcat.databus.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-http/hcat.http.iml" filepath="$PROJECT_DIR$/hcat-http/hcat.http.iml" />
       <module fileurl="file://$PROJECT_DIR$/hcat-server/hcat.server.iml" filepath="$PROJECT_DIR$/hcat-server/hcat.server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hcat-databus/hcat.transfer.iml" filepath="$PROJECT_DIR$/hcat-databus/hcat.transfer.iml" />
       <module fileurl="file://$PROJECT_DIR$/hiido.hcat.iml" filepath="$PROJECT_DIR$/hiido.hcat.iml" />
       <module fileurl="file://$PROJECT_DIR$/../hva/hiido.validation.iml" filepath="$PROJECT_DIR$/../hva/hiido.validation.iml" />
       <module fileurl="file://$USER_HOME$/ideaProjects/calc/security/security.iml" filepath="$USER_HOME$/ideaProjects/calc/security/security.iml" />

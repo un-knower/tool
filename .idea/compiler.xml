@@ -22,24 +22,33 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
+        <module name="hcat-demo" />
         <module name="hcat.client" />
         <module name="hcat.common" />
         <module name="hcat.databus" />
         <module name="hcat.http" />
         <module name="hcat.server" />
-        <module name="hiido.validation" />
+        <module name="hcat.transfer" />
+        <module name="mr-example" />
         <module name="security" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
+      <module name="es-hadoop" target="1.7" />
       <module name="hcat-databus" target="1.7" />
+      <module name="hcat-demo" target="1.7" />
+      <module name="hcat-jdbc" target="1.7" />
       <module name="hcat.client" target="1.7" />
+      <module name="hcat.clientsdk" target="1.7" />
       <module name="hcat.common" target="1.7" />
       <module name="hcat.databus" target="1.7" />
       <module name="hcat.http" target="1.7" />
       <module name="hcat.server" target="1.7" />
+      <module name="hcat.sp" target="1.7" />
+      <module name="hcat.transfer" target="1.7" />
       <module name="hiido.hcat" target="1.7" />
       <module name="hiido.validation" target="1.7" />
+      <module name="mr-example" target="1.5" />
       <module name="security" target="1.7" />
     </bytecodeTargetLevel>
   </component>

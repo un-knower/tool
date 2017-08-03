@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$USER_HOME$/ideaProjects/calc/security" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../hcat-demo" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../hcat-transfer" vcs="svn" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
 </project>
