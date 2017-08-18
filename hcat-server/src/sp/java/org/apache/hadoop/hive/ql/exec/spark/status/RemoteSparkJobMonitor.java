@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.base.Preconditions;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.exec.spark.status.impl.RemoteSparkJobStatus;

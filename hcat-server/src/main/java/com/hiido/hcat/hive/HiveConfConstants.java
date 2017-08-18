@@ -20,6 +20,8 @@ public final class HiveConfConstants implements PublicConstant {
     private HiveConfConstants() {
     }
 
+    public static final String SPARK_YARN_NAME = "spark.app.name";
+
     public static final String ZK_ZNODE_PARENT = "zookeeper.znode.parent";
 
     public static final String HCAT_CONTEXT_ISHDFSClEANUP = "hcat.context.ishdfscleanup";

@@ -19,6 +19,8 @@
 package org.apache.hadoop.mapred;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,8 +136,9 @@ public class YARNRunner implements ClientProtocol {
     try {
       this.resMgrDelegate = resMgrDelegate;
       this.clientCache = clientCache;
-      this.defaultFileContext = FileContext.getFileContext(this.conf);
-    } catch (UnsupportedFileSystemException ufe) {
+      //FIXME this.defaultFileContext = FileContext.getFileContext(this.conf);
+      this.defaultFileContext = FileContext.getFileContext(new URI(conf.get("yarn.app.mapreduce.am.staging-dir")), this.conf);
+    } catch (URISyntaxException | UnsupportedFileSystemException ufe) {
       throw new RuntimeException("Error in instantiating YarnClient", ufe);
     }
   }

@@ -44,6 +44,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.hive.common.FileUtils;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.QueueACL;
@@ -174,7 +175,7 @@ class JobSubmitter {
           " that directory");
     }
     submitJobDir = jtFs.makeQualified(submitJobDir);
-    submitJobDir = new Path(submitJobDir.toUri().getPath());
+    //submitJobDir = new Path(submitJobDir.toUri().getPath());
     FsPermission mapredSysPerms = new FsPermission(JobSubmissionFiles.JOB_DIR_PERMISSION);
     FileSystem.mkdirs(jtFs, submitJobDir, mapredSysPerms);
     Path filesDir = JobSubmissionFiles.getJobDistCacheFiles(submitJobDir);
@@ -210,9 +211,17 @@ class JobSubmitter {
       String[] libjarsArr = libjars.split(",");
       for (String tmpjars: libjarsArr) {
         Path tmp = new Path(tmpjars);
-        Path newPath = copyRemoteFiles(libjarsDir, tmp, conf, replication);
-        DistributedCache.addFileToClassPath(
-            new Path(newPath.toUri().getPath()), conf);
+
+        FileSystem fs = tmp.getFileSystem(conf);
+        if(FileUtils.equalsFileSystem(fs, jtFs))
+          DistributedCache.addFileToClassPath(
+                  tmp, conf);
+        else {
+          Path newPath = copyRemoteFiles(libjarsDir, tmp, conf, replication);
+          DistributedCache.addFileToClassPath(
+                  //FIXME new Path(newPath.toUri().getPath()), conf);
+                  newPath, conf);
+        }
       }
     }
       

@@ -39,6 +39,7 @@ import org.apache.hadoop.hive.ql.exec.FetchTask;
 import org.apache.hadoop.hive.ql.parse.*;
 import org.apache.hadoop.hive.ql.plan.FetchWork;
 import org.apache.hadoop.hive.ql.processors.HiveCommand;
+import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.apache.hive.service.cli.ColumnDescriptor;
 import org.apache.hive.service.cli.HiveSQLException;
 import org.apache.hive.service.cli.OperationHandle;
@@ -303,6 +304,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 }
 
                 boolean loadedSparkConf = false;
+
+                //set mapreduce/spark job name.
+                String dwid = session.getSessionState().getCurrUser() == null?HcatConstantConf.NULL_BUSUSER:session.getSessionState().getCurrUser();
+                String appName = String.format("busUser[%s],logSysUser[%s],curSysUser[%s],hcat.qid[%s]",
+                        session.getUserName(), dwid, dwid, qid);
+                hiveConf.set(MRJobConfig.JOB_NAME, appName);
                 for (String q : query) {
                     // 前端不支持输出多个select查询结果
                     //if (qp.isFetchTask)
@@ -322,6 +329,8 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                             if (user2Queue.get(session.getUserName()) != null)
                                 hiveConf.set("spark.yarn.queue", user2Queue.get(session.getUserName()));
                             loadedSparkConf = true;
+
+                            hiveConf.set(HiveConfConstants.SPARK_YARN_NAME, appName);
                         }
                     }
 
@@ -884,6 +893,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                     qidSeq.getAndIncrement());
             commitQueryRecord(qid, queryStr, bususer, quick);
             HiveConf hiveConf = new HiveConf();
+            HcatMultiNamenode.configureHiveConf(hiveConf);
 
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
             HcatSession session = new HcatSession(bususer, curruser, logSysUser, null, hiveConf, null);

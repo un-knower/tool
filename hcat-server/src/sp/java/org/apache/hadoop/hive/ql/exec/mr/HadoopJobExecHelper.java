@@ -220,7 +220,7 @@ public class HadoopJobExecHelper {
     private MapRedStats progress(ExecDriverTaskHandle th) throws IOException, LockException {
         JobClient jc = th.getJobClient();
         RunningJob rj = th.getRunningJob();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
         //DecimalFormat longFormatter = new DecimalFormat("###,###");
         long reportTime = System.currentTimeMillis();
         long maxReportInterval = HiveConf.getTimeVar(
@@ -229,13 +229,14 @@ public class HadoopJobExecHelper {
         StringBuilder errMsg = new StringBuilder();
         long pullInterval = HiveConf.getLongVar(job, HiveConf.ConfVars.HIVECOUNTERSPULLINTERVAL);
         boolean initializing = true;
-        boolean initOutputPrinted = false;
+        //boolean initOutputPrinted = false;
         long cpuMsec = -1;
         int numMap = -1;
         int numReduce = -1;
         List<ClientStatsPublisher> clientStatPublishers = getClientStatPublishers();
         final boolean localMode = ShimLoader.getHadoopShims().isLocalMode(job);
 
+        SessionState ss = SessionState.get();
         while (!rj.isComplete()) {
             if (th.getContext() != null) {
                 th.getContext().checkHeartbeaterLockException();
@@ -246,6 +247,8 @@ public class HadoopJobExecHelper {
             } catch (InterruptedException e) {
             }
 
+            ss.putIfAbsent(rj.getID().toString());
+            ss.putApplicationId(rj.getID().toString());
             if (initializing && rj.getJobState() == JobStatus.PREP) {
                 // No reason to poll untill the job is initialized
                 continue;
@@ -256,12 +259,13 @@ public class HadoopJobExecHelper {
             }
 
             if (!localMode) {
+                /*
                 if (!initOutputPrinted) {
                     SessionState ss = SessionState.get();
                     //FIXME
                     ss.putIfAbsent(rj.getID().toString());
                     ss.putApplicationId(rj.getID().toString());
-                    /*
+
                     String logMapper;
                     String logReducer;
                     String queryId = queryState.getQueryId();
@@ -291,9 +295,9 @@ public class HadoopJobExecHelper {
 
                     console
                             .printInfo("Hadoop job information for " + getId() + ": " + logMapper + logReducer);
-                    */
                     initOutputPrinted = true;
                 }
+                */
 
                 RunningJob newRj = jc.getJob(rj.getID());
                 if (newRj == null) {
@@ -343,8 +347,8 @@ public class HadoopJobExecHelper {
                     System.currentTimeMillis() < reportTime + maxReportInterval) {
                 continue;
             }
-            //FIXME
-            /*
+
+            /* FIXME
             StringBuilder report = new StringBuilder();
             report.append(dateFormat.format(Calendar.getInstance().getTime()));
 
@@ -407,7 +411,7 @@ public class HadoopJobExecHelper {
                 console.printError("[Fatal Error] " + errMsg.toString());
                 success = false;
             } else {
-                SessionState ss = SessionState.get();
+                //SessionState ss = SessionState.get();
                 if (ss != null) {
                     ss.getHiveHistory().setTaskCounters(queryState.getQueryId(), getId(), ctrs);
                 }
@@ -432,7 +436,7 @@ public class HadoopJobExecHelper {
         // update based on the final value of the counters
         updateCounters(ctrs, rj);
 
-        SessionState ss = SessionState.get();
+        //SessionState ss = SessionState.get();
         if (ss != null) {
             this.callBackObj.logPlanProgress(ss);
         }

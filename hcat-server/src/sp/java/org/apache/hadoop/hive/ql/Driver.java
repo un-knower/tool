@@ -67,6 +67,7 @@ import org.apache.hadoop.hive.ql.hooks.PostExecute;
 import org.apache.hadoop.hive.ql.hooks.PreExecute;
 import org.apache.hadoop.hive.ql.hooks.ReadEntity;
 import org.apache.hadoop.hive.ql.hooks.WriteEntity;
+import org.apache.hadoop.hive.ql.io.merge.MergeFileTask;
 import org.apache.hadoop.hive.ql.lockmgr.HiveLock;
 import org.apache.hadoop.hive.ql.lockmgr.HiveTxnManager;
 import org.apache.hadoop.hive.ql.lockmgr.LockException;
@@ -1843,6 +1844,11 @@ public class Driver implements CommandProcessor {
             //FIXME add running job
             SessionState.get().putRunningTask(tsk.getId());
         }
+
+        //FIXME MergeFileTask also will create a mapreduce job.
+        if(tsk instanceof MergeFileTask)
+            SessionState.get().putRunningTask(tsk.getId());
+
         tsk.initialize(queryState, plan, cxt, ctx.getOpContext());
         TaskResult tskRes = new TaskResult();
         TaskRunner tskRun = new TaskRunner(tsk, tskRes);

@@ -395,7 +395,7 @@ public class HcatAppMaster extends CompositeService {
 		try {
 			String user = UserGroupInformation.getCurrentUser().getShortUserName();
 			Path stagingDir = MRApps.getStagingAreaDir(conf, user);
-			FileSystem fs = getFileSystem(conf);
+			FileSystem fs = stagingDir.getFileSystem(conf);
 			boolean stagingExists = fs.exists(stagingDir);
 			Path startCommitFile = MRApps.getStartJobCommitFile(conf, user, jobId);
 			boolean commitStarted = fs.exists(startCommitFile);
@@ -629,7 +629,6 @@ public class HcatAppMaster extends CompositeService {
 	public void cleanupStagingDir() throws IOException {
 		/* make sure we clean the staging files */
 		String jobTempDir = null;
-		FileSystem fs = getFileSystem(getConfig());
 		try {
 			if (!keepJobFiles(new JobConf(getConfig()))) {
 				jobTempDir = getConfig().get(MRJobConfig.MAPREDUCE_JOB_DIR);
@@ -638,6 +637,7 @@ public class HcatAppMaster extends CompositeService {
 					return;
 				}
 				Path jobTempDirPath = new Path(jobTempDir);
+				FileSystem fs = jobTempDirPath.getFileSystem(getConfig());
 				LOG.info("Deleting staging directory " + FileSystem.getDefaultUri(getConfig()) + " " + jobTempDir);
 				fs.delete(jobTempDirPath, true);
 			}
