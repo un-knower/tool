@@ -1,5 +1,6 @@
 package com.hiido.hcat.service;
 
+import com.hiido.hcat.common.util.StringUtils;
 import com.hiido.hcat.thrift.protocol.Field;
 import org.apache.log4j.Logger;
 
@@ -175,7 +176,7 @@ public class HcatQuery {
     }
 
     public static List<Field> convertFieldList(String qid, String fields) {
-        if(fields == null)
+        if(StringUtils.isEmpty(fields))
             return Collections.<Field>emptyList();
         try{
             List<Field> fieldList = new LinkedList<Field>();
@@ -189,5 +190,4 @@ public class HcatQuery {
             return Collections.<Field>emptyList();
         }
     }
-
 }
