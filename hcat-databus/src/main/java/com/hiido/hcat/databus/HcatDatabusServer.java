@@ -197,8 +197,7 @@ public class HcatDatabusServer implements CliService.Iface {
 
         public void run() {
             runningTask.incrementAndGet();
-            try {
-                THttpClient thc = new THttpClient(address);
+            try(THttpClient thc = new THttpClient(address);) {
                 TProtocol lopFactory = new TBinaryProtocol(thc);
                 CliService.Client client = new CliService.Client(lopFactory);
                 QueryStatusReply status = client.queryJobStatus(new QueryStatus(conf, qid));
@@ -220,7 +219,6 @@ public class HcatDatabusServer implements CliService.Iface {
                     List<Field> schema = progress.getFields();
                     List<String> fetchDirs = progress.getFetchDirs();
 
-
                     if (size == 0)
                         return;
 
@@ -228,10 +226,22 @@ public class HcatDatabusServer implements CliService.Iface {
                         throw new IllegalArgumentException("Lack schema or fetch task.");
 
                     String serializedTask = fetchDirs.get(0);
-                    final String serverTypeKey = fetchDirs.get(1);
-                    String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
+
+                    Map<String,String> customizedConf = new HashMap<>();
+                    for(int i = 1; i < fetchDirs.size(); i++) {
+                        String[] kv = fetchDirs.get(i).split("=");
+                        customizedConf.put(kv[0], kv[1]);
+                    }
+                    //final String serverTypeKey = fetchDirs.get(1);
+                    final String serverTypeKey = customizedConf.get(Config.HCAT_DATABUS_SERVICE_TYPE_KEY);
+
+                    //String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
+                    String serverAddress = customizedConf.get(Config.HCAT_DATABUS_SERVICE_ADDRESS);
                     if (StringUtils.isEmpty(serverAddress))
                         serverAddress = HcatDatabusServer.this.defaultServiceAddress;
+
+                    //String storeTimeCol = fetchDirs.size() > 3 ? fetchDirs.get(3) : null;
+                    String storeTimeCol = customizedConf.get(Config.HCAT_DATABUS_DATA_STORETIME_COLUMN);
 
                     LOG.info("job {} start to send data to {}", qid, serverAddress);
                     if (serverTypeKey == null)
@@ -254,7 +264,7 @@ public class HcatDatabusServer implements CliService.Iface {
 
                     final ProducerScheduler.OnceFailureListener failureListener = new ProducerScheduler.OnceFailureListener() {
                         @Override
-                        protected void handle(long uid, Exception e) {
+                        protected                                                                                                                                                                                                                                                                                                                                                                       void handle(long uid, Exception e) {
                             if (!error.get()) {
                                 synchronized (error) {
                                     if (error.get())
@@ -283,11 +293,11 @@ public class HcatDatabusServer implements CliService.Iface {
 
                     ProducerScheduler.Key key = null;
                     try {
-                        key = producerScheduler.register(serverTypeKey, serverAddress, successListener, failureListener);
+                        key = producerScheduler.register(qid, serverTypeKey, serverAddress, successListener, failureListener);
                         List<Map<String, Object>> list = new LinkedList<Map<String, Object>>();
 
-                        //for special job
-                        if(key.serviceKey.equals("yylive_nearby_black")) {
+                        if(customizedConf.get(Config.HCAT_DATABUS_PUSHALL_ONCE_REQUEST) != null
+                                && customizedConf.get(Config.HCAT_DATABUS_PUSHALL_ONCE_REQUEST).equalsIgnoreCase("true")) {
                             while ((!error.get()) && fetch.fetch(list))
                                 ;
                             try {
@@ -297,12 +307,33 @@ public class HcatDatabusServer implements CliService.Iface {
                                 LOG.warn("Interrupted when putting uid into task.pendingQueue.");
                             }
                             currentUid.incrementAndGet();
+                        } else if(customizedConf.get(Config.HCAT_DATABUS_RESET_DATA) != null
+                                && customizedConf.get(Config.HCAT_DATABUS_RESET_DATA).equalsIgnoreCase("true")) {
+                            boolean isFirst = true;
+                            while ((!error.get()) && fetch.fetch(list)) {
+                                try {
+                                    pending.put(currentUid.get());
+                                    producerScheduler.pushData(key, currentUid.get(), list, false, isFirst);
+                                    if(isFirst) {
+                                        Thread.sleep(10 * 1000);
+                                        isFirst = false;
+                                    }
+
+                                } catch (InterruptedException e) {
+                                    LOG.warn("Interrupted when putting uid into task.pendingQueue.");
+                                }
+                                currentUid.incrementAndGet();
+                                list = new LinkedList<Map<String, Object>>();
+                            }
                         } else {
                             while ((!error.get()) && fetch.fetch(list)) {
                                 //阻塞
                                 try {
                                     pending.put(currentUid.get());
-                                    producerScheduler.pushData(key, currentUid.get(), list, false, false);
+                                    if(StringUtils.isEmpty(storeTimeCol))
+                                        producerScheduler.pushData(key, currentUid.get(), list, false, false);
+                                    else
+                                        producerScheduler.pushData(key, currentUid.get(), list, storeTimeCol);
                                 } catch (InterruptedException e) {
                                     LOG.warn("Interrupted when putting uid into task.pendingQueue.");
                                 }
@@ -337,6 +368,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 if (errMss.length() > 0)
                     this.progress.setErrmsg(errMss.toString());
                 endTime = System.currentTimeMillis();
+                /*
                 try (Connection conn = dataSource.getConnection();) {
                     Calendar cd = Calendar.getInstance();
                     PreparedStatement statement = conn.prepareStatement(INSERT_SQL);
@@ -352,6 +384,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 } catch (SQLException e) {
                     LOG.warn("faled to insert log into mysql.", e);
                 }
+                */
                 LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), spended.get() / count.get());
             }
         }
@@ -427,8 +460,7 @@ public class HcatDatabusServer implements CliService.Iface {
         int retry = 0;
         CommitQueryReply reply = null;
         for (String address : hcatServer) {
-            try {
-                THttpClient thc = new THttpClient(address);
+            try(THttpClient thc = new THttpClient(address);) {
                 TProtocol lopFactory = new TBinaryProtocol(thc);
                 CliService.Client client = new CliService.Client(lopFactory);
                 reply = client.commit(cq);
@@ -441,8 +473,13 @@ public class HcatDatabusServer implements CliService.Iface {
                 if (retry < hcatServer.size())
                     continue;
                 throw new AuthorizationException(e.getMessage());
-            } catch (Exception e) {
-                throw new AuthorizationException(e.getMessage());
+            } catch (AuthorizationException e) {
+                throw e;
+            } catch(Exception e) {
+                retry++;
+                if (retry < hcatServer.size())
+                    continue;
+                throw new AuthorizationException(e.toString());
             }
         }
         return reply;
@@ -454,8 +491,7 @@ public class HcatDatabusServer implements CliService.Iface {
         Task task = qid2Task.get(qs.queryId);
         if (task == null) {
             for (int i = 0; i < hcatServer.size(); i++) {
-                try {
-                    THttpClient thc = new THttpClient(hcatServer.get(i));
+                try(THttpClient thc = new THttpClient(hcatServer.get(i));) {
                     TProtocol lopFactory = new TBinaryProtocol(thc);
                     CliService.Client client = new CliService.Client(lopFactory);
                     return client.queryJobStatus(qs);
