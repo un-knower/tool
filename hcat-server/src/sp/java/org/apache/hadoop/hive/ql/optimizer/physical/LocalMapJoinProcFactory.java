@@ -139,9 +139,9 @@ public final class LocalMapJoinProcFactory {
             // get the last operator for processing big tables
             int bigTable = mapJoinDesc.getPosBigTable();
 
-            // todo: support tez/vectorization
-            boolean useNontaged = conf.getBoolVar(
-                    HiveConf.ConfVars.HIVECONVERTJOINUSENONSTAGED) &&
+            //FIXME todo: support tez/vectorization
+            boolean useNontaged = /*conf.getBoolVar(
+                    HiveConf.ConfVars.HIVECONVERTJOINUSENONSTAGED)*/conf.getBoolean("hcat.mapjoin.no.local", false) &&
                     conf.getVar(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE).equals("mr") &&
                     !conf.getBoolVar(HiveConf.ConfVars.HIVE_VECTORIZATION_ENABLED);
 
