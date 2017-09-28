@@ -1038,8 +1038,9 @@ public final class PlanUtils {
         for (int pos = 0; pos < aliases.length; pos++) {
             currentAlias = currentAlias == null ? aliases[pos] : currentAlias + ":" + aliases[pos];
 
-            currentAlias = currentAlias.replace(SemanticAnalyzer.SUBQUERY_TAG_1, "")
-                    .replace(SemanticAnalyzer.SUBQUERY_TAG_2, "");
+            //FIXME test for view in union all.
+            //currentAlias = currentAlias.replace(SemanticAnalyzer.SUBQUERY_TAG_1, "")
+            //        .replace(SemanticAnalyzer.SUBQUERY_TAG_2, "");
             ReadEntity input = viewAliasToInput.get(currentAlias);
             if (input == null && currentInput != null) {
                 // To handle the case of - select * from (select * from V1) A;
