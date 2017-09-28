@@ -1105,11 +1105,16 @@ public class SessionState {
         if (SessionState.get() != null && SessionState.get().getAuthenticator() != null) {
             return SessionState.get().getAuthenticator().getUserName();
         }
+        else
+            return null;
         */
         if(SessionState.get() != null && !StringUtils.isEmpty(SessionState.get().getCurrUser()))
             return SessionState.get().getCurrUser();
+        else if (SessionState.get() != null && SessionState.get().getAuthenticator() != null)
+            return SessionState.get().getAuthenticator().getUserName();
         else
-            return "UNKNOWN";
+            return null;
+
     }
 
     static void validateFiles(List<String> newFiles) throws IllegalArgumentException {
