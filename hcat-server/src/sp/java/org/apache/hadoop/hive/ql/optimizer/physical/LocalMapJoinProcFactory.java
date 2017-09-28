@@ -162,13 +162,14 @@ public final class LocalMapJoinProcFactory {
                 }
                 Operator<? extends OperatorDesc> parent = parentsOp.get(i);
                 boolean directFetchable = useNontaged &&
-                        (parent instanceof SelectOperator || parent instanceof TableScanOperator || parent instanceof MapJoinOperator);
+                        (parent instanceof FilterOperator || parent instanceof SelectOperator || parent instanceof TableScanOperator || parent instanceof MapJoinOperator);
                 Operator<? extends OperatorDesc> parentOp = parent;
                 if (directFetchable) {
                     // no filter, no projection. no need to stage
                     smallTablesParentOp.add(null);
-                    if(parent instanceof SelectOperator) {
-                        while( (!(parent instanceof TableScanOperator || parent instanceof MapJoinOperator)) &&parentOp.getParentOperators().size()> 0){
+                    //FIXME
+                    if(parentOp instanceof SelectOperator || parentOp instanceof FilterOperator) {
+                        while( (!(parentOp instanceof TableScanOperator || parentOp instanceof MapJoinOperator)) /*&&parentOp.getParentOperators().size()> 0 */){
                             parentOp = parentOp.getParentOperators().get(0);
                         }
                         directOperators.add(parentOp);
