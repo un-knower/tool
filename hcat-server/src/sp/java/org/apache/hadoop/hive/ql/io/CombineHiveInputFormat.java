@@ -142,7 +142,6 @@ public class CombineHiveInputFormat<K extends WritableComparable, V extends Writ
                 if (this.pathToPartitionInfo == null) {
                     this.pathToPartitionInfo = Utilities.getMapWork(job).getPathToPartitionInfo();
                 }
-
                 // extract all the inputFormatClass names for each chunk in the
                 // CombinedSplit.
                 Path[] ipaths = inputSplitShim.getPaths();
@@ -639,7 +638,6 @@ public class CombineHiveInputFormat<K extends WritableComparable, V extends Writ
                 }
                 size += splitgLength;
             }
-
         }
 
         return retLists;
