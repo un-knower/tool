@@ -162,7 +162,8 @@ public final class LocalMapJoinProcFactory {
                 }
                 Operator<? extends OperatorDesc> parent = parentsOp.get(i);
                 boolean directFetchable = useNontaged &&
-                        (parent instanceof FilterOperator || parent instanceof SelectOperator || parent instanceof TableScanOperator || parent instanceof MapJoinOperator);
+                        (parent instanceof FilterOperator || parent instanceof SelectOperator
+                                || parent instanceof TableScanOperator || parent instanceof MapJoinOperator || parent instanceof UnionOperator);
                 Operator<? extends OperatorDesc> parentOp = parent;
                 if (directFetchable) {
                     // no filter, no projection. no need to stage
@@ -173,8 +174,15 @@ public final class LocalMapJoinProcFactory {
                             parentOp = parentOp.getParentOperators().get(0);
                         }
                         directOperators.add(parentOp);
-                    }
-                    else
+                    } else if(parentOp instanceof UnionOperator) {
+                        List<Operator<? extends OperatorDesc>> unionParents = parentOp.getParentOperators();
+                        for(Operator<? extends OperatorDesc> unionParent : unionParents) {
+                            while( (!(unionParent instanceof TableScanOperator || unionParent instanceof MapJoinOperator)) /*&&parentOp.getParentOperators().size()> 0 */){
+                                unionParent = unionParent.getParentOperators().get(0);
+                            }
+                            directOperators.add(unionParent);
+                        }
+                    } else
                         directOperators.add(parent);
                     hashTableSinkDesc.getKeys().put(i, null);
                     hashTableSinkDesc.getExprs().put(i, null);
