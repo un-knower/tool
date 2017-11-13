@@ -91,10 +91,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
     private final AtomicBoolean close = new AtomicBoolean(false);
     private final AtomicBoolean closeSignal = new AtomicBoolean(false);
     private final AtomicInteger runningTask = new AtomicInteger(0);
+    private final Map<String, AtomicInteger> bususerMonitor = new HashMap();
 
     private static Map<Integer, CompanyInfo> id2Company = new ConcurrentHashMap<Integer, CompanyInfo>();
     private static Map<String, String> user2Queue = new ConcurrentHashMap<String, String>();
-    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 
     public void setConnPool(ConnectionPool connPool) {
         this.connPool = connPool;
@@ -184,6 +185,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         disper.start();
         queryDB.start();
         scheduler.scheduleWithFixedDelay(new QueueUpdater(), 0l, 60 * 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new JobsMonitor(), 0, 5 * 60, TimeUnit.SECONDS);
         server.start();
     }
 
@@ -407,7 +409,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
 
                             Map<String, String> map = SessionState.get().getOverriddenConfigurations();
                             for(String key : map.keySet())
-                                if(key.startsWith("hcat.databus"))
+                                if(key.startsWith("hcat.databus") || key.equals("hiido.scheduleid"))
                                     qp.fetchDirs.add(String.format("%s=%s", key, map.get(key)));
                         } else if(work.getLimit() > 0) {
                             qp.isFetchTask = false;
@@ -450,6 +452,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 this.serverException = new RuntimeException(
                         "The server threw an exception, please contact the administrator.");
             } finally {
+                String bususer = session.getUserName();
                 try {
                     updateQueryRecord(qid, qp.state, qp.getRes(), qp.resSize, qp.jobId, qp.fields);
                     qp.endTime = System.currentTimeMillis() / 1000;
@@ -461,6 +464,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                     LOG.error("close session wrong.", e);
                 } finally {
                     runningTask.decrementAndGet();
+                    bususerMonitor.get(bususer).decrementAndGet();
                 }
             }
         }
@@ -629,6 +633,36 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         query.setFieldList(fields);
         query.setOperation(HcatQuery.DbOperation.UPDATE);
         sqlQueue.add(query);
+    }
+
+    private final class JobsMonitor implements Runnable {
+        @Override
+        public void run() {
+            java.sql.Connection conn = null;
+            boolean err = false;
+            try {
+                conn = connPool.acquire();
+                PreparedStatement stmt = conn.prepareStatement("insert into bees.hcat_jobs_monitor (server_name, bususer, r_num, monitor_time, `date`) values(?,?,?,?,?)");
+                long currentTime = System.currentTimeMillis();
+                Iterator<Map.Entry<String, AtomicInteger>> iterator = bususerMonitor.entrySet().iterator();
+                while(iterator.hasNext()) {
+                    Map.Entry<String, AtomicInteger> kv = iterator.next();
+                    stmt.setString(1, serverTag);
+                    stmt.setString(2, kv.getKey());
+                    stmt.setInt(3, kv.getValue().get());
+                    stmt.setTimestamp(4, new Timestamp(currentTime));
+                    stmt.setDate(5, new java.sql.Date(currentTime));
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+                stmt.close();
+            } catch (Exception e) {
+                err = true;
+                LOG.error("failed to update monitor info.", e);
+            } finally {
+                connPool.release(conn, err);
+            }
+        }
     }
 
     private final class QueueUpdater implements Runnable {
@@ -898,6 +932,17 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
             HcatSession session = new HcatSession(bususer, curruser, logSysUser, null, hiveConf, null);
 
+            AtomicInteger runningMonitor = bususerMonitor.get(bususer);
+            if(runningMonitor == null){
+                synchronized (bususerMonitor) {
+                    if(!bususerMonitor.containsKey(bususer)) {
+                        runningMonitor = new AtomicInteger(0);
+                        bususerMonitor.put(bususer, runningMonitor);
+                    }
+                }
+            }
+            runningMonitor.incrementAndGet();
+
             session.setOperationManager(operationManager);
             Task task = new Task(qid, companyInfo, session, cmds, quick, bitSet, cq.getConf());
             task.companyId = companyId;
@@ -1132,6 +1177,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             }
             LOG.warn("HttpHiveServer closed.");
             try {
+                scheduler.shutdown();
                 close();
             } catch (Exception e) {
                 LOG.warn("Err when closing server.", e);
