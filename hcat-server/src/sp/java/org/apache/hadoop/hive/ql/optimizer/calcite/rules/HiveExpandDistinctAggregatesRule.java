@@ -133,6 +133,7 @@ public final class HiveExpandDistinctAggregatesRule extends RelOptRule {
             return;
         }
 
+        //FIXME see AggregateExpandDistinctAggregatesRule.onMatch()
         if (useGroupingSets) {
             rewriteUsingGroupingSets(call, aggregate, argLists);
             return;
@@ -499,11 +500,14 @@ public final class HiveExpandDistinctAggregatesRule extends RelOptRule {
 
             // Re-map arguments.
             final int argCount = aggCall.getArgList().size();
+            //FIXME count function not support more than one argument, if argCount > 1, should use count(*) instead of count(c1,c2...)
             final List<Integer> newArgs = new ArrayList<>(argCount);
-            for (int j = 0; j < argCount; j++) {
-                final Integer arg = aggCall.getArgList().get(j);
-                newArgs.add(sourceOf.get(arg));
-            }
+            if(argCount <=1)
+                for (int j = 0; j < argCount; j++) {
+                    final Integer arg = aggCall.getArgList().get(j);
+                    newArgs.add(sourceOf.get(arg));
+                }
+
             final int newFilterArg =
                     aggCall.filterArg >= 0 ? sourceOf.get(aggCall.filterArg) : -1;
             final AggregateCall newAggCall =
