@@ -399,15 +399,8 @@ public class HcatSession implements HiveSession {
 	}
 	
 	public void cancel() throws HiveSQLException {
-		OperationHandle handle = null;
-		synchronized(opHandleStack) {
-			this.cancel = true;
-			handle = this.opHandleStack.peek();
-		}
-		Operation opt = operationManager.getOperation(handle);
-		if(!(opt.isFailed() || opt.isCanceled() || opt.isFinished()))
-			opt.cancel(OperationState.CANCELED);
 
+		//cancel first
 		if(this.sessionState != null && sessionState.getJobs().size() > 0) {
 			List<String> jobs = sessionState.getJobs();
 			String job = jobs.get(jobs.size() - 1);
@@ -420,6 +413,16 @@ public class HcatSession implements HiveSession {
 				LOG.warn("failed to kill applicationId :" + job);
 			}
 		}
+
+		OperationHandle handle = null;
+		synchronized(opHandleStack) {
+			this.cancel = true;
+			handle = this.opHandleStack.peek();
+		}
+		Operation opt = operationManager.getOperation(handle);
+		if(!(opt.isFailed() || opt.isCanceled() || opt.isFinished()))
+			opt.cancel(OperationState.CANCELED);
+
 		sessionState.closeSparkSession();
 	}
 
