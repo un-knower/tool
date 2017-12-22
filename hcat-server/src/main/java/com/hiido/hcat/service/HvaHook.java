@@ -1,13 +1,14 @@
 package com.hiido.hcat.service;
 
+import com.hiido.hcat.HcatConstantConf;
 import com.hiido.hcat.common.PublicConstant;
 import com.hiido.hcat.common.util.StringUtils;
+import com.hiido.hcat.common.util.SystemUtils;
 import com.hiido.hcat.hive.HiveConfConstants;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.Business;
 import com.hiido.suit.net.http.protocol.HttpApacheClient;
 import com.hiido.suit.net.http.protocol.SecurityAuth;
-//import com.hiido.suit.net.http.protocol.bak.HttpApacheClient;
 import com.hiido.suit.net.http.protocol.ha.HttpHAPoolClient;
 import com.hiido.suit.service.security.SecurityObject;
 import org.apache.commons.httpclient.HttpClient;
@@ -32,7 +33,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -72,6 +72,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
         boolean hasInvalidOpt4Old = false;
         Set<Obj> authSet = new HashSet<Obj>();
         List<SecurityAuth.AuthEntry> authInfo = new LinkedList<SecurityAuth.AuthEntry>();
+        List<SecurityAuth.AuthEntry> authInfo4SelfDb = new LinkedList();
 
         BaseSemanticAnalyzer sem = ((HiveSemanticAnalyzerHookContextImpl) context).getSem();
         if (sem instanceof FunctionSemanticAnalyzer) {
@@ -154,14 +155,15 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                     entry.setBusi_type(Business.BusType.HIVE.toString());
                     SecurityAuth.AuthEntry.ObjectInfo objectInfo = new SecurityAuth.AuthEntry.ObjectInfo();
                     String table = entity.getName().replace('@', '.');
-                    if (table.startsWith(context.getUserName()))
-                        continue;
                     String object_name = String.format("%s.%s", "default", table);
                     addColumnInfo(objectInfo, columnAccess, entity.getName());
                     objectInfo.setObject_name(object_name);
                     entry.setObject_info(objectInfo);
-                    authInfo.add(entry);
 
+                    if (table.startsWith(context.getUserName()))
+                        authInfo4SelfDb.add(entry);
+                    else
+                        authInfo.add(entry);
                 }
                 if (entity.getWriteType() == WriteEntity.WriteType.PATH_WRITE) {
                     if (entity.getName().startsWith(HiveConf.getVar(conf, HiveConf.ConfVars.SCRATCHDIR)))
@@ -203,21 +205,26 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
                     entry.setBusi_type(Business.BusType.HIVE.toString());
                     SecurityAuth.AuthEntry.ObjectInfo objectInfo = new SecurityAuth.AuthEntry.ObjectInfo();
                     String table = entity.getName().replace('@', '.');
-                    if (table.startsWith(context.getUserName()))
-                        continue;
                     String object_name = String.format("%s.%s", "default", table);
                     objectInfo.setObject_name(object_name);
                     addColumnInfo(objectInfo, columnAccess, entity.getName());
                     entry.setObject_info(objectInfo);
-                    authInfo.add(entry);
+
+                    if (table.startsWith(context.getUserName()))
+                        authInfo4SelfDb.add(entry);
+                    else
+                        authInfo.add(entry);
                 }
             }
+            authInfo4SelfDb.addAll(authInfo);
             validate(context, authSet, hiidoUser, authInfo, hasInvalidOpt4Old);
-            sendHqltrace(hiidoUser.uid, authInfo);
+            sendHqltrace(hiidoUser.uid, context.getUserName(), authInfo);
         }
     }
 
-    private void sendHqltrace(int uid, List<SecurityAuth.AuthEntry> authInfo) {
+    private void sendHqltrace(int uid, String bususer, List<SecurityAuth.AuthEntry> authInfo) {
+        if(authInfo == null || authInfo.size() ==0)
+            return;
         HttpClient client = new HttpClient();
         HttpConnectionManagerParams params = new HttpConnectionManagerParams();
         params.setSoTimeout(10 * 1000);
@@ -247,40 +254,48 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
         }
         List<NameValuePair> nvps = new ArrayList <NameValuePair>();
         nvps.add(new NameValuePair("uid", String.valueOf(uid)));
+        nvps.add(new NameValuePair("bususer", bususer));
         nvps.add(new NameValuePair("dbtbname", tblBuilder.toString()));
         nvps.add(new NameValuePair("fields", colBuilder.toString()));
         nvps.add(new NameValuePair("qid", conf.get("hcat.qid")));
         method.setRequestBody(nvps.toArray(new NameValuePair[4]));
         try {
             client.executeMethod(method);
-            LOG.info(String.format("%s, %s", tblBuilder.toString(), colBuilder.toString()));
+            LOG.debug(String.format("%s, %s", tblBuilder.toString(), colBuilder.toString()));
         } catch (Exception e) {
-            LOG.warn("failed to request hqltrace server.", e);
+            LOG.debug("failed to request hqltrace server.", e);
+        } finally {
+            method.releaseConnection();
         }
-        method.releaseConnection();
     }
 
     private void validate(HiveSemanticAnalyzerHookContext context, Set<Obj> authSet, HiidoUser hiidoUser, List<SecurityAuth.AuthEntry> authInfo, boolean hasInvalidOpt4Old) {
         if (authSet.size() == 0)
             return;
 
-        try (CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(HttpHiveServer.sslsf).build()) {
+        try (CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(SystemUtils.sslsf).build()) {
             THttpClient thc = new THttpClient(HiveConfConstants.getHcatHvaserver(conf), httpclient);
             TProtocol lopFactory = new TBinaryProtocol(thc);
             HvaService.Client hvaClient =new HvaService.Client(lopFactory);
-            Reply reply = hvaClient.validate("hcat", hiidoUser, authSet);
+            Reply reply = null;
+            if(hiidoUser.uid != 0)
+                 reply = hvaClient.validate("hcat", hiidoUser, authSet);
+            else
+                reply = hvaClient.validate4Dw("hcat", SessionState.get().getCurrUser(), authSet);
+
             if (reply.getRecode() != Recode.SUCESS)
-                if(hiidoUser.comparyId == 189)
+                if(hiidoUser.comparyId == 189 && context.getUserName() != HcatConstantConf.NULL_BUSUSER)
                     LOG.warn("new validation message : " + reply.message);
                 else
                     throw new AuthorizationException(reply.getMessage());
             else
                 return;
         } catch (Exception e) {
-            if(hiidoUser.comparyId == 189)
-                LOG.error("failed to connect authorization Server.", e);
-            else
+            if(hiidoUser.comparyId != 189 || context.getUserName() == HcatConstantConf.NULL_BUSUSER)
                 throw new AuthorizationException(String.format("failed to connect authorization Server : %s", e.getMessage()));
+            else
+                LOG.error("failed to connect authorization Server.", e);
+
         }
 
         //use old validation if false in new.
