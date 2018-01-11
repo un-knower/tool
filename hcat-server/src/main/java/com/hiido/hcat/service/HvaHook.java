@@ -17,6 +17,8 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Task;
 import org.apache.hadoop.hive.ql.hooks.Entity;
@@ -232,7 +234,11 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
         HttpConnectionManager manager = new SimpleHttpConnectionManager();
         manager.setParams(params);
         client.setHttpConnectionManager(manager);
-        PostMethod method = new PostMethod("https://cloud.hiido.com/api/hqltrace");
+
+        Protocol myhttps =  new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
+        client.getHostConfiguration().setHost("cloud.hiido.com", 443, myhttps);
+
+        PostMethod method = new PostMethod("/api/hqltrace");
 
         StringBuilder tblBuilder = new StringBuilder();
         StringBuilder colBuilder = new StringBuilder();
@@ -258,7 +264,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
         nvps.add(new NameValuePair("dbtbname", tblBuilder.toString()));
         nvps.add(new NameValuePair("fields", colBuilder.toString()));
         nvps.add(new NameValuePair("qid", conf.get("hcat.qid")));
-        method.setRequestBody(nvps.toArray(new NameValuePair[4]));
+        method.setRequestBody(nvps.toArray(new NameValuePair[5]));
         try {
             client.executeMethod(method);
             LOG.debug(String.format("%s, %s", tblBuilder.toString(), colBuilder.toString()));
@@ -355,7 +361,7 @@ public class HvaHook extends AbstractSemanticAnalyzerHook {
         switch (op) {
             case SWITCHDATABASE:
                 return false;
-            case EXPLAIN:
+            //case EXPLAIN:
             case DESCFUNCTION:
             case SHOWDATABASES:
             case SHOWTABLES:
