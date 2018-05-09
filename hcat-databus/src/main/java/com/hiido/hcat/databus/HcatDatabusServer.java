@@ -16,6 +16,9 @@ import org.apache.hadoop.hive.ql.QueryState;
 import org.apache.hadoop.hive.ql.exec.FetchTask;
 import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.serde2.SerDeUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -32,10 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -48,9 +48,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HcatDatabusServer implements CliService.Iface {
     private static final Logger LOG = LoggerFactory.getLogger(HcatDatabusServer.class);
 
-    private static final String INSERT_SQL = "insert into bees.databus_tasks (qid,commit_month, exec_start, exec_end, rows, rate, state) values(?,?,?,?,?,?,?)";
+    private static final String INSERT_SQL = "insert into bees.databus_statistics (qid, schedule_id, exec_start, exec_end, row_count, state, server_type) values(?,?,?,?,?,?,?)";
 
-    private final ProducerScheduler producerScheduler;
+    //private final ProducerScheduler producerScheduler;
 
     private List<String> hcatServer;
     private int maxRows = 100;
@@ -66,7 +66,8 @@ public class HcatDatabusServer implements CliService.Iface {
     private final long historyTaskLife = 60 * 60;
     private final long maxHistoryTask = 100;
 
-    private final BasicDataSource dataSource;
+    //private final BasicDataSource dataSource;
+    private Class<?> dirver;
 
     public HcatDatabusServer(String host, int port, int maxThreads, int minThreads, int maxIdleTimeMs
             , String serverAddress, int queueCapacity, int parallelism) throws IOException {
@@ -77,11 +78,18 @@ public class HcatDatabusServer implements CliService.Iface {
                 new TBinaryProtocol.Factory(true, true)));
         httpServer.addServlet("reject", "/reject", new RejectServlet());
         this.defaultServiceAddress = serverAddress;
-        producerScheduler = new ProducerScheduler(serverAddress, queueCapacity, parallelism);
-        dataSource = new BasicDataSource();
+        //producerScheduler = new ProducerScheduler(serverAddress, queueCapacity, parallelism);
+        //dataSource = new BasicDataSource();
     }
 
     public void start() throws Exception {
+        try {
+            dirver = Class.forName(driverName);
+        } catch (ClassNotFoundException e) {
+            throw new java.lang.RuntimeException(e);
+        }
+
+        /*
         dataSource.setDriverClassName(driverName);
         dataSource.setUrl(url);
         dataSource.setUsername(username);
@@ -91,8 +99,14 @@ public class HcatDatabusServer implements CliService.Iface {
         dataSource.setMaxActive(maxTotal);
         dataSource.setMaxWait(maxWaitMillis);
         dataSource.setTestOnBorrow(true);
+
+        dataSource.setTestWhileIdle(true);
+        dataSource.setTestOnReturn(true);
+        dataSource.setNumTestsPerEvictionRun(2);
+        dataSource.setMinEvictableIdleTimeMillis(1800000);
         dataSource.setDefaultAutoCommit(true);
-        producerScheduler.start();
+        */
+        //producerScheduler.start();
 
         Thread disper = new Thread(new Disper(), "task-dipser");
         disper.start();
@@ -102,8 +116,8 @@ public class HcatDatabusServer implements CliService.Iface {
     public void close() throws Exception {
         closeSignal.set(true);
         httpServer.stop();
-        dataSource.close();
-        producerScheduler.close();
+        //dataSource.close();
+        //producerScheduler.close();
     }
 
     public void setHcatServer(List<String> list) {
@@ -196,15 +210,23 @@ public class HcatDatabusServer implements CliService.Iface {
         }
 
         public void run() {
+            String server_type = null;
+            String schedule_id = null;
             runningTask.incrementAndGet();
-            try(THttpClient thc = new THttpClient(address);) {
-                TProtocol lopFactory = new TBinaryProtocol(thc);
-                CliService.Client client = new CliService.Client(lopFactory);
-                QueryStatusReply status = client.queryJobStatus(new QueryStatus(conf, qid));
-                while (status.retCode == 0 && status.getQueryProgress().state <= 1) {
-                    this.progress = status.getQueryProgress();
-                    SystemUtils.sleep(5000);
+
+            try {
+                QueryStatusReply status = null;
+                try(CloseableHttpClient httpclient = HttpClients.custom()
+                        .setKeepAliveStrategy(DefaultConnectionKeepAliveStrategy.INSTANCE)
+                        .build();THttpClient thc = new THttpClient(address, httpclient);) {
+                    TProtocol lopFactory = new TBinaryProtocol(thc);
+                    CliService.Client client = new CliService.Client(lopFactory);
                     status = client.queryJobStatus(new QueryStatus(conf, qid));
+                    while (status.retCode == 0 && status.getQueryProgress().state <= 1) {
+                        this.progress = status.getQueryProgress();
+                        SystemUtils.sleep(5000);
+                        status = client.queryJobStatus(new QueryStatus(conf, qid));
+                    }
                 }
 
                 //TODO 状态暂时不为2
@@ -219,8 +241,6 @@ public class HcatDatabusServer implements CliService.Iface {
                     List<Field> schema = progress.getFields();
                     List<String> fetchDirs = progress.getFetchDirs();
 
-                    if (size == 0)
-                        return;
 
                     if (schema == null || schema.size() == 0 || fetchDirs == null)
                         throw new IllegalArgumentException("Lack schema or fetch task.");
@@ -232,8 +252,12 @@ public class HcatDatabusServer implements CliService.Iface {
                         String[] kv = fetchDirs.get(i).split("=");
                         customizedConf.put(kv[0], kv[1]);
                     }
+
+                    schedule_id = customizedConf.get("hiido.scheduleid");
+
                     //final String serverTypeKey = fetchDirs.get(1);
                     final String serverTypeKey = customizedConf.get(Config.HCAT_DATABUS_SERVICE_TYPE_KEY);
+                    server_type = serverTypeKey;
 
                     //String serverAddress = fetchDirs.size() > 2 ? fetchDirs.get(2) : this.address;
                     String serverAddress = customizedConf.get(Config.HCAT_DATABUS_SERVICE_ADDRESS);
@@ -246,6 +270,9 @@ public class HcatDatabusServer implements CliService.Iface {
                     LOG.info("job {} start to send data to {}", qid, serverAddress);
                     if (serverTypeKey == null)
                         throw new IllegalArgumentException("service type key should not be 'null'.");
+
+                    if (size == 0)
+                        return;
 
                     int i = 0;
                     StringBuilder builder = new StringBuilder();
@@ -260,7 +287,17 @@ public class HcatDatabusServer implements CliService.Iface {
 
                     FetchTask fetch = SerializationUtilities.deserializeObject(serializedTask, FetchTask.class);
                     fetch.initialize(new QueryState(conf), null, null, new CompilationOpContext());
-                    fetch.setMaxRows(maxRows);
+
+
+                    int batchRow = maxRows;
+                    try{
+                        String rowSize = customizedConf.get(Config.HCAT_DATABUS_BATCH_ROW);
+                        if(rowSize !=null)
+                            batchRow = Integer.parseInt(rowSize);
+                    } catch (NumberFormatException e) {
+                        batchRow = maxRows;
+                    }
+                    fetch.setMaxRows(batchRow);
 
                     final ProducerScheduler.OnceFailureListener failureListener = new ProducerScheduler.OnceFailureListener() {
                         @Override
@@ -291,6 +328,18 @@ public class HcatDatabusServer implements CliService.Iface {
                         }
                     };
 
+                    int parallelism = 4;
+                    String parallelismStr = customizedConf.get(Config.HCAT_DATABUS_PRODUCER_PARALLELISM);
+                    if(parallelismStr != null)
+                        try{
+                            parallelism = Integer.parseInt(parallelismStr);
+                        }catch (NumberFormatException e){
+                            parallelism = 4;
+                        }
+
+                    final ProducerScheduler producerScheduler = new ProducerScheduler(serverAddress, 4, parallelism);
+                    producerScheduler.start();
+
                     ProducerScheduler.Key key = null;
                     try {
                         key = producerScheduler.register(qid, serverTypeKey, serverAddress, successListener, failureListener);
@@ -310,13 +359,18 @@ public class HcatDatabusServer implements CliService.Iface {
                         } else if(customizedConf.get(Config.HCAT_DATABUS_RESET_DATA) != null
                                 && customizedConf.get(Config.HCAT_DATABUS_RESET_DATA).equalsIgnoreCase("true")) {
                             boolean isFirst = true;
+                            //第一次reset只发送少量数据
+                            fetch.setMaxRows(10);
                             while ((!error.get()) && fetch.fetch(list)) {
                                 try {
                                     pending.put(currentUid.get());
                                     producerScheduler.pushData(key, currentUid.get(), list, false, isFirst);
                                     if(isFirst) {
-                                        Thread.sleep(10 * 1000);
+                                        while(pending.size() != 0) {
+                                            Thread.sleep(5 * 1000);
+                                        }
                                         isFirst = false;
+                                        fetch.setMaxRows(batchRow);
                                     }
 
                                 } catch (InterruptedException e) {
@@ -350,6 +404,7 @@ public class HcatDatabusServer implements CliService.Iface {
                     } finally {
                         if (key != null)
                             producerScheduler.unregister(key);
+                        producerScheduler.close();
                     }
                 } else {
                     error.set(true);
@@ -368,24 +423,23 @@ public class HcatDatabusServer implements CliService.Iface {
                 if (errMss.length() > 0)
                     this.progress.setErrmsg(errMss.toString());
                 endTime = System.currentTimeMillis();
-                /*
-                try (Connection conn = dataSource.getConnection();) {
-                    Calendar cd = Calendar.getInstance();
+
+                //qid, schedule_id, exec_start, exec_end, rows, state, server_type
+                try (Connection conn = DriverManager.getConnection(url, username, password);) {
                     PreparedStatement statement = conn.prepareStatement(INSERT_SQL);
                     statement.setString(1, qid);
-                    statement.setInt(2, cd.get(Calendar.MONTH) + 1);
+                    statement.setString(2,schedule_id);
                     statement.setTimestamp(3, new Timestamp(progress.startTime * 1000));
                     statement.setTimestamp(4, new Timestamp(progress.endTime * 1000));
                     statement.setLong(5, transfered.get());
-                    statement.setLong(6, spended.get() / count.get());
-                    statement.setInt(7, this.progress.getState());
+                    statement.setInt(6, this.progress.getState());
+                    statement.setString(7, server_type);
                     boolean success = statement.execute();
                     statement.close();
                 } catch (SQLException e) {
                     LOG.warn("faled to insert log into mysql.", e);
                 }
-                */
-                LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), spended.get() / count.get());
+                LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), count.get() == 0 ? 0 : spended.get() / count.get());
             }
         }
     }
