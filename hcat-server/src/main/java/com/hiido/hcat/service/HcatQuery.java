@@ -18,7 +18,7 @@ public class HcatQuery {
     public static enum DbOperation {
         INSERT("insert into bees.hcat_query(qid,commit_month,`user`,committer,state,quick) values(?,?,?,?,?,?)"),
         UPDATE("update bees.hcat_query set state=?,exec_end=?, resourcedir=?, jobIds=?, fieldList=?, resSize=? where qid=?"),
-        SELECT("select exec_end, state, resourcedir, jobIds, fieldList, isFetchTask, resSize from bees.hcat_query where qid=?");
+        SELECT("select exec_start, exec_end, state, resourcedir, jobIds, fieldList, isFetchTask, resSize from bees.hcat_query where qid=?");
         String sql;
         private DbOperation(String sql) {
             this.sql = sql;

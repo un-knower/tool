@@ -29,7 +29,7 @@ public class HcatMultiNamenode {
     }
 
     public static void configureHiveConf(HiveConf conf) {
-        String namenode = getNamenode();
+        String namenode = conf.getBoolean("hcat.use.multiple.namenode", true) ? getNamenode() : conf.get("fs.defaultFS");
         for(String cc : config) {
             String defValue = conf.get(cc);
             if(defValue == null || defValue.startsWith("hdfs://"))
@@ -47,10 +47,5 @@ public class HcatMultiNamenode {
             stringBuilder.append(namenode).append(jar);
         }
         conf.setVar(HiveConf.ConfVars.HIVEAUXJARS, stringBuilder.toString());
-    }
-
-    public static void main(String[] args) {
-        Path newPath = new Path("hdfs://hcat3cluster/abc");
-        System.out.println(newPath.toUri().getPath());
     }
 }

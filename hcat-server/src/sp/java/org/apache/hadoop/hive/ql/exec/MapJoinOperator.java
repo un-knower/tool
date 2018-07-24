@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import com.esotericsoftware.kryo.KryoException;
+import org.apache.hive.com.esotericsoftware.kryo.KryoException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.conf.Configuration;

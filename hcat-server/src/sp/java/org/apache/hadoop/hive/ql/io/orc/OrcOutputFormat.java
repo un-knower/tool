@@ -110,7 +110,9 @@ public class OrcOutputFormat extends FileOutputFormat<NullWritable, OrcSerdeRow>
 
         @Override
         public void close(boolean b) throws IOException {
-            if (writer == null) {
+            FileSystem fs = options.getFileSystem() == null ?
+                    path.getFileSystem(options.getConfiguration()) : options.getFileSystem();
+            if (writer == null && !fs.exists(path)) {
                 //FIXME copy from OrcNewOutputFormat
                 /*
                 // we are closing a file without writing any data in it
@@ -126,7 +128,8 @@ public class OrcOutputFormat extends FileOutputFormat<NullWritable, OrcSerdeRow>
                 options.inspector(inspector);
                 writer = OrcFile.createWriter(path, options);
             }
-            writer.close();
+            if(writer != null)
+                writer.close();
         }
 
         @Override

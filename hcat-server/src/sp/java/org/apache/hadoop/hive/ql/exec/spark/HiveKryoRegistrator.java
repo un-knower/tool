@@ -29,6 +29,7 @@ public class HiveKryoRegistrator implements KryoRegistrator {
         public void write(Kryo kryo, Output output, HiveKey object) {
             output.writeInt(object.getLength(), true);
             output.write(object.getBytes(), 0, object.getLength());
+            output.writeInt(object.hashCode(), false);
         }
 
         @Override
@@ -36,7 +37,7 @@ public class HiveKryoRegistrator implements KryoRegistrator {
             int len = input.readInt(true);
             byte[] bytes = new byte[len];
             input.readBytes(bytes);
-            return new HiveKey(bytes, Arrays.hashCode(bytes));
+            return new HiveKey(bytes, input.readInt(false));
         }
     }
 

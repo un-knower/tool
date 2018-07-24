@@ -40,12 +40,11 @@ import org.apache.hadoop.hive.ql.exec.RowSchema;
 import org.apache.hadoop.hive.ql.exec.TableScanOperator;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.hooks.ReadEntity;
-import org.apache.hadoop.hive.ql.io.AcidUtils;
-import org.apache.hadoop.hive.ql.io.HiveOutputFormat;
-import org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat;
-import org.apache.hadoop.hive.ql.io.RCFileInputFormat;
-import org.apache.hadoop.hive.ql.io.RCFileOutputFormat;
+import org.apache.hadoop.hive.ql.io.*;
 import org.apache.hadoop.hive.llap.LlapOutputFormat;
+import org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat;
+import org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat;
+import org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe;
 import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.metadata.HiveStorageHandler;
@@ -278,6 +277,13 @@ public final class PlanUtils {
             properties.setProperty(
                     org.apache.hadoop.hive.metastore.api.hive_metastoreConstants.META_TABLE_STORAGE,
                     "org.apache.hadoop.hive.llap.LlapStorageHandler");
+            //FIXME add Parquet
+        } else if("Parquet".equalsIgnoreCase(fileFormat)){
+            inputFormat = MapredParquetInputFormat.class;
+            outputFormat = MapredParquetOutputFormat.class;
+            properties.setProperty(IOConstants.COLUMNS, columns);
+            properties.setProperty(IOConstants.COLUMNS_TYPES, columnTypes);
+            serdeClass = ParquetHiveSerDe.class;
         } else { // use TextFile by default
             inputFormat = TextInputFormat.class;
             outputFormat = IgnoreKeyTextOutputFormat.class;

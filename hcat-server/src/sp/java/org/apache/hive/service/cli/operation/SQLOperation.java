@@ -222,7 +222,7 @@ public class SQLOperation extends ExecuteStatementOperation {
         }
     }
 
-    private void runQuery() throws HiveSQLException {
+    public void runQuery() throws HiveSQLException {
         try {
             OperationState opState = getStatus().getState();
             // Operation may have been cancelled by another thread

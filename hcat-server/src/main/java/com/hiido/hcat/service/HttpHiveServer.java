@@ -2,7 +2,6 @@ package com.hiido.hcat.service;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.security.*;
 import java.sql.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -12,6 +11,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 
 import com.hiido.hcat.CompanyInfo;
 import com.hiido.hcat.HcatConstantConf;
@@ -22,10 +22,14 @@ import com.hiido.hcat.thrift.protocol.AuthorizationException;
 import com.hiido.hcat.thrift.protocol.RuntimeException;
 import com.hiido.hva.thrift.protocol.*;
 import com.hiido.suit.common.util.ConnectionPool;
+import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
 import org.apache.hadoop.hive.ql.metadata.*;
+import org.apache.hadoop.hive.ql.processors.CommandProcessor;
+import org.apache.hadoop.hive.ql.processors.CommandProcessorFactory;
+import org.apache.hadoop.hive.ql.processors.SetProcessor;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -61,6 +65,9 @@ import com.hiido.hcat.common.util.SystemUtils;
 import com.hiido.hcat.service.cli.HcatSession;
 import com.hiido.suit.TokenVerifyStone;
 import org.apache.thrift.transport.THttpClient;
+import org.apache.thrift.transport.TTransportException;
+import scala.Tuple3;
+import scala.Tuple5;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -167,11 +174,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         server = builder.setName("hiido").setHost("0.0.0.0").setPort(this.port).setMaxThreads(maxThreads).setMinThreads(minThreads).setMaxIdleTimeMs(maxIdleTimeMs)
                 .setConf(new HiveConf(conf, this.getClass())).setUseSSL(false).build();
 
-        server.addServlet("query", "/query", new QueryServlet(new CliService.Processor<HttpHiveServer>(this),
+        server.addServlet("query", "/query", new QueryServlet(new CliService.Processor(this),
                 new TBinaryProtocol.Factory(true, true)));
-        server.addServlet("signup", "/signup", new SignUpServlet(new SignupService.Processor<HttpHiveServer>(this),
+        server.addServlet("signup", "/signup", new SignUpServlet(new SignupService.Processor(this),
                 new TBinaryProtocol.Factory(true, true)));
-        server.addServlet("metastore", "/metastore", new MetastoreServlet(new MetastoreService.Processor<HttpHiveServer>(this),
+        server.addServlet("metastore", "/metastore", new MetastoreServlet(new MetastoreService.Processor(this),
                 new TBinaryProtocol.Factory(true, true)));
         server.addServlet("reject", "/reject", new RejectServlet());
 
@@ -232,7 +239,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             this.query = query;
             this.quick = quick;
             this.bitSet = bitSet;
-            this.confOverlay = confOverlay;
+            this.confOverlay = confOverlay == null ? Collections.EMPTY_MAP : confOverlay;
             this.qp.setJobId(new LinkedList<String>()).setState(JobStatus.READY.getValue()).setN(query.size())
                     .setEngine("mapreduce").setErrmsg("").setIsFetchTask(false).setProgress(0.0);
 
@@ -272,12 +279,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         }
 
         public void cancel() throws HiveSQLException {
-            if(qp.state > JobStatus.RUNNING.getValue())
+            if (qp.state > JobStatus.RUNNING.getValue())
                 return;
             synchronized (qp) {
                 qp.state = JobStatus.CANCEL.getValue();
             }
-            if(session != null)
+            if (session != null)
                 session.cancel();
         }
 
@@ -287,10 +294,17 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 HiveConf hiveConf = session.getHiveConf();
                 hiveConf.set("hcat.qid", qid);
                 hiveConf.setVar(HiveConf.ConfVars.HIVEQUERYID, qid);
-                if (companyInfo != null && companyInfo.getJobQueue() != null)
-                    hiveConf.set("mapred.job.queue.name", companyInfo.getJobQueue());
-                if (user2Queue.get(session.getUserName()) != null)
-                    hiveConf.set("mapred.job.queue.name", user2Queue.get(session.getUserName()));
+
+                String queue = null;
+                if (!StringUtils.isEmpty(confOverlay.get("manual")))
+                    queue = "root.manual";
+                else if (user2Queue.get(session.getUserName()) != null)
+                    queue = user2Queue.get(session.getUserName());
+                else if (companyInfo != null && companyInfo.getJobQueue() != null)
+                    queue = companyInfo.getJobQueue();
+                if (queue != null)
+                    hiveConf.set("mapred.job.queue.name", queue);
+
                 session.open(confOverlay);
                 session.getSessionState().setHiidoUserId(userId == null ? 0 : Integer.parseInt(userId));
                 session.getSessionState().setHiidoCompanyId((companyId == null ? 0 : Integer.parseInt(companyId)));
@@ -308,9 +322,9 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 boolean loadedSparkConf = false;
 
                 //set mapreduce/spark job name.
-                String dwid = session.getSessionState().getCurrUser() == null?HcatConstantConf.NULL_BUSUSER:session.getSessionState().getCurrUser();
-                String appName = String.format("busUser[%s],logSysUser[%s],curSysUser[%s],hcat.qid[%s]",
-                        session.getUserName(), dwid, dwid, qid);
+                String dwid = session.getSessionState().getCurrUser() == null ? HcatConstantConf.NULL_BUSUSER : session.getSessionState().getCurrUser();
+                String appName = String.format("busUser[%s],logSysUser[%s],curSysUser[%s],hcat.qid[%s],hiido.scheduleid[%s]",
+                        session.getUserName(), dwid, dwid, qid, hiveConf.get("hiido.scheduleid", "NULL"));
                 hiveConf.set(MRJobConfig.JOB_NAME, appName);
                 for (String q : query) {
                     // 前端不支持输出多个select查询结果
@@ -326,10 +340,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                         if (engine.equals("spark")) {
                             this.engine = engine;
                             hiveConf.addResource("spark-site.xml");
-                            if (companyInfo != null && companyInfo.getJobQueue() != null)
-                                hiveConf.set("spark.yarn.queue", companyInfo.getJobQueue());
-                            if (user2Queue.get(session.getUserName()) != null)
-                                hiveConf.set("spark.yarn.queue", user2Queue.get(session.getUserName()));
+
+                            if (queue != null)
+                                hiveConf.set("spark.yarn.queue", queue);
+
                             loadedSparkConf = true;
 
                             hiveConf.set(HiveConfConstants.SPARK_YARN_NAME, appName);
@@ -408,10 +422,10 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                             qp.fetchDirs.add(SerializationUtilities.serializeObject(fetch));
 
                             Map<String, String> map = SessionState.get().getOverriddenConfigurations();
-                            for(String key : map.keySet())
-                                if(key.startsWith("hcat.databus") || key.equals("hiido.scheduleid"))
+                            for (String key : map.keySet())
+                                if (key.startsWith("hcat.databus") || key.equals("hiido.scheduleid"))
                                     qp.fetchDirs.add(String.format("%s=%s", key, map.get(key)));
-                        } else if(work.getLimit() > 0) {
+                        } else if (work.getLimit() > 0) {
                             qp.isFetchTask = false;
                             qp.fetchDirs = new LinkedList<>();
                             qp.fetchDirs.add(String.valueOf(work.getLimit()));
@@ -426,7 +440,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                         }
                     }
                 }
-                qp.state = JobStatus.COMPLETE.getValue();
+                qp.state = qp.state > JobStatus.COMPLETE.getValue() ? qp.state : JobStatus.COMPLETE.getValue();
             } catch (HiveSQLException e) {
                 if (session.getErr() != null)
                     session.getErr().returnAndClear();
@@ -518,6 +532,12 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         }
     }
 
+    public class SchemaServlet extends AbstractTServlet {
+        public SchemaServlet(TProcessor processor, TProtocolFactory protocolFactory) {
+            super(processor, protocolFactory);
+        }
+    }
+
     public class RejectServlet extends HttpServlet {
 
         public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -555,7 +575,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             if (t == null) {
                 continue;
             }
-            boolean clean = t.isFinished() && (force || t.qp.endTime * 1000 - now >= historyTaskLife);
+            boolean clean = t.isFinished() && ((force && t.qp.endTime * 1000 - now >= 300000) || t.qp.endTime * 1000 - now >= historyTaskLife);
             if (clean) {
                 qid2Task.remove(k);
                 count++;
@@ -586,13 +606,14 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             boolean hasRecord = false;
             while (set.next()) {
                 hasRecord = true;
-                progress.setEndTime(set.getTimestamp(1) == null ? 0l : set.getTimestamp(1).getTime() / 1000);
-                progress.setState(set.getInt(2));
-                progress.setRes(set.getString(3));
-                progress.setJobId(HcatQuery.convertJobIds(set.getString(4)));
-                progress.setFields(HcatQuery.convertFieldList(qid, set.getString(5)));
-                progress.setIsFetchTask(set.getBoolean(6));
-                progress.setResSize(set.getLong(7));
+                progress.setStartTime(set.getTimestamp(1).getTime() / 1000);
+                progress.setEndTime(set.getTimestamp(2) == null ? 0l : set.getTimestamp(2).getTime() / 1000);
+                progress.setState(set.getInt(3));
+                progress.setRes(set.getString(4));
+                progress.setJobId(HcatQuery.convertJobIds(set.getString(5)));
+                progress.setFields(HcatQuery.convertFieldList(qid, set.getString(6)));
+                progress.setIsFetchTask(set.getBoolean(7));
+                progress.setResSize(set.getLong(8));
             }
             return hasRecord ? progress : null;
         } catch (Exception e) {
@@ -645,7 +666,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 PreparedStatement stmt = conn.prepareStatement("insert into bees.hcat_jobs_monitor (server_name, bususer, r_num, monitor_time, `date`) values(?,?,?,?,?)");
                 long currentTime = System.currentTimeMillis();
                 Iterator<Map.Entry<String, AtomicInteger>> iterator = bususerMonitor.entrySet().iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     Map.Entry<String, AtomicInteger> kv = iterator.next();
                     stmt.setString(1, serverTag);
                     stmt.setString(2, kv.getKey());
@@ -852,18 +873,13 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         if (close.get())
             throw new RuntimeException("Server is closing.");
         // 1. 权限验证
-        String companyId = cq.cipher.get("company_id");
-        String userId = cq.cipher.get("user_id");
-        String bususer = cq.cipher.get("bususer") == null ? HcatConstantConf.NULL_BUSUSER : cq.cipher.get("bususer");
-        String curruser = cq.cipher.get("curuser");
-        String logSysUser = cq.cipher.get("loguser");
-
-        CompanyInfo companyInfo = id2Company.get(Integer.valueOf(companyId));
-        if(companyInfo == null) {
-            LOG.warn(String.format("server has no %s info, achieve from jdbc.", companyId));
-            try(Connection conn = connPool.acquire()) {
+        Tuple5<String, String, String, String, String> userInfo = getUserInfo(cq);
+        CompanyInfo companyInfo = id2Company.get(Integer.valueOf(userInfo._1()));
+        if (companyInfo == null) {
+            LOG.warn(String.format("server has no %s info, achieve from jdbc.", userInfo._1()));
+            try (Connection conn = connPool.acquire()) {
                 PreparedStatement stmt = conn.prepareStatement("select company_id, company_name,job_queue, hdfs FROM hiidoid.`company_hcat` where company_id = ?");
-                stmt.setInt(1, Integer.valueOf(companyId));
+                stmt.setInt(1, Integer.valueOf(userInfo._1()));
                 ResultSet result = stmt.executeQuery();
                 while (result.next()) {
                     int cid = result.getInt(1);
@@ -879,79 +895,40 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         }
         CommitQueryReply reply = new CommitQueryReply();
         String queryStr = cq.getQuery();
-        String line;
-        BufferedReader r = new BufferedReader(new StringReader(queryStr), 128);
-        StringBuilder qsb = new StringBuilder();
-        try {
-            while ((line = r.readLine()) != null) {
-                // Skipping through comments
-                if (!line.startsWith("--")) {
-                    qsb.append(line + "\n");
-                }
-            }
-        } catch (IOException e) {
-            LOG.error("failed when committing query.", e);
-            throw new AuthorizationException("server-side exception when committing query.");
-        }
-
-        boolean quick = true;
-        List<String> cmds = new LinkedList<String>();
         try {
             runningTask.incrementAndGet();
-            Context ctx = new Context(conf, false);
-            ParseDriver pd = new ParseDriver();
-            String command = "";
-
-            int pos = 0;
-            BitSet bitSet = new BitSet();
-
-            for (String oneCmd : qsb.toString().split(";")) {
-                if (StringUtils.endsWith(oneCmd, "\\")) {
-                    command += StringUtils.chop(oneCmd) + ";";
-                    continue;
-                } else {
-                    command += oneCmd;
-                }
-                if (StringUtils.isBlank(command)) {
-                    continue;
-                }
-                command = command.trim();
-                boolean isQ = isQuickCmd(command, ctx, pd);
-                bitSet.set(pos++, isQ);
-                quick = quick & isQ;
-                cmds.add(command);
-                command = "";
-            }
+            Tuple3<List<String>, Boolean, BitSet> tuple3 = prepare(cq.getQuery(), conf);
 
             String qid = String.format("%s_%s_%d", serverTag, sdf.format(new Date(System.currentTimeMillis())),
                     qidSeq.getAndIncrement());
-            commitQueryRecord(qid, queryStr, bususer, quick);
+            commitQueryRecord(qid, queryStr, userInfo._3(), tuple3._2());
             HiveConf hiveConf = new HiveConf();
             HcatMultiNamenode.configureHiveConf(hiveConf);
 
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
-            HcatSession session = new HcatSession(bususer, curruser, logSysUser, null, hiveConf, null);
+            HcatSession session = new HcatSession(userInfo._3(), userInfo._4(), userInfo._5(), null, hiveConf, null);
 
-            AtomicInteger runningMonitor = bususerMonitor.get(bususer);
-            if(runningMonitor == null){
+            AtomicInteger runningMonitor = bususerMonitor.get(userInfo._3());
+            if (runningMonitor == null) {
                 synchronized (bususerMonitor) {
-                    if(!bususerMonitor.containsKey(bususer)) {
+                    if (!bususerMonitor.containsKey(userInfo._3())) {
                         runningMonitor = new AtomicInteger(0);
-                        bususerMonitor.put(bususer, runningMonitor);
-                    }
+                        bususerMonitor.put(userInfo._3(), runningMonitor);
+                    }else
+                        runningMonitor = bususerMonitor.get(userInfo._3());
                 }
             }
             runningMonitor.incrementAndGet();
 
             session.setOperationManager(operationManager);
-            Task task = new Task(qid, companyInfo, session, cmds, quick, bitSet, cq.getConf());
-            task.companyId = companyId;
-            task.userId = userId;
+            Task task = new Task(qid, companyInfo, session, tuple3._1(), tuple3._2(), tuple3._3(), cq.getConf());
+            task.companyId = userInfo._1();
+            task.userId = userInfo._2();
             qid2Task.put(qid, task);
 
             taskBlockQueue.add(task);
 
-            Handle handle = new Handle().setQuick(quick).setQueryId(qid).setTotalN(cmds.size()).setRunning(false).setStderr(task.getProgress().errmsg);
+            Handle handle = new Handle().setQuick(tuple3._2()).setQueryId(qid).setTotalN(tuple3._1().size()).setRunning(false).setStderr(task.getProgress().errmsg);
             reply.setHandle(handle);
             return reply;
         } catch (Exception e1) {
@@ -1016,15 +993,15 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             Hive hive = Hive.get(hiveConf);
             Table hiveTable = hive.getTable(dbname, table);
             List<FieldInfo> list = new LinkedList<>();
-            if(hiveTable.isPartitioned())
-                for(FieldSchema field : hiveTable.getPartCols())
-                list.add(new FieldInfo(field.getName(), field.getType(), true));
+            if (hiveTable.isPartitioned())
+                for (FieldSchema field : hiveTable.getPartCols())
+                    list.add(new FieldInfo(field.getName(), field.getType(), true));
 
-            for(FieldSchema field : hiveTable.getCols())
+            for (FieldSchema field : hiveTable.getCols())
                 list.add(new FieldInfo(field.getName(), field.getType(), false));
 
             return list;
-        }catch(InvalidTableException e) {
+        } catch (InvalidTableException e) {
             throw new NotFoundException("Table not found.");
         } catch (HiveException e) {
             LOG.error("failed to achieve table info.", e);
@@ -1035,20 +1012,58 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
     @Override
     public String getPartitionPath(String dbname, String table, Map<String, String> partitions) throws AuthorizationException, RuntimeException, NotFoundException, TException {
         HiveConf hiveConf = new HiveConf();
-        try{
+        try {
             Hive hive = Hive.get(hiveConf);
             Table hiveTable = hive.getTable(dbname, table);
-            if(!hiveTable.isPartitioned())
+            if (!hiveTable.isPartitioned())
                 throw new AuthorizationException("Table is not partitioned.");
 
             Partition partition = hive.getPartition(hiveTable, partitions, false);
             Path path = partition.getDataLocation();
             return path.toUri().toString();
-        } catch(InvalidTableException e) {
+        } catch (InvalidTableException e) {
             throw new NotFoundException("Table not found.");
         } catch (HiveException e) {
             LOG.error("failed to achieve table info.", e);
             throw new AuthorizationException(e.toString());
+        }
+    }
+
+    @Override
+    public void createDatabase(Map<String, String> cipher, String database) throws AuthorizationException, TException {
+        String dbname = database.trim().toLowerCase();
+        if (!Pattern.matches("([0-9]|[a-z]|_)+", dbname))
+            throw new AuthorizationException("database name only support char: [0-9]|[a-z]|_.");
+        HiveConf hiveConf = new HiveConf();
+        try {
+            Hive hive = Hive.get(hiveConf);
+            Database db = new Database(dbname.toLowerCase(), "", String.format("hdfs://hcat2cluster/user/hiidoagent/warehouse/%s", dbname), Collections.<String, String>emptyMap());
+            hive.createDatabase(db);
+
+            String[] servers = HiveConfConstants.getHcatHvaserver(conf).split(";");
+            String errorMessage = null;
+            for (String server : servers) {
+                try (CloseableHttpClient httpclient = HttpClients.custom().build();
+                     THttpClient thc = new THttpClient(server, httpclient)) {
+                    TProtocol lopFactory = new TBinaryProtocol(thc);
+                    HvaService.Client hvaClient = new HvaService.Client(lopFactory);
+                    Reply reply = null;
+                    reply = hvaClient.setPrivileges("hcat", Integer.parseInt(cipher.get(HcatConstantConf.USER_ID)), dbname, "hive", (byte) 8);
+                    if (reply.getRecode() != Recode.SUCESS)
+                        errorMessage = reply.message;
+                    else
+                        return;
+                } catch (com.hiido.hva.thrift.protocol.RuntimeException | TTransportException e) {
+                    errorMessage = e.getMessage();
+                    continue;
+                } catch (Exception e) {
+                    throw new org.apache.hadoop.hive.ql.metadata.AuthorizationException(String.format("failed to connect authorization Server : %s", errorMessage == null ? e.getMessage() : errorMessage));
+                }
+            }
+            if(errorMessage != null)
+                throw new AuthorizationException(errorMessage);
+        } catch (HiveException e) {
+            throw new AuthorizationException(e.getMessage());
         }
     }
 
@@ -1074,7 +1089,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             tree = ParseUtils.findRootNonNullToken(tree);
 
             switch (tree.getType()) {
-                case HiveParser.TOK_EXPLAIN:
+                //case HiveParser.TOK_EXPLAIN:
                 case HiveParser.TOK_EXPLAIN_SQ_REWRITE: // TODO
                 case HiveParser.TOK_EXPORT:
                 case HiveParser.TOK_IMPORT:
@@ -1160,6 +1175,62 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                 throw new AuthorizationException("failed in parse sql :" + e.toString());
         }
         return isQuick;
+    }
+
+    /**
+     * @param cq
+     * @return (company_id, user_id, bususer, curuser, loguser)
+     */
+    private static Tuple5<String, String, String, String, String> getUserInfo(CommitQuery cq) {
+        return new Tuple5<>(cq.cipher.get(HcatConstantConf.COMPANY_ID),
+                cq.cipher.get(HcatConstantConf.USER_ID),
+                cq.cipher.get(HcatConstantConf.BUSUSER) == null ? HcatConstantConf.NULL_BUSUSER : cq.cipher.get(HcatConstantConf.BUSUSER),
+                cq.cipher.get(HcatConstantConf.CURUSER),
+                cq.cipher.get(HcatConstantConf.LOGUSER));
+    }
+
+    private static Tuple3<List<String>, Boolean, BitSet> prepare(String queryStr, Configuration conf) throws AuthorizationException, IOException {
+        String line;
+        BufferedReader r = new BufferedReader(new StringReader(queryStr), 128);
+        StringBuilder qsb = new StringBuilder();
+        try {
+            while ((line = r.readLine()) != null) {
+                if (!line.startsWith("--")) {
+                    qsb.append(line + "\n");
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("failed when committing query.", e);
+            throw new AuthorizationException("server-side exception when committing query.");
+        }
+
+        List<String> cmds = new LinkedList<String>();
+        Context ctx = new Context(conf, false);
+        ParseDriver pd = new ParseDriver();
+        String command = StringUtils.EMPTY;
+
+        int pos = 0;
+        boolean quick = true;
+        BitSet bitSet = new BitSet();
+
+        for (String oneCmd : qsb.toString().split(";")) {
+            if (StringUtils.endsWith(oneCmd, "\\")) {
+                command += StringUtils.chop(oneCmd) + ";";
+                continue;
+            } else {
+                command += oneCmd;
+            }
+            if (StringUtils.isBlank(command)) {
+                continue;
+            }
+            command = command.trim();
+            boolean isQ = isQuickCmd(command, ctx, pd);
+            bitSet.set(pos++, isQ);
+            quick = quick & isQ;
+            cmds.add(command);
+            command = StringUtils.EMPTY;
+        }
+        return new Tuple3(cmds, quick, bitSet);
     }
 
     private class SoftReject implements Runnable {

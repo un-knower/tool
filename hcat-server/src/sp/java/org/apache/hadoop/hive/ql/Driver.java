@@ -477,13 +477,16 @@ public class Driver implements CommandProcessor {
                 }
             }
 
+            //FIXME change the explain
             if (conf.getBoolVar(ConfVars.HIVE_LOG_EXPLAIN_OUTPUT)) {
                 String explainOutput = getExplainOutput(sem, plan, tree);
                 if (explainOutput != null) {
+                    /*
                     if (conf.getBoolVar(ConfVars.HIVE_LOG_EXPLAIN_OUTPUT)) {
                         LOG.info("EXPLAIN output for queryid " + queryId + " : "
                                 + explainOutput);
                     }
+                    */
                     if (conf.isWebUiQueryInfoCacheEnabled()) {
                         queryDisplay.setExplainPlan(explainOutput);
                     }
@@ -549,7 +552,7 @@ public class Driver implements CommandProcessor {
         PrintStream ps = new PrintStream(baos);
         try {
             List<Task<?>> rootTasks = sem.getAllRootTasks();
-            task.getJSONPlan(ps, rootTasks, sem.getFetchTask(), false, true, true);
+            task.getJSONPlan(ps, rootTasks, sem.getFetchTask(), false, false, true);
             ret = baos.toString();
         } catch (Exception e) {
             LOG.warn("Exception generating explain output: " + e, e);
