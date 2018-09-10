@@ -12,6 +12,8 @@ public class Config {
     public static final String HCAT_DATABUS_DATA_STORETIME_COLUMN = "hcat.databus.data.storetime.column";
     public static final String HCAT_DATABUS_RESET_DATA = "hcat.databus.reset.data";
     public static final String HCAT_DATABUS_PUSHALL_ONCE_REQUEST = "hcat.databus.pushall.once.request";
+    public static final String HCAT_DATABUS_BATCH_ROW = "hcat.databus.batch.row";
+    public static final String HCAT_DATABUS_PRODUCER_PARALLELISM = "hcat.databus.producer.parallelism";
 
     private Map<String, String> confData = new HashMap<String, String>();
 

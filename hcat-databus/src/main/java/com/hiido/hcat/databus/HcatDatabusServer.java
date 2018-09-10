@@ -48,7 +48,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HcatDatabusServer implements CliService.Iface {
     private static final Logger LOG = LoggerFactory.getLogger(HcatDatabusServer.class);
 
-    private static final String INSERT_SQL = "insert into bees.databus_statistics (qid, schedule_id, exec_start, exec_end, row_count, state, server_type) values(?,?,?,?,?,?,?)";
+    private static final String INSERT_SQL = "insert into bees.databus_statistics (qid, server,schedule_id, exec_start, exec_end, row_count, state, server_type, err_msg) values(?,?,?,?,?,?,?,?,?)";
+    private static final String UPDATE_SQL = "update bees.databus_statistics set schedule_id=?, exec_end=?, row_count=?, state=?, err_msg=? where qid=?";
+    private static final String SELECT_SQL = "select state, exec_start, exec_end,err_msg from bees.databus_statistics where qid=?";
 
     //private final ProducerScheduler producerScheduler;
 
@@ -65,6 +67,7 @@ public class HcatDatabusServer implements CliService.Iface {
 
     private final long historyTaskLife = 60 * 60;
     private final long maxHistoryTask = 100;
+    private String serverTag = null;
 
     //private final BasicDataSource dataSource;
     private Class<?> dirver;
@@ -78,6 +81,7 @@ public class HcatDatabusServer implements CliService.Iface {
                 new TBinaryProtocol.Factory(true, true)));
         httpServer.addServlet("reject", "/reject", new RejectServlet());
         this.defaultServiceAddress = serverAddress;
+        this.serverTag = createServerTag("0.0.0.0", port, "eth0");
         //producerScheduler = new ProducerScheduler(serverAddress, queueCapacity, parallelism);
         //dataSource = new BasicDataSource();
     }
@@ -136,6 +140,24 @@ public class HcatDatabusServer implements CliService.Iface {
         return maxRows;
     }
 
+    /**
+     *
+     * @param host default host
+     * @param port
+     * @param ifname
+     * @return
+     */
+    protected String createServerTag(String host, int port, String ifname) {
+        String tag = null;
+        if (ifname != null) {
+            tag = SystemUtils.getNetInterface(ifname);
+        }
+        if (tag == null) {
+            tag = host;
+        }
+        return String.format("%s_%d", tag.replaceAll("\\.", "_"), port);
+    }
+
     private final class Disper implements Runnable {
 
         private long cleanTaskInterval = 1000 * 60 * 60;
@@ -185,7 +207,7 @@ public class HcatDatabusServer implements CliService.Iface {
         private String address;
         private Map<String, String> conf;
         private QueryProgress progress = new QueryProgress();
-        private LinkedBlockingQueue<Long> pending = new LinkedBlockingQueue<Long>(4);
+        private LinkedBlockingQueue<Long> pending = new LinkedBlockingQueue<Long>(8);
         private AtomicLong currentUid = new AtomicLong(0l);
 
         long endTime;
@@ -424,20 +446,19 @@ public class HcatDatabusServer implements CliService.Iface {
                     this.progress.setErrmsg(errMss.toString());
                 endTime = System.currentTimeMillis();
 
-                //qid, schedule_id, exec_start, exec_end, rows, state, server_type
+                //update bees.databus_statistics set schedule_id=?, exec_end=?, row_count=?, state=?, err_msg=? where qid=?
                 try (Connection conn = DriverManager.getConnection(url, username, password);) {
-                    PreparedStatement statement = conn.prepareStatement(INSERT_SQL);
-                    statement.setString(1, qid);
-                    statement.setString(2,schedule_id);
-                    statement.setTimestamp(3, new Timestamp(progress.startTime * 1000));
-                    statement.setTimestamp(4, new Timestamp(progress.endTime * 1000));
-                    statement.setLong(5, transfered.get());
-                    statement.setInt(6, this.progress.getState());
-                    statement.setString(7, server_type);
-                    boolean success = statement.execute();
+                    PreparedStatement statement = conn.prepareStatement(UPDATE_SQL);
+                    statement.setString(1, schedule_id);
+                    statement.setTimestamp(2,  new Timestamp(progress.endTime * 1000));
+                    statement.setLong(3, transfered.get());
+                    statement.setInt(4, this.progress.getState());
+                    statement.setString(5, progress.errmsg == null ? null : progress.errmsg.substring(0, Math.min(progress.errmsg.length(), 512)));
+                    statement.setString(6, qid);
+                    int success = statement.executeUpdate();
                     statement.close();
                 } catch (SQLException e) {
-                    LOG.warn("faled to insert log into mysql.", e);
+                    LOG.warn("faled to update log into mysql.", e);
                 }
                 LOG.info("Task {} finished with state {}, transferd row {}, rate {}.", this.qid, this.progress.getState(), this.transfered.get(), count.get() == 0 ? 0 : spended.get() / count.get());
             }
@@ -521,6 +542,23 @@ public class HcatDatabusServer implements CliService.Iface {
                 Task task = new Task(reply.getHandle().getQueryId(), address, cq.getConf());
                 qid2Task.put(task.qid, task);
                 taskQueue.add(task);
+
+                try (Connection conn = DriverManager.getConnection(url, username, password);) {
+                    PreparedStatement statement = conn.prepareStatement(INSERT_SQL);
+                    statement.setString(1, reply.handle.queryId);
+                    statement.setString(2, serverTag);
+                    statement.setString(3,null);
+                    statement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                    statement.setTimestamp(5, null);
+                    statement.setLong(6, 0);
+                    statement.setInt(7, 1);
+                    statement.setString(8, null);
+                    statement.setString(9, null);
+                    boolean success = statement.execute();
+                    statement.close();
+                } catch (SQLException e) {
+                    LOG.warn("faled to insert log into mysql.", e);
+                }
                 break;
             } catch (RuntimeException e) {
                 retry++;
@@ -545,13 +583,28 @@ public class HcatDatabusServer implements CliService.Iface {
         Task task = qid2Task.get(qs.queryId);
         if (task == null) {
             for (int i = 0; i < hcatServer.size(); i++) {
-                try(THttpClient thc = new THttpClient(hcatServer.get(i));) {
+                try(THttpClient thc = new THttpClient(hcatServer.get(i));
+                    Connection conn = DriverManager.getConnection(url, username, password)) {
                     TProtocol lopFactory = new TBinaryProtocol(thc);
                     CliService.Client client = new CliService.Client(lopFactory);
-                    return client.queryJobStatus(qs);
-                } catch (TException e) {
+                    reply = client.queryJobStatus(qs);
+                    PreparedStatement statement = conn.prepareStatement(SELECT_SQL);
+                    statement.setString(1, qs.getQueryId());
+                    ResultSet resultSet = statement.executeQuery();
+                    if(resultSet.next()) {
+                        int state = resultSet.getInt(1);
+                        Timestamp startTime = resultSet.getTimestamp(2);
+                        Timestamp endTime = resultSet.getTimestamp(3);
+                        String errMsg = resultSet.getString(4);
+                        reply.queryProgress.setState(state);
+                        reply.queryProgress.setStartTime(startTime.getTime()/1000);
+                        reply.queryProgress.setEndTime(endTime.getTime()/1000);
+                        reply.queryProgress.setErrmsg(errMsg == null ? "" : errMsg);
+                    }
+                    return reply;
+                } catch (Throwable e) {
                     if (i == hcatServer.size() - 1)
-                        throw e;
+                        throw new TException(e);
                 }
             }
         }

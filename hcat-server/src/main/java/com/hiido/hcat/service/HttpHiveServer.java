@@ -27,9 +27,6 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.ql.exec.SerializationUtilities;
 import org.apache.hadoop.hive.ql.exec.spark.session.SparkSessionManagerImpl;
 import org.apache.hadoop.hive.ql.metadata.*;
-import org.apache.hadoop.hive.ql.processors.CommandProcessor;
-import org.apache.hadoop.hive.ql.processors.CommandProcessorFactory;
-import org.apache.hadoop.hive.ql.processors.SetProcessor;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -1036,10 +1033,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             throw new AuthorizationException("database name only support char: [0-9]|[a-z]|_.");
         HiveConf hiveConf = new HiveConf();
         try {
-            Hive hive = Hive.get(hiveConf);
-            Database db = new Database(dbname.toLowerCase(), "", String.format("hdfs://hcat2cluster/user/hiidoagent/warehouse/%s", dbname), Collections.<String, String>emptyMap());
-            hive.createDatabase(db);
-
             String[] servers = HiveConfConstants.getHcatHvaserver(conf).split(";");
             String errorMessage = null;
             for (String server : servers) {
@@ -1047,21 +1040,20 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                      THttpClient thc = new THttpClient(server, httpclient)) {
                     TProtocol lopFactory = new TBinaryProtocol(thc);
                     HvaService.Client hvaClient = new HvaService.Client(lopFactory);
-                    Reply reply = null;
-                    reply = hvaClient.setPrivileges("hcat", Integer.parseInt(cipher.get(HcatConstantConf.USER_ID)), dbname, "hive", (byte) 8);
-                    if (reply.getRecode() != Recode.SUCESS)
-                        errorMessage = reply.message;
-                    else
-                        return;
+                    hvaClient.setPrivileges4Bususer("hcat", cipher.get(HcatConstantConf.BUSUSER), dbname, "hive", (byte) 7);
                 } catch (com.hiido.hva.thrift.protocol.RuntimeException | TTransportException e) {
                     errorMessage = e.getMessage();
                     continue;
                 } catch (Exception e) {
-                    throw new org.apache.hadoop.hive.ql.metadata.AuthorizationException(String.format("failed to connect authorization Server : %s", errorMessage == null ? e.getMessage() : errorMessage));
+                    throw new AuthorizationException(String.format("failed to connect authorization Server : %s", errorMessage == null ? e.getMessage() : errorMessage));
                 }
             }
             if(errorMessage != null)
                 throw new AuthorizationException(errorMessage);
+
+            Hive hive = Hive.get(hiveConf);
+            Database db = new Database(dbname.toLowerCase(), "", String.format("hdfs://hcat2cluster/user/hiidoagent/warehouse/%s", dbname), Collections.<String, String>emptyMap());
+            hive.createDatabase(db);
         } catch (HiveException e) {
             throw new AuthorizationException(e.getMessage());
         }

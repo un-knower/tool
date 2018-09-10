@@ -107,6 +107,7 @@ public class ProducerScheduler implements Closeable {
         public Producer() {
             databusClient = new HttpHAPoolClient();
             databusClient.setHttpProtocolClient(new HttpApacheClient());
+            databusClient.getHttpProtocolClient().setReadTimeout(120000);
             databusClient.setAddrList(serverAddress);
             databusClient.setPoolOneTryCount(2);
         }
@@ -163,8 +164,8 @@ public class ProducerScheduler implements Closeable {
             } catch (Exception e) {
                 LOG.warn("producer err :", e);
             } finally {
+                databusClient.close();
                 countDownLatch.countDown();
-                LOG.warn("One produce Processor is finished.");
             }
         }
     }
