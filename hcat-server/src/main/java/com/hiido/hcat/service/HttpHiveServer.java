@@ -95,7 +95,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
     private final AtomicBoolean close = new AtomicBoolean(false);
     private final AtomicBoolean closeSignal = new AtomicBoolean(false);
     private final AtomicInteger runningTask = new AtomicInteger(0);
-    private final Map<String, AtomicInteger> bususerMonitor = new HashMap();
+    private final AtomicInteger runInThreads = new AtomicInteger(0);
 
     private static Map<Integer, CompanyInfo> id2Company = new ConcurrentHashMap<Integer, CompanyInfo>();
     private static Map<String, String> user2Queue = new ConcurrentHashMap<String, String>();
@@ -475,7 +475,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                     LOG.error("close session wrong.", e);
                 } finally {
                     runningTask.decrementAndGet();
-                    bususerMonitor.get(bususer).decrementAndGet();
+                    runInThreads.decrementAndGet();
                 }
             }
         }
@@ -489,6 +489,11 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
         public void run() {
             while ((!closeSignal.get()) || taskBlockQueue.peek() != null) {
                 Task task = null;
+                if(runInThreads.get() > 300) {
+                    LOG.warn(String.format("There are %d jobs running in threads, %d jobs pending in block queue.", runInThreads.get(), taskBlockQueue.size()));
+                    SystemUtils.sleep(30000);
+                    continue;
+                }
                 try {
                     task = taskBlockQueue.poll(5, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
@@ -498,6 +503,7 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
                     Thread t = new Thread(task, "qid=" + qid);
                     t.setDaemon(true);
                     t.start();
+                    runInThreads.incrementAndGet();
                     LOG.info("start to run:" + qid);
                 }
                 if (qid2Task.size() > maxHistoryTask || System.currentTimeMillis() - cleanTaskInterval > lastCleanTime) {
@@ -660,19 +666,13 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
             boolean err = false;
             try {
                 conn = connPool.acquire();
-                PreparedStatement stmt = conn.prepareStatement("insert into bees.hcat_jobs_monitor (server_name, bususer, r_num, monitor_time, `date`) values(?,?,?,?,?)");
+                PreparedStatement stmt = conn.prepareStatement("insert into bees.hcat_jobs_monitor (server_name, r_num, monitor_time, `date`) values(?,?,?,?)");
                 long currentTime = System.currentTimeMillis();
-                Iterator<Map.Entry<String, AtomicInteger>> iterator = bususerMonitor.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, AtomicInteger> kv = iterator.next();
-                    stmt.setString(1, serverTag);
-                    stmt.setString(2, kv.getKey());
-                    stmt.setInt(3, kv.getValue().get());
-                    stmt.setTimestamp(4, new Timestamp(currentTime));
-                    stmt.setDate(5, new java.sql.Date(currentTime));
-                    stmt.addBatch();
-                }
-                stmt.executeBatch();
+                stmt.setString(1, serverTag);
+                stmt.setInt(2, runInThreads.get());
+                stmt.setTimestamp(3, new Timestamp(currentTime));
+                stmt.setDate(4, new java.sql.Date(currentTime));
+                stmt.execute();
                 stmt.close();
             } catch (Exception e) {
                 err = true;
@@ -904,18 +904,6 @@ public class HttpHiveServer implements CliService.Iface, SignupService.Iface, Me
 
             hiveConf.addToRestrictList(hiveConf.get("hcat.conf.restricted.list"));
             HcatSession session = new HcatSession(userInfo._3(), userInfo._4(), userInfo._5(), null, hiveConf, null);
-
-            AtomicInteger runningMonitor = bususerMonitor.get(userInfo._3());
-            if (runningMonitor == null) {
-                synchronized (bususerMonitor) {
-                    if (!bususerMonitor.containsKey(userInfo._3())) {
-                        runningMonitor = new AtomicInteger(0);
-                        bususerMonitor.put(userInfo._3(), runningMonitor);
-                    }else
-                        runningMonitor = bususerMonitor.get(userInfo._3());
-                }
-            }
-            runningMonitor.incrementAndGet();
 
             session.setOperationManager(operationManager);
             Task task = new Task(qid, companyInfo, session, tuple3._1(), tuple3._2(), tuple3._3(), cq.getConf());
